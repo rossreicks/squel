@@ -2246,3 +2246,5 @@ squel.useFlavour = function(flavour = null) {
     throw new Error(`Flavour not available: ${flavour}`);
   }
 }
+
+module.exports = squel;
