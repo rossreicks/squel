@@ -81,6 +81,7 @@ export const DefaultQueryBuilderOptions = {
 };
 
 export abstract class BaseBuilder extends Cloneable {
+    // TODO this needs to be shared from the parent somehow
     globalValueHandlers = [];
 
     options: Options;
@@ -288,7 +289,7 @@ export abstract class BaseBuilder extends Cloneable {
 
     // Format the given custom value
     // TODO: figure out this type
-    _formatCustomValue(value: any, asParam: boolean, formattingOptions) {
+    _formatCustomValue(value: any, asParam: boolean, formattingOptions = {}) {
         // user defined custom handlers takes precedence
         const customHandler = getValueHandler(
             value,
@@ -540,7 +541,7 @@ export abstract class BaseBuilder extends Cloneable {
     _buildManyStrings(
         strings: string[],
         strValues: string[][],
-        options: Options
+        options: Options = {},
     ) {
         let totalStr: string[] = [];
         const totalValues = [];

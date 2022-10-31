@@ -33,182 +33,181 @@ let squel = undefined;
 const { _, testCreator, assert, expect, should } = require("./testbase");
 const test = testCreator();
 
-test["Postgres flavour"] = {
-    beforeEach() {
+describe("Postgres flavour", () => {
+   beforeEach(() => {
         delete require.cache[require.resolve("../dist/squel")];
         squel = require("../dist/squel");
         return (squel = squel.useFlavour("postgres"));
-    },
+    });
 
-    "INSERT builder": {
-        beforeEach() {
+   describe("INSERT builder", () => {
+       beforeEach(() => {
             return (this.inst = squel.insert());
-        },
+        });
 
-        '>> into(table).set(field, 1).set(field,2).onConflict("field", {field2:2})':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field, 1).set(field,2).onConflict("field", {field2:2})', () => {
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field", 1)
                         .set("field2", 2)
                         .onConflict("field", { field2: 2 });
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field) DO UPDATE SET field2 = 2"
                     );
-                },
-            },
+                });
+            });
 
-        '>> into(table).set(field, 1).set(field,2).onConflict("field")': {
-            beforeEach() {
+       describe('>> into(table).set(field, 1).set(field,2).onConflict("field")', () => {
+           beforeEach(() => {
                 return this.inst
                     .into("table")
                     .set("field", 1)
                     .set("field2", 2)
                     .onConflict("field");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field) DO NOTHING"
                 );
-            },
-        },
+            });
+        });
 
-        '>> into(table).set(field, 1).set(field,2).onConflict(["field", "field2"], {field3:3})':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field, 1).set(field,2).onConflict(["field", "field2"], {field3:3})', () => {
+
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field", 1)
                         .set("field2", 2)
                         .onConflict(["field", "field2"], { field3: 3 });
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field, field2) DO UPDATE SET field3 = 3"
                     );
-                },
-            },
+                });
+            });
 
-        '>> into(table).set(field, 1).set(field,2).onConflict(["field", "field2"])':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field, 1).set(field,2).onConflict(["field", "field2"])', () => {
+
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field", 1)
                         .set("field2", 2)
                         .onConflict("field");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field) DO NOTHING"
                     );
-                },
-            },
+                });
+            });
 
-        ">> into(table).set(field, 1).set(field,2).onConflict()": {
-            beforeEach() {
+       describe(">> into(table).set(field, 1).set(field,2).onConflict()", () => {
+           beforeEach(() => {
                 return this.inst
                     .into("table")
                     .set("field", 1)
                     .set("field2", 2)
                     .onConflict();
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT DO NOTHING"
                 );
-            },
-        },
+            });
+        });
 
-        '>> into(table).set(field, 1).returning("*")': {
-            beforeEach() {
+       describe('>> into(table).set(field, 1).returning("*")', () => {
+           beforeEach(() => {
                 return this.inst.into("table").set("field", 1).returning("*");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "INSERT INTO table (field) VALUES (1) RETURNING *"
                 );
-            },
-        },
+            });
+        });
 
-        '>> into(table).set(field, 1).returning("id")': {
-            beforeEach() {
+       describe('>> into(table).set(field, 1).returning("id")', () => {
+           beforeEach(() => {
                 return this.inst.into("table").set("field", 1).returning("id");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "INSERT INTO table (field) VALUES (1) RETURNING id"
                 );
-            },
-        },
+            });
+        });
 
-        '>> into(table).set(field, 1).returning("id").returning("id")': {
-            beforeEach() {
+       describe('>> into(table).set(field, 1).returning("id").returning("id")', () => {
+           beforeEach(() => {
                 return this.inst
                     .into("table")
                     .set("field", 1)
                     .returning("id")
                     .returning("id");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "INSERT INTO table (field) VALUES (1) RETURNING id"
                 );
-            },
-        },
+            });
+        });
 
-        '>> into(table).set(field, 1).returning("id").returning("name", "alias")':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field, 1).returning("id").returning("name", "alias")' ,() => {
+
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field", 1)
                         .returning("id")
                         .returning("name", "alias");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field) VALUES (1) RETURNING id, name AS alias"
                     );
-                },
-            },
+                });
+            });
 
-        '>> into(table).set(field, 1).returning(squel.str("id < ?", 100), "under100")':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field, 1).returning(squel.str("id < ?", 100), "under100")', () => {
+
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field", 1)
                         .returning(squel.str("id < ?", 100), "under100");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field) VALUES (1) RETURNING (id < 100) AS under100"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.inst.toParam(), {
                         text: "INSERT INTO table (field) VALUES ($1) RETURNING (id < $2) AS under100",
                         values: [1, 100],
                     });
-                },
-            },
+                });
+            });
 
-        ">> into(table).set(field, 1).with(alias, table)": {
-            beforeEach() {
+       describe(">> into(table).set(field, 1).with(alias, table)", () => {
+           beforeEach(() => {
                 return this.inst
                     .into("table")
                     .set("field", 1)
@@ -216,83 +215,83 @@ test["Postgres flavour"] = {
                         "alias",
                         squel.select().from("table").where("field = ?", 2)
                     );
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "WITH alias AS (SELECT * FROM table WHERE (field = 2)) INSERT INTO table (field) VALUES (1)"
                 );
-            },
-            toParam() {
+            });
+           it('toParam', () => {
                 return assert.same(this.inst.toParam(), {
                     text: "WITH alias AS (SELECT * FROM table WHERE (field = $1)) INSERT INTO table (field) VALUES ($2)",
                     values: [2, 1],
                 });
-            },
-        },
-    },
+            });
+        });
+    });
 
-    "UPDATE builder": {
-        beforeEach() {
+   describe("UPDATE builder", () => {
+       beforeEach(() => {
             return (this.upd = squel.update());
-        },
+        });
 
-        '>> table(table).set(field, 1).returning("*")': {
-            beforeEach() {
+       describe('>> table(table).set(field, 1).returning("*")', () => {
+           beforeEach(() => {
                 return this.upd.table("table").set("field", 1).returning("*");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.upd.toString(),
                     "UPDATE table SET field = 1 RETURNING *"
                 );
-            },
-        },
+            });
+        });
 
-        '>> table(table).set(field, 1).returning("field")': {
-            beforeEach() {
+       describe('>> table(table).set(field, 1).returning("field")', () => {
+           beforeEach(() => {
                 return this.upd
                     .table("table")
                     .set("field", 1)
                     .returning("field");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.upd.toString(),
                     "UPDATE table SET field = 1 RETURNING field"
                 );
-            },
-        },
+            });
+        });
 
-        '>> table(table).set(field, 1).returning("name", "alias")': {
-            beforeEach() {
+       describe('>> table(table).set(field, 1).returning("name", "alias")', () => {
+           beforeEach(() => {
                 return this.upd
                     .table("table")
                     .set("field", 1)
                     .returning("name", "alias");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.upd.toString(),
                     "UPDATE table SET field = 1 RETURNING name AS alias"
                 );
-            },
-        },
+            });
+        });
 
-        ">> table(table).set(field, 1).from(table2)": {
-            beforeEach() {
+       describe(">> table(table).set(field, 1).from(table2)", () => {
+           beforeEach(() => {
                 return this.upd.table("table").set("field", 1).from("table2");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.upd.toString(),
                     "UPDATE table SET field = 1 FROM table2"
                 );
-            },
-        },
+            });
+        });
 
-        ">> table(table).set(field, 1).with(alias, table)": {
-            beforeEach() {
+       describe(">> table(table).set(field, 1).with(alias, table)", () => {
+           beforeEach(() => {
                 return this.upd
                     .table("table")
                     .set("field", 1)
@@ -300,71 +299,71 @@ test["Postgres flavour"] = {
                         "alias",
                         squel.select().from("table").where("field = ?", 2)
                     );
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.upd.toString(),
                     "WITH alias AS (SELECT * FROM table WHERE (field = 2)) UPDATE table SET field = 1"
                 );
-            },
-            toParam() {
+            });
+           it('toParam', () => {
                 return assert.same(this.upd.toParam(), {
                     text: "WITH alias AS (SELECT * FROM table WHERE (field = $1)) UPDATE table SET field = $2",
                     values: [2, 1],
                 });
-            },
-        },
-    },
+            });
+        });
+    });
 
-    "DELETE builder": {
-        beforeEach() {
+   describe("DELETE builder", () => {
+       beforeEach(() => {
             return (this.del = squel.delete());
-        },
+        });
 
-        '>> from(table).where(field = 1).returning("*")': {
-            beforeEach() {
+       describe('>> from(table).where(field = 1).returning("*")', () => {
+           beforeEach(() => {
                 return this.del.from("table").where("field = 1").returning("*");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.del.toString(),
                     "DELETE FROM table WHERE (field = 1) RETURNING *"
                 );
-            },
-        },
+            });
+        });
 
-        '>> from(table).where(field = 1).returning("field")': {
-            beforeEach() {
+       describe('>> from(table).where(field = 1).returning("field")', () => {
+           beforeEach(() => {
                 return this.del
                     .from("table")
                     .where("field = 1")
                     .returning("field");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.del.toString(),
                     "DELETE FROM table WHERE (field = 1) RETURNING field"
                 );
-            },
-        },
+            });
+        });
 
-        '>> from(table).where(field = 1).returning("field", "f")': {
-            beforeEach() {
+       describe('>> from(table).where(field = 1).returning("field", "f")', () => {
+           beforeEach(() => {
                 return this.del
                     .from("table")
                     .where("field = 1")
                     .returning("field", "f");
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.del.toString(),
                     "DELETE FROM table WHERE (field = 1) RETURNING field AS f"
                 );
-            },
-        },
+            });
+        });
 
-        ">> from(table).where(field = 1).with(alias, table)": {
-            beforeEach() {
+       describe(">> from(table).where(field = 1).with(alias, table)", () => {
+           beforeEach(() => {
                 return this.del
                     .from("table")
                     .where("field = ?", 1)
@@ -372,189 +371,189 @@ test["Postgres flavour"] = {
                         "alias",
                         squel.select().from("table").where("field = ?", 2)
                     );
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.del.toString(),
                     "WITH alias AS (SELECT * FROM table WHERE (field = 2)) DELETE FROM table WHERE (field = 1)"
                 );
-            },
-            toParam() {
+            });
+           it('toParam', () => {
                 return assert.same(this.del.toParam(), {
                     text: "WITH alias AS (SELECT * FROM table WHERE (field = $1)) DELETE FROM table WHERE (field = $2)",
                     values: [2, 1],
                 });
-            },
-        },
-    },
+            });
+        });
+    });
 
-    "SELECT builder": {
-        beforeEach() {
+   describe("SELECT builder", () => {
+       beforeEach(() => {
             return (this.sel = squel.select());
-        },
-        select: {
-            ">> from(table).where(field = 1)": {
-                beforeEach() {
+        });
+        describe('select', () => {
+           describe(">> from(table).where(field = 1)", () => {
+               beforeEach(() => {
                     return this.sel
                         .field("field1")
                         .from("table1")
                         .where("field1 = 1");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT field1 FROM table1 WHERE (field1 = 1)"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT field1 FROM table1 WHERE (field1 = 1)",
                         values: [],
                     });
-                },
-            },
+                });
+            });
 
-            ">> from(table).where(field = ?, 2)": {
-                beforeEach() {
+           describe(">> from(table).where(field = ?, 2)", () => {
+               beforeEach(() => {
                     return this.sel
                         .field("field1")
                         .from("table1")
                         .where("field1 = ?", 2);
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT field1 FROM table1 WHERE (field1 = 2)"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT field1 FROM table1 WHERE (field1 = $1)",
                         values: [2],
                     });
-                },
-            },
-        },
+                });
+            });
+        });
 
-        "distinct queries": {
-            beforeEach() {
+       describe("distinct queries", () => {
+           beforeEach(() => {
                 return this.sel.fields(["field1", "field2"]).from("table1");
-            },
+            });
 
-            ">> from(table).distinct()": {
-                beforeEach() {
+           describe(">> from(table).distinct()", () => {
+               beforeEach(() => {
                     return this.sel.distinct();
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT DISTINCT field1, field2 FROM table1"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT DISTINCT field1, field2 FROM table1",
                         values: [],
                     });
-                },
-            },
+                });
+            });
 
-            ">> from(table).distinct(field1)": {
-                beforeEach() {
+           describe(">> from(table).distinct(field1)", () => {
+               beforeEach(() => {
                     return this.sel.distinct("field1");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT DISTINCT ON (field1) field1, field2 FROM table1"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT DISTINCT ON (field1) field1, field2 FROM table1",
                         values: [],
                     });
-                },
-            },
+                });
+            });
 
-            ">> from(table).distinct(field1, field2)": {
-                beforeEach() {
+           describe(">> from(table).distinct(field1, field2)", () => {
+               beforeEach(() => {
                     return this.sel.distinct("field1", "field2");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT DISTINCT ON (field1, field2) field1, field2 FROM table1"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT DISTINCT ON (field1, field2) field1, field2 FROM table1",
                         values: [],
                     });
-                },
-            },
-        },
+                });
+            });
+        });
 
-        "cte queries": {
-            beforeEach() {
+       describe("cte queries", () => {
+           beforeEach(() => {
                 this.sel = squel.select();
                 this.sel2 = squel.select();
                 return (this.sel3 = squel.select());
-            },
+            });
 
-            ">> query1.with(alias, query2)": {
-                beforeEach() {
+           describe(">> query1.with(alias, query2)", () => {
+               beforeEach(() => {
                     this.sel.from("table1").where("field1 = ?", 1);
                     this.sel2.from("table2").where("field2 = ?", 2);
                     return this.sel.with("someAlias", this.sel2);
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = 2)) SELECT * FROM table1 WHERE (field1 = 1)"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = $1)) SELECT * FROM table1 WHERE (field1 = $2)",
                         values: [2, 1],
                     });
-                },
-            },
+                });
+            });
 
-            ">> query1.with(alias1, query2).with(alias2, query2)": {
-                beforeEach() {
+           describe(">> query1.with(alias1, query2).with(alias2, query2)", () => {
+               beforeEach(() => {
                     this.sel.from("table1").where("field1 = ?", 1);
                     this.sel2.from("table2").where("field2 = ?", 2);
                     this.sel3.from("table3").where("field3 = ?", 3);
                     return this.sel
                         .with("someAlias", this.sel2)
                         .with("anotherAlias", this.sel3);
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = 2)), anotherAlias AS (SELECT * FROM table3 WHERE (field3 = 3)) SELECT * FROM table1 WHERE (field1 = 1)"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = $1)), anotherAlias AS (SELECT * FROM table3 WHERE (field3 = $2)) SELECT * FROM table1 WHERE (field1 = $3)",
                         values: [2, 3, 1],
                     });
-                },
-            },
-        },
+                });
+            });
+        });
 
-        "union queries": {
-            beforeEach() {
+       describe("union queries", () => {
+           beforeEach(() => {
                 this.sel = squel.select();
                 return (this.sel2 = squel.select());
-            },
+            });
 
-            ">> query1.union(query2)": {
-                beforeEach() {
+           describe(">> query1.union(query2)", () => {
+               beforeEach(() => {
                     this.sel
                         .field("field1")
                         .from("table1")
@@ -564,23 +563,23 @@ test["Postgres flavour"] = {
                         .from("table1")
                         .where("field1 < ?", 10);
                     return this.sel.union(this.sel2);
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT field1 FROM table1 WHERE (field1 = 3) UNION (SELECT field1 FROM table1 WHERE (field1 < 10))"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT field1 FROM table1 WHERE (field1 = $1) UNION (SELECT field1 FROM table1 WHERE (field1 < $2))",
                         values: [3, 10],
                     });
-                },
-            },
+                });
+            });
 
-            ">> query1.union_all(query2)": {
-                beforeEach() {
+           describe(">> query1.union_all(query2)", () => {
+               beforeEach(() => {
                     this.sel
                         .field("field1")
                         .from("table1")
@@ -590,24 +589,24 @@ test["Postgres flavour"] = {
                         .from("table1")
                         .where("field1 < ?", 10);
                     return this.sel.union_all(this.sel2);
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.sel.toString(),
                         "SELECT field1 FROM table1 WHERE (field1 = 3) UNION ALL (SELECT field1 FROM table1 WHERE (field1 < 10))"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.sel.toParam(), {
                         text: "SELECT field1 FROM table1 WHERE (field1 = $1) UNION ALL (SELECT field1 FROM table1 WHERE (field1 < $2))",
                         values: [3, 10],
                     });
-                },
-            },
-        },
-    },
+                });
+            });
+        });
+    });
 
-    "Default query builder options"() {
+   it("Default query builder options", () => {
         return assert.same(
             {
                 replaceSingleQuotes: false,
@@ -630,9 +629,5 @@ test["Postgres flavour"] = {
             },
             squel.cls.DefaultQueryBuilderOptions
         );
-    },
-};
-
-if (typeof module !== "undefined" && module !== null) {
-    module.exports[require("path").basename(__filename)] = test;
-}
+    });
+});

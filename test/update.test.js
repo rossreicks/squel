@@ -1,0 +1,374 @@
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+/*
+Copyright (c) 2014 Ramesh Nair (hiddentao.com)
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+
+import sinon from "sinon";
+import _ from "underscore";
+import { squel } from "../src";
+import { StringBlock } from "../src/block";
+import { DefaultQueryBuilderOptions } from '../src/base-builder';
+import { QueryBuilder } from '../src/query-builder';
+
+import { assert } from "chai";
+
+let mocker;
+let inst = squel.update();
+
+assert.same = function (actual, expected, message) {
+    assert.deepEqual(actual, expected, message);
+};
+
+describe('UPDATE builder', () => {
+    beforeEach(() => {
+        mocker = sinon.sandbox.create();
+        inst = squel.update();
+    });
+
+    afterEach(() => {
+        mocker.restore();
+    });
+
+ it('instanceof QueryBuilder', () => {
+    assert.instanceOf(inst, QueryBuilder);
+  });
+
+ describe('constructor', () => {
+   it('override options', () => {
+      inst = squel.update({
+        usingValuePlaceholders: true,
+        dummy: true
+      });
+
+      const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+        usingValuePlaceholders: true,
+        dummy: true
+      }
+      );
+
+      Array.from(inst.blocks).map((block) =>
+        assert.same(_.pick(block.options, _.keys(expectedOptions)), expectedOptions));
+    });
+
+   it('override blocks', () => {
+      const block = new StringBlock('SELECT');
+      inst = squel.update({}, [block]);
+      assert.same([block], inst.blocks);
+    });
+  });
+
+
+ describe('build query', () => {
+   it('need to call set() first', () => {
+      inst.table('table');
+      assert.throws((() => inst.toString()), 'set() needs to be called');
+    });
+
+   describe('>> table(table, t1).set(field, 1)', () => {
+     beforeEach(() => {
+        inst.table('table', 't1').set('field', 1);
+     });
+     it('toString', () => {
+        assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1');
+      });
+
+     describe('>> set(field2, 1.2)', () => {
+       beforeEach(() => { inst.set('field2', 1.2); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = 1.2');
+        });
+      });
+
+     describe('>> set(field2, true)', () => {
+       beforeEach(() => { inst.set('field2', true); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = TRUE');
+        });
+      });
+
+     describe('>> set(field2, "str")', () => {
+       beforeEach(() => { inst.set('field2', 'str'); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = \'str\'');
+        });
+       it('toParam', () => {
+          assert.same(inst.toParam(), {
+            text: 'UPDATE table `t1` SET field = ?, field2 = ?',
+            values: [1, 'str']
+          });
+        });
+      });
+
+     describe('>> set(field2, "str", { dontQuote: true })', () => {
+       beforeEach(() => { inst.set('field2', 'str', {dontQuote: true}); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = str');
+        });
+       it('toParam', () => {
+          assert.same(inst.toParam(), {
+            text: 'UPDATE table `t1` SET field = ?, field2 = ?',
+            values: [1, 'str']
+          });
+        });
+      });
+
+     describe('>> set(field, query builder)', () => {
+       beforeEach(() => {
+          this.subQuery = squel.select().field('MAX(score)').from('scores');
+          inst.set( 'field',  this.subQuery );
+        });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = (SELECT MAX(score) FROM scores)');
+        });
+       it('toParam', () => {
+          const parameterized = inst.toParam();
+          assert.same(parameterized.text, 'UPDATE table `t1` SET field = (SELECT MAX(score) FROM scores)');
+          assert.same(parameterized.values, []);
+        });
+      });
+
+     describe('>> set(custom value type)', () => {
+       beforeEach(() => {
+          class MyClass {}
+          inst.registerValueHandler(MyClass, a => 'abcd');
+          inst.set( 'field',  new MyClass() );
+        });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = (abcd)');
+        });
+       it('toParam', () => {
+          const parameterized = inst.toParam();
+          assert.same(parameterized.text, 'UPDATE table `t1` SET field = ?');
+          assert.same(parameterized.values, ['abcd']);
+        });
+      });
+
+     describe('>> setFields({field2: \'value2\', field3: true })', () => {
+       beforeEach(() => { inst.setFields({field2: 'value2', field3: true }); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = \'value2\', field3 = TRUE');
+        });
+       it('toParam', () => {
+          const parameterized = inst.toParam();
+          assert.same(parameterized.text, 'UPDATE table `t1` SET field = ?, field2 = ?, field3 = ?');
+          assert.same(parameterized.values, [1, 'value2', true]);
+        });
+      });
+
+     describe('>> setFields({field2: \'value2\', field: true })', () => {
+       beforeEach(() => { inst.setFields({field2: 'value2', field: true }); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = TRUE, field2 = \'value2\'');
+        });
+      });
+
+     describe('>> set(field2, null)', () => {
+       beforeEach(() => { inst.set('field2', null); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = NULL');
+        });
+       it('toParam', () => {
+          assert.same(inst.toParam(), { text: 'UPDATE table `t1` SET field = ?, field2 = ?', values: [1, null] });
+        });
+
+       describe('>> table(table2)', () => {
+         beforeEach(() => { inst.table('table2'); });
+         it('toString', () => {
+            assert.same(inst.toString(), 'UPDATE table `t1`, table2 SET field = 1, field2 = NULL');
+          });
+
+         describe('>> where(a = 1)', () => {
+           beforeEach(() => { inst.where('a = 1'); });
+           it('toString', () => {
+              assert.same(inst.toString(), 'UPDATE table `t1`, table2 SET field = 1, field2 = NULL WHERE (a = 1)');
+            });
+
+           describe('>> order(a, true)', () => {
+             beforeEach(() => { inst.order('a', true); });
+             it('toString', () => {
+                assert.same(inst.toString(), 'UPDATE table `t1`, table2 SET field = 1, field2 = NULL WHERE (a = 1) ORDER BY a ASC');
+              });
+
+             describe('>> limit(2)', () => {
+               beforeEach(() => { inst.limit(2); });
+               it('toString', () => {
+                  assert.same(inst.toString(), 'UPDATE table `t1`, table2 SET field = 1, field2 = NULL WHERE (a = 1) ORDER BY a ASC LIMIT 2');
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+
+   describe('>> table(table, t1).setFields({field1: 1, field2: \'value2\'})', () => {
+     beforeEach(() => { inst.table('table', 't1').setFields({field1: 1, field2: 'value2' }); });
+     it('toString', () => {
+        assert.same(inst.toString(), 'UPDATE table `t1` SET field1 = 1, field2 = \'value2\'');
+      });
+
+     describe('>> set(field1, 1.2)', () => {
+       beforeEach(() => { inst.set('field1', 1.2); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field1 = 1.2, field2 = \'value2\'');
+        });
+      });
+
+     describe('>> setFields({field3: true, field4: \'value4\'})', () => {
+       beforeEach(() => { inst.setFields({field3: true, field4: 'value4'}); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field1 = 1, field2 = \'value2\', field3 = TRUE, field4 = \'value4\'');
+        });
+      });
+
+     describe('>> setFields({field1: true, field3: \'value3\'})', () => {
+       beforeEach(() => { inst.setFields({field1: true, field3: 'value3'}); });
+       it('toString', () => {
+          assert.same(inst.toString(), 'UPDATE table `t1` SET field1 = TRUE, field2 = \'value2\', field3 = \'value3\'');
+        });
+      });
+    });
+
+   describe('>> table(table, t1).set("count = count + 1")', () => {
+     beforeEach(() => { inst.table('table', 't1').set('count = count + 1'); });
+     it('toString', () => {
+        assert.same(inst.toString(), 'UPDATE table `t1` SET count = count + 1');
+      });
+    });
+  });
+
+ describe('str()', () => {
+   beforeEach(() => { inst.table('students').set('field', squel.str('GETDATE(?, ?)', 2014, '"feb"')); });
+   it('toString', () => {
+      assert.same('UPDATE students SET field = (GETDATE(2014, \'"feb"\'))', inst.toString());
+    });
+   it('toParam', () => {
+      assert.same({ text: 'UPDATE students SET field = (GETDATE(?, ?))', values: [2014, '"feb"'] }, inst.toParam());
+    });
+  });
+
+ describe('string formatting', () => {
+   beforeEach(() => {
+      inst.updateOptions({
+        stringFormatter(str) { return `N'${str}'`; }
+      });
+      inst.table('students').set('field', 'jack');
+    });
+   it('toString', () => {
+      assert.same('UPDATE students SET field = N\'jack\'', inst.toString());
+    });
+   it('toParam', () => {
+      assert.same({ text: 'UPDATE students SET field = ?', values: ["jack"] }, inst.toParam());
+    });
+  });
+
+ it('fix for hiddentao/squel#63', () => {
+    const newinst = inst.table('students').set('field = field + 1');
+    newinst.set('field2', 2).set('field3', true);
+    assert.same({ text: 'UPDATE students SET field = field + 1, field2 = ?, field3 = ?', values: [2, true] }, inst.toParam());
+  });
+
+ describe('dontQuote and replaceSingleQuotes set(field2, "ISNULL(\'str\', str)", { dontQuote: true })', () => {
+   beforeEach(() => {
+      inst = squel.update({replaceSingleQuotes: true});
+      inst.table('table', 't1').set('field', 1);
+      inst.set('field2', "ISNULL('str', str)", {dontQuote: true});
+    });
+   it('toString', () => {
+      assert.same(inst.toString(), 'UPDATE table `t1` SET field = 1, field2 = ISNULL(\'str\', str)');
+    });
+   it('toParam', () => {
+      assert.same(inst.toParam(), {
+        text: 'UPDATE table `t1` SET field = ?, field2 = ?',
+        values: [1, "ISNULL('str', str)"]
+      });
+    });
+  });
+
+ describe('fix for #223 - careful about array looping methods', () => {
+   beforeEach(() => {
+      Array.prototype.substr = () => 1;
+    });
+   afterEach(() => {
+      delete Array.prototype.substr;
+    });
+    it('check()', () => {
+      inst = squel.update()
+        .table('users')
+        .where('id = ?', 123)
+        .set('active', 1)
+        .set('regular', 0)
+        .set('moderator',1);
+
+      assert.same(inst.toParam(), {
+        text: 'UPDATE users SET active = ?, regular = ?, moderator = ? WHERE (id = ?)',
+        values: [1, 0, 1, 123],
+      });
+    });
+  });
+
+ it('fix for #225 - autoquoting field names', () => {
+    inst = squel.update({autoQuoteFieldNames: true})
+      .table('users')
+      .where('id = ?', 123)
+      .set('active', 1)
+      .set('regular', 0)
+      .set('moderator',1);
+
+    assert.same(inst.toParam(), {
+        text: 'UPDATE users SET `active` = ?, `regular` = ?, `moderator` = ? WHERE (id = ?)',
+        values: [1, 0, 1, 123],
+      });
+  });
+
+ describe('fix for #243 - ampersand in conditions', () => {
+   beforeEach(() => {
+      inst = squel.update().table('a').set('a = a & ?', 2);
+    });
+   it('toString', () => {
+      assert.same(inst.toString(), 'UPDATE a SET a = a & 2');
+    });
+   it('toParam', () => {
+      assert.same(inst.toParam(), {
+        text: 'UPDATE a SET a = a & ?',
+        values: [2],
+      });
+    });
+  });
+
+ it('cloning', () => {
+    const newinst = inst.table('students').set('field', 1).clone();
+    newinst.set('field', 2).set('field2', true);
+
+    assert.same('UPDATE students SET field = 1', inst.toString());
+    assert.same('UPDATE students SET field = 2, field2 = TRUE', newinst.toString());
+  });
+});
+

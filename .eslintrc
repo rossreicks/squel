@@ -4,7 +4,7 @@
         "curly": ["error", "all"],
         "newline-after-var": ["error", "always"],
         "newline-before-return": "error",
-        "no-unsafe-return": "ignore",
+        "no-unsafe-return": 0,
         "indent": ["error", 4]
     }
 }

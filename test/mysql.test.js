@@ -33,28 +33,28 @@ let squel = undefined;
 const { _, testCreator, assert, expect, should } = require("./testbase");
 const test = testCreator();
 
-test["MySQL flavour"] = {
-    beforeEach() {
+describe("MySQL flavour", () => {
+   beforeEach(() => {
         delete require.cache[require.resolve("../dist/squel")];
         squel = require("../dist/squel");
         return (squel = squel.useFlavour("mysql"));
-    },
+    });
 
-    MysqlOnDuplicateKeyUpdateBlock: {
-        beforeEach() {
+    describe('MysqlOnDuplicateKeyUpdateBlock', () => {
+       beforeEach(() => {
             this.cls = squel.cls.MysqlOnDuplicateKeyUpdateBlock;
             return (this.inst = new this.cls());
-        },
+        });
 
-        "instanceof of AbstractSetFieldBlock"() {
+       it("instanceof of AbstractSetFieldBlock", () => {
             return assert.instanceOf(
                 this.inst,
                 squel.cls.AbstractSetFieldBlock
             );
-        },
+        });
 
-        "onDupUpdate()": {
-            "calls to _set()"() {
+       describe("onDupUpdate()", () => {
+           it("calls to _set()", () => {
                 const spy = test.mocker.stub(this.inst, "_set");
 
                 this.inst.onDupUpdate("f", "v", { dummy: true });
@@ -62,23 +62,23 @@ test["MySQL flavour"] = {
                 return assert.ok(
                     spy.calledWithExactly("f", "v", { dummy: true })
                 );
-            },
-        },
+            });
+        });
 
-        "_toParamString()": {
-            beforeEach() {
+       describe("_toParamString()", () => {
+           beforeEach(() => {
                 this.inst.onDupUpdate("field1 = field1 + 1");
                 this.inst.onDupUpdate("field2", "value2", { dummy: true });
                 return this.inst.onDupUpdate("field3", "value3");
-            },
+            });
 
-            "non-parameterized"() {
+           it("non-parameterized", () => {
                 return assert.same(this.inst._toParamString(), {
                     text: "ON DUPLICATE KEY UPDATE field1 = field1 + 1, field2 = 'value2', field3 = 'value3'",
                     values: [],
                 });
-            },
-            parameterized() {
+            });
+            it('parameterized()', () => {
                 return assert.same(
                     this.inst._toParamString({ buildParameterized: true }),
                     {
@@ -86,89 +86,85 @@ test["MySQL flavour"] = {
                         values: ["value2", "value3"],
                     }
                 );
-            },
-        },
-    },
+            });
+        });
+    });
 
-    "INSERT builder": {
-        beforeEach() {
+   describe("INSERT builder", () => {
+       beforeEach(() => {
             return (this.inst = squel.insert());
-        },
+        });
 
-        '>> into(table).set(field, 1).set(field1, 2).onDupUpdate(field, 5).onDupUpdate(field1, "str")':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field, 1).set(field1, 2).onDupUpdate(field, 5).onDupUpdate(field1, "str")', () => {
+
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field", 1)
                         .set("field1", 2)
                         .onDupUpdate("field", 5)
                         .onDupUpdate("field1", "str");
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field, field1) VALUES (1, 2) ON DUPLICATE KEY UPDATE field = 5, field1 = 'str'"
                     );
-                },
+                });
 
-                toParam() {
+               it('toParam', () => {
                     return assert.same(this.inst.toParam(), {
                         text: "INSERT INTO table (field, field1) VALUES (?, ?) ON DUPLICATE KEY UPDATE field = ?, field1 = ?",
                         values: [1, 2, 5, "str"],
                     });
-                },
-            },
+                });
+        });
 
-        '>> into(table).set(field2, 3).onDupUpdate(field2, "str", { dontQuote: true })':
-            {
-                beforeEach() {
+        describe('>> into(table).set(field2, 3).onDupUpdate(field2, "str", { dontQuote: true })', () => {
+               beforeEach(() => {
                     return this.inst
                         .into("table")
                         .set("field2", 3)
                         .onDupUpdate("field2", "str", { dontQuote: true });
-                },
-                toString() {
+                });
+               it('toString', () => {
                     return assert.same(
                         this.inst.toString(),
                         "INSERT INTO table (field2) VALUES (3) ON DUPLICATE KEY UPDATE field2 = str"
                     );
-                },
-                toParam() {
+                });
+               it('toParam', () => {
                     return assert.same(this.inst.toParam(), {
                         text: "INSERT INTO table (field2) VALUES (?) ON DUPLICATE KEY UPDATE field2 = ?",
                         values: [3, "str"],
                     });
-                },
-            },
-    },
+                });
+        });
+    });
 
-    "REPLACE builder": {
-        beforeEach() {
+   describe("REPLACE builder", () => {
+       beforeEach(() => {
             return (this.inst = squel.replace());
-        },
+        });
 
-        ">> into(table).set(field, 1).set(field1, 2)": {
-            beforeEach() {
+       describe(">> into(table).set(field, 1).set(field1, 2)", () => {
+           beforeEach(() => {
                 return this.inst.into("table").set("field", 1).set("field1", 2);
-            },
-            toString() {
+            });
+           it('toString', () => {
                 return assert.same(
                     this.inst.toString(),
                     "REPLACE INTO table (field, field1) VALUES (1, 2)"
                 );
-            },
+            });
 
-            toParam() {
+           it('toParam', () => {
                 return assert.same(this.inst.toParam(), {
                     text: "REPLACE INTO table (field, field1) VALUES (?, ?)",
                     values: [1, 2],
                 });
-            },
-        },
-    },
-};
+            });
+        });
+    });
+});
 
-if (typeof module !== "undefined" && module !== null) {
-    module.exports[require("path").basename(__filename)] = test;
-}

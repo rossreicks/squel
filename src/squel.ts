@@ -1,23 +1,36 @@
 /* eslint-disable class-methods-use-this */
-import { Expression } from "./expression";
-import { Case } from "./case";
-import { Select } from "./methods/select";
-import { Update } from "./methods/update";
-import { Insert } from "./methods/insert";
-import { Delete } from "./methods/delete";
-import { FunctionBlock } from "./block";
-import { registerValueHandler } from "./helpers";
+import { Expression } from './expression';
+import { Case } from './case';
+import { Select } from './methods/select';
+import { Update } from './methods/update';
+import { Insert } from './methods/insert';
+import { Delete } from './methods/delete';
+import { FunctionBlock } from './block';
+import { registerValueHandler as registerValueHandlerHelper } from './helpers';
 
 export class Squel {
     flavour = null;
 
     flavours = {};
 
-    VERSION = "<<VERSION_STRING>>";
+    globalValueHandlers = [];
+
+    VERSION = '<<VERSION_STRING>>';
 
     constructor(flavour?: string) {
-        this.flavour = flavour;
+        this.flavour = flavour || null;
+
+        this.registerValueHandler(
+            FunctionBlock,
+            function (value, asParam = false) {
+                return asParam ? value.toParam() : value.toString();
+            }
+        );
     }
+
+    registerValueHandler(type, handler) {
+        registerValueHandlerHelper(this.globalValueHandlers, type, handler);
+    };
 
     expr(options) {
         return new Expression(options);
@@ -51,25 +64,24 @@ export class Squel {
         return inst;
     }
 
-    // TODO - help!
-    // rstr(...args) {
-    //     const inst = new FunctionBlock({
-    //         rawNesting: true,
-    //     });
+    rstr(...args) {
+        const inst = new FunctionBlock({
+            rawNesting: true,
+        });
 
-    //     inst.function(...getArr(...args));
+        inst.function(args[0] as string, ...args.slice(1));
 
-    //     return inst;
-    // }
+        return inst;
+    }
 
     // Setup Squel for a particular SQL flavour
-    useFlavour = function (flavour = null) {
+    useFlavour(flavour = null) {
         if (!flavour) {
             return this;
         }
 
         if (this.flavours[flavour] instanceof Function) {
-            const s = this(flavour);
+            const s = new Squel(flavour);
 
             this.flavours[flavour].call(null, s);
 
