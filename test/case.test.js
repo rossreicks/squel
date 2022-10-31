@@ -29,7 +29,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import _ from 'underscore';
+import { extend } from 'lodash';
 import { squel } from '../src';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 
@@ -61,7 +61,7 @@ describe('Case expression builder base class', () => {
                 separator: ',asdf',
             });
 
-            const expected = _.extend({}, DefaultQueryBuilderOptions, {
+            const expected = extend({}, DefaultQueryBuilderOptions, {
                 separator: ',asdf',
             });
 

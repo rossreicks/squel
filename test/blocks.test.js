@@ -32,7 +32,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import sinon from 'sinon';
-import _ from 'underscore';
+import { extend } from 'lodash';
 import { squel } from '../src';
 import {
     FunctionBlock,
@@ -86,7 +86,7 @@ describe('Blocks', () => {
         });
 
         it('instanceof of BaseBuilder', () => {
-            const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+            const expectedOptions = extend({}, DefaultQueryBuilderOptions, {
                 usingValuePlaceholders: true,
                 dummy: true,
             });
@@ -114,18 +114,15 @@ describe('Blocks', () => {
 
                 expect(
                     undefined ===
-                        _.find(
-                            (() => {
-                                const result = [];
+                        (() => {
+                            const result = [];
 
-                                for (name in inst.exposedMethods()) {
-                                    result.push(name);
-                                }
+                            for (name in inst.exposedMethods()) {
+                                result.push(name);
+                            }
 
-                                return result;
-                            })(),
-                            (name) => name === '_method'
-                        )
+                            return result;
+                        })().find((name) => name === '_method')
                 ).toBeTruthy();
             });
 
@@ -134,18 +131,15 @@ describe('Blocks', () => {
 
                 expect(
                     undefined ===
-                        _.find(
-                            (() => {
-                                const result = [];
+                        (() => {
+                            const result = [];
 
-                                for (name in inst.exposedMethods()) {
-                                    result.push(name);
-                                }
+                            for (name in inst.exposedMethods()) {
+                                result.push(name);
+                            }
 
-                                return result;
-                            })(),
-                            (name) => name === 'toString'
-                        )
+                            return result;
+                        })().find((name) => name === 'toString')
                 ).toBeTruthy();
             });
         });
@@ -1372,7 +1366,7 @@ describe('Blocks', () => {
     describe('AbstractConditionBlock', () => {
         class MockConditionBlock extends AbstractConditionBlock {
             constructor(options) {
-                super(_.extend({}, options, { verb: 'MOCKVERB' }));
+                super(extend({}, options, { verb: 'MOCKVERB' }));
             }
 
             mockCondition(condition, ...values) {

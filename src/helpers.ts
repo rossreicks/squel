@@ -48,7 +48,7 @@ export function _clone(src) {
 }
 
 export function isSquelBuilder(obj) {
-    return obj && obj instanceof BaseBuilder && !!obj._toParamString;
+    return obj && !!obj._toParamString;
 }
 
 export const _shouldApplyNesting = function (obj) {

@@ -30,7 +30,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import sinon from 'sinon';
-import _ from 'underscore';
+import { extend } from 'lodash';
 import { squel } from '../src';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 
@@ -68,7 +68,7 @@ describe('Expression builder base class', () => {
                 separator: ',asdf',
             });
 
-            const expected = _.extend({}, DefaultQueryBuilderOptions, {
+            const expected = extend({}, DefaultQueryBuilderOptions, {
                 separator: ',asdf',
             });
 

@@ -30,7 +30,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import sinon from 'sinon';
-import _ from 'underscore';
+import { extend, pick, keys } from 'lodash';
 import { squel } from '../src';
 import { StringBlock } from '../src/block';
 import { DefaultQueryBuilderOptions } from '../src/base-builder';
@@ -67,13 +67,13 @@ describe('SELECT builder', () => {
                 dummy: true,
             });
 
-            const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+            const expectedOptions = extend({}, DefaultQueryBuilderOptions, {
                 usingValuePlaceholders: true,
                 dummy: true,
             });
 
             Array.from(inst.blocks).map((block) =>
-                areEqual(_.pick(block.options, _.keys(expectedOptions)), expectedOptions)
+                areEqual(pick(block.options, keys(expectedOptions)), expectedOptions)
             );
         });
 

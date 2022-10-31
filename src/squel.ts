@@ -14,7 +14,8 @@ export class Squel {
 
     globalValueHandlers = [];
 
-    VERSION = '<<VERSION_STRING>>';
+    // THIS WILL BE REPLACED AT BUILD TIME WITH THE PACKAGE.JSON VERSION
+    VERSION = '[VI]{version}[/VI]';
 
     constructor(flavour?: string) {
         this.flavour = flavour || null;

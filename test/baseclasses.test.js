@@ -35,8 +35,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import sinon from 'sinon';
-import _ from 'underscore';
-import { squel } from '../src';
+import { extend, find } from 'lodash';
+import { squel } from '../lib/squel.esm';
 import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../src/block';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 import { QueryBuilder } from '../src/query-builder';
@@ -197,7 +197,7 @@ describe('Base Classes', () => {
             beforeEach(() => {
                 inst = squel.str('G(?,?)', 12, 23, 65);
 
-                const handlerConfig = _.find(squel.globalValueHandlers, (hc) => hc.type === FunctionBlock);
+                const handlerConfig = find(squel.globalValueHandlers, (hc) => hc.type === FunctionBlock);
 
                 handler = handlerConfig.handler;
             });
@@ -235,7 +235,7 @@ describe('Base Classes', () => {
             beforeEach(() => {
                 inst = squel.rstr('G(?,?)', 12, 23, 65);
 
-                const handlerConfig = _.find(squel.globalValueHandlers, (hc) => hc.type === FunctionBlock);
+                const handlerConfig = find(squel.globalValueHandlers, (hc) => hc.type === FunctionBlock);
 
                 handler = handlerConfig.handler;
             });
@@ -345,7 +345,7 @@ describe('Base Classes', () => {
                     globalValueHandlers: [1],
                 });
 
-                const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+                const expectedOptions = extend({}, DefaultQueryBuilderOptions, {
                     dummy1: 'str',
                     dummy2: 12.3,
                     usingValuePlaceholders: true,
@@ -641,15 +641,17 @@ describe('Base Classes', () => {
             });
 
             describe('custom handlers', () => {
+                const identity = (value) => value;
+
                 it('global', () => {
-                    squel.registerValueHandler(Date, _.identity);
+                    squel.registerValueHandler(Date, identity);
                     const date = new Date();
 
                     areEqual(date, inst._sanitizeValue(date));
                 });
 
                 it('instance', () => {
-                    inst.registerValueHandler(Date, _.identity);
+                    inst.registerValueHandler(Date, identity);
                     const date = new Date();
 
                     areEqual(date, inst._sanitizeValue(date));
@@ -1086,15 +1088,14 @@ describe('Base Classes', () => {
                     });
                 });
                 it('parameterized', () => {
-                    areEqual(
-                        inst._buildString('a = ?', [testContext.s], {
-                            buildParameterized: true,
-                        }),
-                        {
-                            text: 'a = (SELECT * FROM master WHERE (b = ?))',
-                            values: [5],
-                        }
-                    );
+                    const result = inst._buildString('a = ?', [testContext.s], {
+                        buildParameterized: true,
+                    });
+
+                    areEqual(result, {
+                        text: 'a = (SELECT * FROM master WHERE (b = ?))',
+                        values: [5],
+                    });
                 });
             });
             describe('return nested output', () => {
@@ -1274,7 +1275,7 @@ describe('Base Classes', () => {
                     dummy3: true,
                 });
 
-                const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+                const expectedOptions = extend({}, DefaultQueryBuilderOptions, {
                     dummy1: 'str',
                     dummy2: 12.3,
                     usingValuePlaceholders: true,
@@ -1329,13 +1330,13 @@ describe('Base Classes', () => {
 
         describe('updateOptions()', () => {
             it('updates query builder options', () => {
-                const oldOptions = _.extend({}, inst.options);
+                const oldOptions = extend({}, inst.options);
 
                 inst.updateOptions({
                     updated: false,
                 });
 
-                const expected = _.extend(oldOptions, { updated: false });
+                const expected = extend(oldOptions, { updated: false });
 
                 areEqual(expected, inst.options);
             });
@@ -1343,13 +1344,13 @@ describe('Base Classes', () => {
             it('updates building block options', () => {
                 inst.blocks = [new Block()];
 
-                const oldOptions = _.extend({}, inst.blocks[0].options);
+                const oldOptions = extend({}, inst.blocks[0].options);
 
                 inst.updateOptions({
                     updated: false,
                 });
 
-                const expected = _.extend(oldOptions, { updated: false });
+                const expected = extend(oldOptions, { updated: false });
 
                 areEqual(expected, inst.blocks[0].options);
             });

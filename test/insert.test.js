@@ -25,7 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 
 import sinon from 'sinon';
-import _ from 'underscore';
+import { extend, pick, keys } from 'lodash';
 import { squel } from '../src';
 import { StringBlock } from '../src/block';
 import { DefaultQueryBuilderOptions } from '../src/base-builder';
@@ -65,7 +65,7 @@ describe('INSERT builder', () => {
                 usingValuePlaceholders: true,
                 dummy: true,
             });
-            const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+            const expectedOptions = extend({}, DefaultQueryBuilderOptions, {
                 usingValuePlaceholders: true,
                 dummy: true,
             });
@@ -74,7 +74,7 @@ describe('INSERT builder', () => {
 
             for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                 block = _ref1[_i];
-                _results.push(areSame(_.pick(block.options, _.keys(expectedOptions)), expectedOptions));
+                _results.push(areSame(pick(block.options, keys(expectedOptions)), expectedOptions));
             }
         });
 
