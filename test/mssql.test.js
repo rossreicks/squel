@@ -29,286 +29,288 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-let squel = undefined;
-const { _, testCreator, assert, expect, should } = require("./testbase");
-const test = testCreator();
+xdescribe("MSSQL flavour", () => {
+    let testContext;
 
-describe("MSSQL flavour", () => {
-   beforeEach(() => {
-        delete require.cache[require.resolve("../dist/squel")];
-        squel = require("../dist/squel");
-        return (squel = squel.useFlavour("mssql"));
+    beforeEach(() => {
+        testContext = {};
     });
 
-   describe("DATE Conversion", () => {
-       beforeEach(() => {
-            return (this.inst = squel.insert());
-        });
+    beforeEach(() => {
+         delete require.cache[require.resolve("../dist/squel")];
+         squel = require("../dist/squel");
+         return (squel = squel.useFlavour("mssql"));
+     });
 
-       describe(">> into(table).set(field, new Date(2012-12-12T4:30:00Z))", () => {
-           beforeEach(() => {
-                return this.inst
-                    .into("table")
-                    .set("field", new Date("2012-12-12T04:30:00Z"));
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.inst.toString(),
-                    "INSERT INTO table (field) VALUES (('2012-12-12 4:30:0'))"
-                );
-            });
-        });
-    });
+    describe("DATE Conversion", () => {
+        beforeEach(() => {
+             return testContext.inst = squel.insert();
+         });
 
-   describe("SELECT builder", () => {
-       beforeEach(() => {
-            return (this.sel = squel.select());
-        });
+        describe(">> into(table).set(field, new Date(2012-12-12T4:30:00Z))", () => {
+            beforeEach(() => {
+                 return testContext.inst
+                     .into("table")
+                     .set("field", new Date("2012-12-12T04:30:00Z"));
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.inst.toString(),
+                     "INSERT INTO table (field) VALUES (('2012-12-12 4:30:0'))"
+                 );
+             });
+         });
+     });
 
-       describe(">> from(table).field(field).top(10)", () => {
-           beforeEach(() => {
-                return this.sel.from("table").field("field").top(10);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.sel.toString(),
-                    "SELECT TOP (10) field FROM table"
-                );
-            });
-        });
+    describe("SELECT builder", () => {
+        beforeEach(() => {
+             return testContext.sel = squel.select();
+         });
 
-       describe(">> from(table).field(field).limit(10)", () => {
-           beforeEach(() => {
-                return this.sel.from("table").field("field").limit(10);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.sel.toString(),
-                    "SELECT TOP (10) field FROM table"
-                );
-            });
-        });
+        describe(">> from(table).field(field).top(10)", () => {
+            beforeEach(() => {
+                 return testContext.sel.from("table").field("field").top(10);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.sel.toString(),
+                     "SELECT TOP (10) field FROM table"
+                 );
+             });
+         });
 
-       describe(">> from(table).field(field).limit(10).offset(5)", () => {
-           beforeEach(() => {
-                return this.sel
-                    .from("table")
-                    .field("field")
-                    .limit(10)
-                    .offset(5);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.sel.toString(),
-                    "SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY"
-                );
-            });
-        });
+        describe(">> from(table).field(field).limit(10)", () => {
+            beforeEach(() => {
+                 return testContext.sel.from("table").field("field").limit(10);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.sel.toString(),
+                     "SELECT TOP (10) field FROM table"
+                 );
+             });
+         });
 
-       describe(">> from(table).field(field).top(10).offset(5)", () => {
-           beforeEach(() => {
-                return this.sel.from("table").field("field").top(10).offset(5);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.sel.toString(),
-                    "SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY"
-                );
-            });
-        });
+        describe(">> from(table).field(field).limit(10).offset(5)", () => {
+            beforeEach(() => {
+                 return testContext.sel
+                     .from("table")
+                     .field("field")
+                     .limit(10)
+                     .offset(5);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.sel.toString(),
+                     "SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY"
+                 );
+             });
+         });
 
-       describe(">> from(table).field(field).offset(5)", () => {
-           beforeEach(() => {
-                return this.sel.from("table").field("field").offset(5);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.sel.toString(),
-                    "SELECT field FROM table OFFSET 5 ROWS"
-                );
-            });
-        });
+        describe(">> from(table).field(field).top(10).offset(5)", () => {
+            beforeEach(() => {
+                 return testContext.sel.from("table").field("field").top(10).offset(5);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.sel.toString(),
+                     "SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY"
+                 );
+             });
+         });
 
-       describe(">> from(table).field(field).offset(5).union(...)", () => {
-           beforeEach(() => {
-                return this.sel
-                    .from("table")
-                    .field("field")
-                    .offset(5)
-                    .union(squel.select().from("table2").where("a = 2"));
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.sel.toString(),
-                    "SELECT field FROM table OFFSET 5 ROWS UNION (SELECT * FROM table2 WHERE (a = 2))"
-                );
-            });
-        });
+        describe(">> from(table).field(field).offset(5)", () => {
+            beforeEach(() => {
+                 return testContext.sel.from("table").field("field").offset(5);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.sel.toString(),
+                     "SELECT field FROM table OFFSET 5 ROWS"
+                 );
+             });
+         });
 
-       describe(">> check variables arent being shared", () => {
-           it('toString', () => {
-                assert.same(
-                    squel
-                        .select()
-                        .from("table")
-                        .field("field")
-                        .top(10)
-                        .toString(),
-                    "SELECT TOP (10) field FROM table"
-                );
-                return assert.same(
-                    squel.select().from("table").field("field").toString(),
-                    "SELECT field FROM table"
-                );
-            });
-        });
-    });
+        describe(">> from(table).field(field).offset(5).union(...)", () => {
+            beforeEach(() => {
+                 return testContext.sel
+                     .from("table")
+                     .field("field")
+                     .offset(5)
+                     .union(squel.select().from("table2").where("a = 2"));
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.sel.toString(),
+                     "SELECT field FROM table OFFSET 5 ROWS UNION (SELECT * FROM table2 WHERE (a = 2))"
+                 );
+             });
+         });
 
-   describe("INSERT builder", () => {
-       beforeEach(() => {
-            return (this.inst = squel.insert());
-        });
+        describe(">> check variables arent being shared", () => {
+            it('toString', () => {
+                 assert.same(
+                     squel
+                         .select()
+                         .from("table")
+                         .field("field")
+                         .top(10)
+                         .toString(),
+                     "SELECT TOP (10) field FROM table"
+                 );
+                 return assert.same(
+                     squel.select().from("table").field("field").toString(),
+                     "SELECT field FROM table"
+                 );
+             });
+         });
+     });
 
-       describe(">> into(table).set(field, 1).output(id)", () => {
-           beforeEach(() => {
-                return this.inst.into("table").output("id").set("field", 1);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.inst.toString(),
-                    "INSERT INTO table (field) OUTPUT INSERTED.id VALUES (1)"
-                );
-            });
-        });
-    });
+    describe("INSERT builder", () => {
+        beforeEach(() => {
+             return testContext.inst = squel.insert();
+         });
 
-   describe("UPDATE builder", () => {
-       beforeEach(() => {
-            return (this.upt = squel.update());
-        });
+        describe(">> into(table).set(field, 1).output(id)", () => {
+            beforeEach(() => {
+                 return testContext.inst.into("table").output("id").set("field", 1);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.inst.toString(),
+                     "INSERT INTO table (field) OUTPUT INSERTED.id VALUES (1)"
+                 );
+             });
+         });
+     });
 
-       describe(">> table(table).set(field, 1).top(12)", () => {
-           beforeEach(() => {
-                return this.upt.table("table").set("field", 1).top(12);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.upt.toString(),
-                    "UPDATE TOP (12) table SET field = 1"
-                );
-            });
-        });
+    describe("UPDATE builder", () => {
+        beforeEach(() => {
+             return testContext.upt = squel.update();
+         });
 
-       describe(">> table(table).set(field, 1).limit(12)", () => {
-           beforeEach(() => {
-                return this.upt.table("table").set("field", 1).limit(12);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.upt.toString(),
-                    "UPDATE TOP (12) table SET field = 1"
-                );
-            });
-        });
+        describe(">> table(table).set(field, 1).top(12)", () => {
+            beforeEach(() => {
+                 return testContext.upt.table("table").set("field", 1).top(12);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.upt.toString(),
+                     "UPDATE TOP (12) table SET field = 1"
+                 );
+             });
+         });
 
-       describe(">> table(table).set(field, 1).output(id)", () => {
-           beforeEach(() => {
-                return this.upt.table("table").output("id").set("field", 1);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.upt.toString(),
-                    "UPDATE table SET field = 1 OUTPUT INSERTED.id"
-                );
-            });
-        });
+        describe(">> table(table).set(field, 1).limit(12)", () => {
+            beforeEach(() => {
+                 return testContext.upt.table("table").set("field", 1).limit(12);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.upt.toString(),
+                     "UPDATE TOP (12) table SET field = 1"
+                 );
+             });
+         });
 
-       describe(">> table(table).set(field, 1).outputs(id AS ident, name AS naming)", () => {
-           beforeEach(() => {
-                return this.upt
-                    .table("table")
-                    .outputs({
-                        id: "ident",
-                        name: "naming",
-                    })
-                    .set("field", 1);
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.upt.toString(),
-                    "UPDATE table SET field = 1 OUTPUT INSERTED.id AS ident, INSERTED.name AS naming"
-                );
-            });
-        });
-    });
+        describe(">> table(table).set(field, 1).output(id)", () => {
+            beforeEach(() => {
+                 return testContext.upt.table("table").output("id").set("field", 1);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.upt.toString(),
+                     "UPDATE table SET field = 1 OUTPUT INSERTED.id"
+                 );
+             });
+         });
 
-   describe("DELETE builder", () => {
-       beforeEach(() => {
-            return (this.upt = squel.delete());
-        });
+        describe(">> table(table).set(field, 1).outputs(id AS ident, name AS naming)", () => {
+            beforeEach(() => {
+                 return testContext.upt
+                     .table("table")
+                     .outputs({
+                         id: "ident",
+                         name: "naming",
+                     })
+                     .set("field", 1);
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.upt.toString(),
+                     "UPDATE table SET field = 1 OUTPUT INSERTED.id AS ident, INSERTED.name AS naming"
+                 );
+             });
+         });
+     });
 
-       describe(">> from(table)", () => {
-           beforeEach(() => {
-                return this.upt.from("table");
-            });
-           it('toString', () => {
-                return assert.same(this.upt.toString(), "DELETE FROM table");
-            });
-        });
+    describe("DELETE builder", () => {
+        beforeEach(() => {
+             return testContext.upt = squel.delete();
+         });
 
-       describe(">> from(table).output(id)", () => {
-           beforeEach(() => {
-                return this.upt.from("table").output("id");
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.upt.toString(),
-                    "DELETE FROM table OUTPUT DELETED.id"
-                );
-            });
-        });
+        describe(">> from(table)", () => {
+            beforeEach(() => {
+                 return testContext.upt.from("table");
+             });
+            it('toString', () => {
+                 return assert.same(testContext.upt.toString(), "DELETE FROM table");
+             });
+         });
 
-       describe('>> from(table).outputs(id AS ident, name AS naming).where("a = 1")', () => {
-           beforeEach(() => {
-                return this.upt
-                    .from("table")
-                    .outputs({
-                        id: "ident",
-                        name: "naming",
-                    })
-                    .where("a = 1");
-            });
-           it('toString', () => {
-                return assert.same(
-                    this.upt.toString(),
-                    "DELETE FROM table OUTPUT DELETED.id AS ident, DELETED.name AS naming WHERE (a = 1)"
-                );
-            });
-        });
-    });
+        describe(">> from(table).output(id)", () => {
+            beforeEach(() => {
+                 return testContext.upt.from("table").output("id");
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.upt.toString(),
+                     "DELETE FROM table OUTPUT DELETED.id"
+                 );
+             });
+         });
 
-   it("Default query builder options", () => {
-        return assert.same(
-            {
-                autoQuoteTableNames: false,
-                autoQuoteFieldNames: false,
-                autoQuoteAliasNames: false,
-                useAsForTableAliasNames: false,
-                nameQuoteCharacter: "`",
-                tableAliasQuoteCharacter: "`",
-                fieldAliasQuoteCharacter: '"',
-                valueHandlers: [],
-                parameterCharacter: "?",
-                numberedParameters: false,
-                numberedParametersPrefix: "@",
-                numberedParametersStartAt: 1,
-                replaceSingleQuotes: true,
-                singleQuoteReplacement: "''",
-                separator: " ",
-                stringFormatter: null,
-                rawNesting: false,
-            },
-            squel.cls.DefaultQueryBuilderOptions
-        );
-    });
+        describe('>> from(table).outputs(id AS ident, name AS naming).where("a = 1")', () => {
+            beforeEach(() => {
+                 return testContext.upt
+                     .from("table")
+                     .outputs({
+                         id: "ident",
+                         name: "naming",
+                     })
+                     .where("a = 1");
+             });
+            it('toString', () => {
+                 return assert.same(
+                     testContext.upt.toString(),
+                     "DELETE FROM table OUTPUT DELETED.id AS ident, DELETED.name AS naming WHERE (a = 1)"
+                 );
+             });
+         });
+     });
+
+    it("Default query builder options", () => {
+         return assert.same(
+             {
+                 autoQuoteTableNames: false,
+                 autoQuoteFieldNames: false,
+                 autoQuoteAliasNames: false,
+                 useAsForTableAliasNames: false,
+                 nameQuoteCharacter: "`",
+                 tableAliasQuoteCharacter: "`",
+                 fieldAliasQuoteCharacter: '"',
+                 valueHandlers: [],
+                 parameterCharacter: "?",
+                 numberedParameters: false,
+                 numberedParametersPrefix: "@",
+                 numberedParametersStartAt: 1,
+                 replaceSingleQuotes: true,
+                 singleQuoteReplacement: "''",
+                 separator: " ",
+                 stringFormatter: null,
+                 rawNesting: false,
+             },
+             squel.cls.DefaultQueryBuilderOptions
+         );
+     });
 });

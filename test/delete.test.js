@@ -37,13 +37,11 @@ import { StringBlock } from "../src/block";
 import { DefaultQueryBuilderOptions } from "../src/base-builder";
 import { QueryBuilder } from "../src/query-builder";
 
-import { assert } from "chai";
-
 let mocker;
 let inst = squel.delete();
 
-assert.same = function (actual, expected, message) {
-    assert.deepEqual(actual, expected, message);
+const areEqual = function (actual, expected, message) {
+    expect(actual).toEqual(expected);
 };
 
 describe("DELETE builder", () => {
@@ -57,7 +55,7 @@ describe("DELETE builder", () => {
     });
 
    it("instanceof QueryBuilder", () => {
-        assert.instanceOf(inst, QueryBuilder);
+        expect(inst).toBeInstanceOf(QueryBuilder);
     });
 
     describe('constructor', () => {
@@ -77,7 +75,7 @@ describe("DELETE builder", () => {
             );
 
             Array.from(inst.blocks).map((block) =>
-                assert.same(
+                areEqual(
                     _.pick(block.options, _.keys(expectedOptions)),
                     expectedOptions
                 )
@@ -88,7 +86,7 @@ describe("DELETE builder", () => {
             const block = new StringBlock("SELECT");
             inst = squel.delete({}, [block]);
 
-            assert.same([block], inst.blocks);
+            areEqual([block], inst.blocks);
         });
     });
 
@@ -102,7 +100,7 @@ describe("DELETE builder", () => {
                 inst.from("table");
             });
             it('toString()', () => {
-                assert.same(inst.toString(), "DELETE FROM table");
+                areEqual(inst.toString(), "DELETE FROM table");
             });
 
            describe(">> table(table2, t2)", () => {
@@ -110,7 +108,7 @@ describe("DELETE builder", () => {
                     inst.from("table2", "t2");
                 });
                 it('toString()', () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "DELETE FROM table2 `t2`"
                     );
@@ -121,7 +119,7 @@ describe("DELETE builder", () => {
                         inst.where("a = 1");
                     });
                     it('toString()', () => {
-                        assert.same(
+                        areEqual(
                             inst.toString(),
                             "DELETE FROM table2 `t2` WHERE (a = 1)"
                         );
@@ -136,7 +134,7 @@ describe("DELETE builder", () => {
                             );
                         });
                         it('toString()', () => {
-                            assert.same(
+                            areEqual(
                                 inst.toString(),
                                 "DELETE FROM table2 `t2` INNER JOIN other_table `o` ON (o.id = t2.id) WHERE (a = 1)"
                             );
@@ -147,7 +145,7 @@ describe("DELETE builder", () => {
                                 inst.order("a", true);
                             });
                             it('toString()', () => {
-                                assert.same(
+                                areEqual(
                                     inst.toString(),
                                     "DELETE FROM table2 `t2` INNER JOIN other_table `o` ON (o.id = t2.id) WHERE (a = 1) ORDER BY a ASC"
                                 );
@@ -158,7 +156,7 @@ describe("DELETE builder", () => {
                                     inst.limit(2);
                                 });
                                 it('toString()', () => {
-                                    assert.same(
+                                    areEqual(
                                         inst.toString(),
                                         "DELETE FROM table2 `t2` INNER JOIN other_table `o` ON (o.id = t2.id) WHERE (a = 1) ORDER BY a ASC LIMIT 2"
                                     );
@@ -179,13 +177,13 @@ describe("DELETE builder", () => {
                         .where("c = ?", 3);
                 });
                 it('toString()', () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "DELETE table1 FROM table1 LEFT JOIN table2 ON (table1.a = table2.b) WHERE (c = 3)"
                     );
                 });
                 it('toParam()', () => {
-                    assert.same(inst.toParam(), {
+                    areEqual(inst.toParam(), {
                         text: "DELETE table1 FROM table1 LEFT JOIN table2 ON (table1.a = table2.b) WHERE (c = ?)",
                         values: [3],
                     });
@@ -196,13 +194,13 @@ describe("DELETE builder", () => {
                         inst.target("table2");
                     });
                     it('toString()', () => {
-                        assert.same(
+                        areEqual(
                             inst.toString(),
                             "DELETE table1, table2 FROM table1 LEFT JOIN table2 ON (table1.a = table2.b) WHERE (c = 3)"
                         );
                     });
                     it('toParam()', () => {
-                        assert.same(inst.toParam(), {
+                        areEqual(inst.toParam(), {
                             text: "DELETE table1, table2 FROM table1 LEFT JOIN table2 ON (table1.a = table2.b) WHERE (c = ?)",
                             values: [3],
                         });
@@ -218,13 +216,13 @@ describe("DELETE builder", () => {
                     .where("c = ?", 3);
             });
             it('toString()', () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "DELETE FROM table1 LEFT JOIN table2 ON (table1.a = table2.b) WHERE (c = 3)"
                 );
             });
             it('toParam()', () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "DELETE FROM table1 LEFT JOIN table2 ON (table1.a = table2.b) WHERE (c = ?)",
                     values: [3],
                 });
@@ -236,7 +234,7 @@ describe("DELETE builder", () => {
         const newinst = inst.from("students").limit(10).clone();
         newinst.limit(20);
 
-        assert.same("DELETE FROM students LIMIT 10", inst.toString());
-        assert.same("DELETE FROM students LIMIT 20", newinst.toString());
+        areEqual("DELETE FROM students LIMIT 10", inst.toString());
+        areEqual("DELETE FROM students LIMIT 20", newinst.toString());
     });
 });

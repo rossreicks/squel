@@ -42,7 +42,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import sinon from 'sinon';
 import _ from 'underscore';
-import { assert } from 'chai';
 import { squel } from '../src';
 import {
     StringBlock,
@@ -59,11 +58,17 @@ import { Cloneable } from '../src/cloneable';
 let mocker;
 let inst = new BaseBuilder();
 
-assert.same = function (actual, expected, message) {
-    assert.deepEqual(actual, expected, message);
+const areEqual = function (actual, expected, message) {
+    expect(actual).toEqual(expected);
 };
 
 describe('Base Classes', () => {
+    let testContext;
+
+    beforeEach(() => {
+        testContext = {};
+    });
+
     beforeEach(() => {
         mocker = sinon.sandbox.create();
         inst = new BaseBuilder();
@@ -75,11 +80,11 @@ describe('Base Classes', () => {
 
     it('Version number', () => {
         // eslint-disable-next-line global-require
-        assert.same(squel.VERSION, require('../package.json').version);
+        areEqual(squel.VERSION, require('../package.json').version);
     });
 
     it('Default flavour', () => {
-        assert.isNull(squel.flavour);
+        expect(squel.flavour).toBeNull();
     });
 
     describe('Cloneable Base Class', () => {
@@ -100,7 +105,7 @@ describe('Base Classes', () => {
 
             const copy = child.clone();
 
-            assert.instanceOf(copy, Child);
+            expect(copy).toBeInstanceOf(Child);
 
             child.a = 2;
             child.b = 3.2;
@@ -109,17 +114,17 @@ describe('Base Classes', () => {
             child.e.push(2);
             child.f.b = 1;
 
-            assert.same(copy.a, 1);
-            assert.same(copy.b, 2.2);
-            assert.same(copy.c, true);
-            assert.same(copy.d, 'str');
-            assert.same(copy.e, [1]);
-            assert.same(copy.f, { a: 1 });
+            areEqual(copy.a, 1);
+            areEqual(copy.b, 2.2);
+            areEqual(copy.c, true);
+            areEqual(copy.d, 'str');
+            areEqual(copy.e, [1]);
+            areEqual(copy.f, { a: 1 });
         });
     });
 
     describe('Default query builder options', () => {
-        assert.same(
+        areEqual(
             {
                 autoQuoteTableNames: false,
                 autoQuoteFieldNames: false,
@@ -162,26 +167,20 @@ describe('Base Classes', () => {
             squel.registerValueHandler(Object, handler);
             squel.registerValueHandler('boolean', handler);
 
-            assert.same(3, squel.globalValueHandlers.length);
-            assert.same({ type: Date, handler }, squel.globalValueHandlers[0]);
-            assert.same({ type: Object, handler }, squel.globalValueHandlers[1]);
-            assert.same({ type: 'boolean', handler }, squel.globalValueHandlers[2]);
+            areEqual(3, squel.globalValueHandlers.length);
+            areEqual({ type: Date, handler }, squel.globalValueHandlers[0]);
+            areEqual({ type: Object, handler }, squel.globalValueHandlers[1]);
+            areEqual({ type: 'boolean', handler }, squel.globalValueHandlers[2]);
         });
 
         it('type should be class constructor', () => {
-            assert.throws(
-                () => squel.registerValueHandler(1, null),
-                'type must be a class constructor or string'
-            );
+            expect(() => squel.registerValueHandler(1, null)).toThrow();
         });
 
         it('handler should be function', () => {
             class MyClass {}
 
-            assert.throws(
-                () => squel.registerValueHandler(MyClass, 1),
-                'handler must be a function'
-            );
+            expect(() => squel.registerValueHandler(MyClass, 1)).toThrow();
         });
 
         it('overrides existing handler', () => {
@@ -191,8 +190,8 @@ describe('Base Classes', () => {
             squel.registerValueHandler(Date, handler);
             squel.registerValueHandler(Date, handler2);
 
-            assert.same(1, squel.globalValueHandlers.length);
-            assert.same(
+            areEqual(1, squel.globalValueHandlers.length);
+            areEqual(
                 { type: Date, handler: handler2 },
                 squel.globalValueHandlers[0]
             );
@@ -203,9 +202,9 @@ describe('Base Classes', () => {
         it('constructor()', () => {
             const f = squel.str('GETDATE(?)', 12, 23);
 
-            assert.ok(f instanceof FunctionBlock);
-            assert.same('GETDATE(?)', f._strings[0]);
-            assert.same([12, 23], f._values[0]);
+            expect(f instanceof FunctionBlock).toBeTruthy();
+            areEqual('GETDATE(?)', f._strings[0]);
+            areEqual([12, 23], f._values[0]);
         });
 
         describe('custom value handler', () => {
@@ -223,10 +222,10 @@ describe('Base Classes', () => {
             });
 
             it('toString', () => {
-                assert.same(inst.toString(), handler(inst));
+                areEqual(inst.toString(), handler(inst));
             });
             it('toParam', () => {
-                assert.same(inst.toParam(), handler(inst, true));
+                areEqual(inst.toParam(), handler(inst, true));
             });
         });
     });
@@ -235,18 +234,18 @@ describe('Base Classes', () => {
         it('constructor()', () => {
             const f = squel.rstr('GETDATE(?)', 12, 23);
 
-            assert.ok(f instanceof FunctionBlock);
-            assert.same('GETDATE(?)', f._strings[0]);
-            assert.same([12, 23], f._values[0]);
+            expect(f instanceof FunctionBlock).toBeTruthy();
+            areEqual('GETDATE(?)', f._strings[0]);
+            areEqual([12, 23], f._values[0]);
         });
 
         it('vsStr()', () => {
             const f1 = squel.str('OUTER(?)', squel.str('INNER(?)', 2));
 
-            assert.same('OUTER((INNER(2)))', f1.toString());
+            areEqual('OUTER((INNER(2)))', f1.toString());
             const f2 = squel.str('OUTER(?)', squel.rstr('INNER(?)', 2));
 
-            assert.same('OUTER(INNER(2))', f2.toString());
+            areEqual('OUTER(INNER(2))', f2.toString());
         });
 
         describe('custom value handler', () => {
@@ -264,45 +263,39 @@ describe('Base Classes', () => {
             });
 
             it('toString', () => {
-                assert.same(inst.toString(), handler(inst));
+                areEqual(inst.toString(), handler(inst));
             });
             it('toParam', () => {
-                assert.same(inst.toParam(), handler(inst, true));
+                areEqual(inst.toParam(), handler(inst, true));
             });
         });
     });
 
     describe('Load an SQL flavour', () => {
         beforeEach(() => {
-            this.flavoursBackup = squel.flavours;
+            testContext.flavoursBackup = squel.flavours;
             squel.flavours = {};
         });
 
         afterEach(() => {
-            squel.flavours = this.flavoursBackup;
+            squel.flavours = testContext.flavoursBackup;
         });
 
         it('invalid flavour', () => {
-            assert.throws(
-                () => squel.useFlavour('test'),
-                'Flavour not available: test'
-            );
+            expect(() => squel.useFlavour('test')).toThrow();
         });
 
         it('flavour reference should be a function', () => {
             squel.flavours.test = 'blah';
-            assert.throws(
-                () => squel.useFlavour('test'),
-                'Flavour not available: test'
-            );
+            expect(() => squel.useFlavour('test')).toThrow();
         });
 
         it('flavour setup function gets executed', () => {
             squel.flavours.test = mocker.spy();
             const ret = squel.useFlavour('test');
 
-            assert.ok(squel.flavours.test.calledOnce);
-            assert.ok(!!ret.select());
+            expect(squel.flavours.test.calledOnce).toBeTruthy();
+            expect(!!ret.select()).toBeTruthy();
         });
 
         it('can switch flavours', () => {
@@ -310,15 +303,15 @@ describe('Base Classes', () => {
             squel.flavours.test2 = mocker.spy((s) => (s.dummy2 = 2));
             let ret = squel.useFlavour('test');
 
-            assert.same(ret.dummy, 1);
+            areEqual(ret.dummy, 1);
 
             ret = squel.useFlavour('test2');
-            assert.same(ret.dummy, undefined);
-            assert.same(ret.dummy2, 2);
+            areEqual(ret.dummy, undefined);
+            areEqual(ret.dummy2, 2);
 
             ret = squel.useFlavour();
-            assert.same(ret.dummy, undefined);
-            assert.same(ret.dummy2, undefined);
+            areEqual(ret.dummy, undefined);
+            areEqual(ret.dummy2, undefined);
         });
 
         it('can get current flavour', () => {
@@ -328,7 +321,7 @@ describe('Base Classes', () => {
 
             const ret = squel.useFlavour(flavour);
 
-            assert.same(ret.flavour, flavour);
+            areEqual(ret.flavour, flavour);
         });
 
         it('can mix flavours - #255', () => {
@@ -339,7 +332,7 @@ describe('Base Classes', () => {
 
             const expr1 = squel1.expr().and('1 = 1');
 
-            assert.same(
+            areEqual(
                 squel2.select().from('test', 't').where(expr1).toString(),
                 'SELECT * FROM test `t` WHERE (1 = 1)'
             );
@@ -360,12 +353,12 @@ describe('Base Classes', () => {
         });
 
         it('instanceof Cloneable', () => {
-            assert.instanceOf(inst, Cloneable);
+            expect(inst).toBeInstanceOf(Cloneable);
         });
 
         describe('constructor', () => {
             it('default options', () => {
-                assert.same(DefaultQueryBuilderOptions, inst.options);
+                areEqual(DefaultQueryBuilderOptions, inst.options);
             });
 
             it('overridden options', () => {
@@ -389,7 +382,7 @@ describe('Base Classes', () => {
                     }
                 );
 
-                assert.same(expectedOptions, inst.options);
+                areEqual(expectedOptions, inst.options);
             });
         });
 
@@ -405,40 +398,34 @@ describe('Base Classes', () => {
                 inst.registerValueHandler(Object, handler);
                 inst.registerValueHandler('number', handler);
 
-                assert.same(3, inst.options.valueHandlers.length);
-                assert.same(
+                areEqual(3, inst.options.valueHandlers.length);
+                areEqual(
                     { type: Date, handler },
                     inst.options.valueHandlers[0]
                 );
-                assert.same(
+                areEqual(
                     { type: Object, handler },
                     inst.options.valueHandlers[1]
                 );
-                assert.same(
+                areEqual(
                     { type: 'number', handler },
                     inst.options.valueHandlers[2]
                 );
             });
 
             it('type should be class constructor', () => {
-                assert.throws(
-                    () => inst.registerValueHandler(1, null),
-                    'type must be a class constructor or string'
-                );
+                expect(() => inst.registerValueHandler(1, null)).toThrow();
             });
 
             it('handler should be function', () => {
                 class MyClass {}
-                assert.throws(
-                    () => inst.registerValueHandler(MyClass, 1),
-                    'handler must be a function'
-                );
+                expect(() => inst.registerValueHandler(MyClass, 1)).toThrow();
             });
 
             it('returns instance for chainability', () => {
                 const handler = () => 'test';
 
-                assert.same(inst, inst.registerValueHandler(Date, handler));
+                areEqual(inst, inst.registerValueHandler(Date, handler));
             });
 
             it('overrides existing handler', () => {
@@ -448,8 +435,8 @@ describe('Base Classes', () => {
                 inst.registerValueHandler(Date, handler);
                 inst.registerValueHandler(Date, handler2);
 
-                assert.same(1, inst.options.valueHandlers.length);
-                assert.same(
+                areEqual(1, inst.options.valueHandlers.length);
+                areEqual(
                     { type: Date, handler: handler2 },
                     inst.options.valueHandlers[0]
                 );
@@ -462,7 +449,7 @@ describe('Base Classes', () => {
 
                 inst.registerValueHandler(Date, handler);
 
-                assert.same(oldGlobalHandlers, squel.globalValueHandlers);
+                areEqual(oldGlobalHandlers, squel.globalValueHandlers);
             });
         });
 
@@ -471,34 +458,31 @@ describe('Base Classes', () => {
                 it('empty expression', () => {
                     const e = squel.expr();
 
-                    assert.same(e, inst._sanitizeExpression(e));
+                    areEqual(e, inst._sanitizeExpression(e));
                 });
                 it('non-empty expression', () => {
                     const e = squel.expr().and("s.name <> 'Fred'");
 
-                    assert.same(e, inst._sanitizeExpression(e));
+                    areEqual(e, inst._sanitizeExpression(e));
                 });
             });
 
             it('if Expression', () => {
                 const s = squel.str('s');
 
-                assert.same(s, inst._sanitizeExpression(s));
+                areEqual(s, inst._sanitizeExpression(s));
             });
 
             it('if string', () => {
                 const s = 'BLA BLA';
 
-                assert.same('BLA BLA', inst._sanitizeExpression(s));
+                areEqual('BLA BLA', inst._sanitizeExpression(s));
             });
 
             it('if neither expression, builder nor String', () => {
                 const testFn = () => inst._sanitizeExpression(1);
 
-                assert.throws(
-                    testFn,
-                    'expression must be a string or builder instance'
-                );
+                expect(testFn).toThrow();
             });
         });
 
@@ -508,56 +492,35 @@ describe('Base Classes', () => {
             });
 
             it('if string', () => {
-                assert.same('bla', inst._sanitizeName('bla'));
+                areEqual('bla', inst._sanitizeName('bla'));
             });
 
             it('if boolean', () => {
-                assert.throws(
-                    () => inst._sanitizeName(true, 'bla'),
-                    'bla must be a string'
-                );
+                expect(() => inst._sanitizeName(true, 'bla')).toThrow();
             });
 
             it('if integer', () => {
-                assert.throws(
-                    () => inst._sanitizeName(1),
-                    'undefined must be a string'
-                );
+                expect(() => inst._sanitizeName(1)).toThrow();
             });
 
             it('if float', () => {
-                assert.throws(
-                    () => inst._sanitizeName(1.2, 'meh'),
-                    'meh must be a string'
-                );
+                expect(() => inst._sanitizeName(1.2, 'meh')).toThrow();
             });
 
             it('if array', () => {
-                assert.throws(
-                    () => inst._sanitizeName([1], 'yes'),
-                    'yes must be a string'
-                );
+                expect(() => inst._sanitizeName([1], 'yes')).toThrow();
             });
 
             it('if object', () => {
-                assert.throws(
-                    () => inst._sanitizeName(new Object(), 'yes'),
-                    'yes must be a string'
-                );
+                expect(() => inst._sanitizeName(new Object(), 'yes')).toThrow();
             });
 
             it('if null', () => {
-                assert.throws(
-                    () => inst._sanitizeName(null, 'no'),
-                    'no must be a string'
-                );
+                expect(() => inst._sanitizeName(null, 'no')).toThrow();
             });
 
             it('if undefined', () => {
-                assert.throws(
-                    () => inst._sanitizeName(undefined, 'no'),
-                    'no must be a string'
-                );
+                expect(() => inst._sanitizeName(undefined, 'no')).toThrow();
             });
         });
 
@@ -565,32 +528,27 @@ describe('Base Classes', () => {
             it('default', () => {
                 mocker.spy(inst, '_sanitizeName');
 
-                assert.same('abc', inst._sanitizeField('abc'));
+                areEqual('abc', inst._sanitizeField('abc'));
 
-                assert.ok(
-                    inst._sanitizeName.calledWithExactly('abc', 'field name')
-                );
+                expect(inst._sanitizeName.calledWithExactly('abc', 'field name')).toBeTruthy();
             });
 
             it('QueryBuilder', () => {
                 const s = squel.select().from('scores').field('MAX(score)');
 
-                assert.same(s, inst._sanitizeField(s));
+                areEqual(s, inst._sanitizeField(s));
             });
         });
 
         describe('_sanitizeBaseBuilder', () => {
             it('is not base builder', () => {
-                assert.throws(
-                    () => inst._sanitizeBaseBuilder(null),
-                    'must be a builder instance'
-                );
+                expect(() => inst._sanitizeBaseBuilder(null)).toThrow();
             });
 
             it('is a query builder', () => {
                 const qry = squel.select();
 
-                assert.same(qry, inst._sanitizeBaseBuilder(qry));
+                areEqual(qry, inst._sanitizeBaseBuilder(qry));
             });
         });
 
@@ -598,22 +556,19 @@ describe('Base Classes', () => {
             it('default', () => {
                 mocker.spy(inst, '_sanitizeName');
 
-                assert.same('abc', inst._sanitizeTable('abc'));
+                areEqual('abc', inst._sanitizeTable('abc'));
 
-                assert.ok(inst._sanitizeName.calledWithExactly('abc', 'table'));
+                expect(inst._sanitizeName.calledWithExactly('abc', 'table')).toBeTruthy();
             });
 
             it('not a string', () => {
-                assert.throws(
-                    () => inst._sanitizeTable(null),
-                    'table name must be a string or a builder'
-                );
+                expect(() => inst._sanitizeTable(null)).toThrow();
             });
 
             it('query builder', () => {
                 const select = squel.select();
 
-                assert.same(select, inst._sanitizeTable(select, true));
+                areEqual(select, inst._sanitizeTable(select, true));
             });
         });
 
@@ -623,9 +578,7 @@ describe('Base Classes', () => {
 
                 inst._sanitizeFieldAlias('abc');
 
-                assert.ok(
-                    inst._sanitizeName.calledWithExactly('abc', 'field alias')
-                );
+                expect(inst._sanitizeName.calledWithExactly('abc', 'field alias')).toBeTruthy();
             });
         });
 
@@ -635,63 +588,46 @@ describe('Base Classes', () => {
 
                 inst._sanitizeTableAlias('abc');
 
-                assert.ok(
-                    inst._sanitizeName.calledWithExactly('abc', 'table alias')
-                );
+                expect(inst._sanitizeName.calledWithExactly('abc', 'table alias')).toBeTruthy();
             });
         });
 
         describe('_sanitizeLimitOffset', () => {
             it('undefined', () => {
-                assert.throws(
-                    () => inst._sanitizeLimitOffset(),
-                    'limit/offset must be >= 0'
-                );
+                expect(() => inst._sanitizeLimitOffset()).toThrow();
             });
 
             it('null', () => {
-                assert.throws(
-                    () => inst._sanitizeLimitOffset(null),
-                    'limit/offset must be >= 0'
-                );
+                expect(() => inst._sanitizeLimitOffset(null)).toThrow();
             });
 
             it('float', () => {
-                assert.same(1, inst._sanitizeLimitOffset(1.2));
+                areEqual(1, inst._sanitizeLimitOffset(1.2));
             });
 
             it('boolean', () => {
-                assert.throws(
-                    () => inst._sanitizeLimitOffset(false),
-                    'limit/offset must be >= 0'
-                );
+                expect(() => inst._sanitizeLimitOffset(false)).toThrow();
             });
 
             it('string', () => {
-                assert.same(2, inst._sanitizeLimitOffset('2'));
+                areEqual(2, inst._sanitizeLimitOffset('2'));
             });
 
             it('array', () => {
-                assert.same(3, inst._sanitizeLimitOffset([3]));
+                areEqual(3, inst._sanitizeLimitOffset([3]));
             });
 
             it('object', () => {
-                assert.throws(
-                    () => inst._sanitizeLimitOffset(new Object()),
-                    'limit/offset must be >= 0'
-                );
+                expect(() => inst._sanitizeLimitOffset(new Object())).toThrow();
             });
 
             it('number >= 0', () => {
-                assert.same(0, inst._sanitizeLimitOffset(0));
-                assert.same(1, inst._sanitizeLimitOffset(1));
+                areEqual(0, inst._sanitizeLimitOffset(0));
+                areEqual(1, inst._sanitizeLimitOffset(1));
             });
 
             it('number < 0', () => {
-                assert.throws(
-                    () => inst._sanitizeLimitOffset(-1),
-                    'limit/offset must be >= 0'
-                );
+                expect(() => inst._sanitizeLimitOffset(-1)).toThrow();
             });
         });
 
@@ -705,53 +641,44 @@ describe('Base Classes', () => {
             });
 
             it('if string', () => {
-                assert.same('bla', inst._sanitizeValue('bla'));
+                areEqual('bla', inst._sanitizeValue('bla'));
             });
 
             it('if boolean', () => {
-                assert.same(true, inst._sanitizeValue(true));
-                assert.same(false, inst._sanitizeValue(false));
+                areEqual(true, inst._sanitizeValue(true));
+                areEqual(false, inst._sanitizeValue(false));
             });
 
             it('if integer', () => {
-                assert.same(-1, inst._sanitizeValue(-1));
-                assert.same(0, inst._sanitizeValue(0));
-                assert.same(1, inst._sanitizeValue(1));
+                areEqual(-1, inst._sanitizeValue(-1));
+                areEqual(0, inst._sanitizeValue(0));
+                areEqual(1, inst._sanitizeValue(1));
             });
 
             it('if float', () => {
-                assert.same(-1.2, inst._sanitizeValue(-1.2));
-                assert.same(1.2, inst._sanitizeValue(1.2));
+                areEqual(-1.2, inst._sanitizeValue(-1.2));
+                areEqual(1.2, inst._sanitizeValue(1.2));
             });
 
             it('if array', () => {
-                assert.throws(
-                    () => inst._sanitizeValue([1]),
-                    'field value must be a string, number, boolean, null or one of the registered custom value types'
-                );
+                expect(() => inst._sanitizeValue([1])).toThrow();
             });
 
             it('if object', () => {
-                assert.throws(
-                    () => inst._sanitizeValue(new Object()),
-                    'field value must be a string, number, boolean, null or one of the registered custom value types'
-                );
+                expect(() => inst._sanitizeValue(new Object())).toThrow();
             });
             it('if null', () => {
-                assert.same(null, inst._sanitizeValue(null));
+                areEqual(null, inst._sanitizeValue(null));
             });
 
             it('if BaseBuilder', () => {
                 const s = squel.select();
 
-                assert.same(s, inst._sanitizeValue(s));
+                areEqual(s, inst._sanitizeValue(s));
             });
 
             it('if undefined', () => {
-                assert.throws(
-                    () => inst._sanitizeValue(undefined),
-                    'field value must be a string, number, boolean, null or one of the registered custom value types'
-                );
+                expect(() => inst._sanitizeValue(undefined)).toThrow();
             });
 
             describe('custom handlers', () => {
@@ -759,35 +686,35 @@ describe('Base Classes', () => {
                     squel.registerValueHandler(Date, _.identity);
                     const date = new Date();
 
-                    assert.same(date, inst._sanitizeValue(date));
+                    areEqual(date, inst._sanitizeValue(date));
                 });
 
                 it('instance', () => {
                     inst.registerValueHandler(Date, _.identity);
                     const date = new Date();
 
-                    assert.same(date, inst._sanitizeValue(date));
+                    areEqual(date, inst._sanitizeValue(date));
                 });
             });
         });
 
         it('_escapeValue', () => {
             inst.options.replaceSingleQuotes = false;
-            assert.same("te'st", inst._escapeValue("te'st"));
+            areEqual("te'st", inst._escapeValue("te'st"));
 
             inst.options.replaceSingleQuotes = true;
-            assert.same("te''st", inst._escapeValue("te'st"));
+            areEqual("te''st", inst._escapeValue("te'st"));
 
             inst.options.singleQuoteReplacement = '--';
-            assert.same('te--st', inst._escapeValue("te'st"));
+            areEqual('te--st', inst._escapeValue("te'st"));
 
             inst.options.singleQuoteReplacement = '--';
-            assert.same(undefined, inst._escapeValue());
+            areEqual(undefined, inst._escapeValue());
         });
 
         describe('_formatTableName', () => {
             it('default', () => {
-                assert.same('abc', inst._formatTableName('abc'));
+                areEqual('abc', inst._formatTableName('abc'));
             });
 
             describe('auto quote names', () => {
@@ -796,57 +723,57 @@ describe('Base Classes', () => {
                 });
 
                 it('default quote character', () => {
-                    assert.same('`abc`', inst._formatTableName('abc'));
+                    areEqual('`abc`', inst._formatTableName('abc'));
                 });
 
                 it('custom quote character', () => {
                     inst.options.nameQuoteCharacter = '|';
-                    assert.same('|abc|', inst._formatTableName('abc'));
+                    areEqual('|abc|', inst._formatTableName('abc'));
                 });
             });
         });
 
         describe('_formatTableAlias', () => {
             it('default', () => {
-                assert.same('`abc`', inst._formatTableAlias('abc'));
+                areEqual('`abc`', inst._formatTableAlias('abc'));
             });
 
             it('custom quote character', () => {
                 inst.options.tableAliasQuoteCharacter = '~';
-                assert.same('~abc~', inst._formatTableAlias('abc'));
+                areEqual('~abc~', inst._formatTableAlias('abc'));
             });
 
             it('auto quote alias names is OFF', () => {
                 inst.options.autoQuoteAliasNames = false;
-                assert.same('abc', inst._formatTableAlias('abc'));
+                areEqual('abc', inst._formatTableAlias('abc'));
             });
 
             it('AS is turned ON', () => {
                 inst.options.autoQuoteAliasNames = false;
                 inst.options.useAsForTableAliasNames = true;
-                assert.same('AS abc', inst._formatTableAlias('abc'));
+                areEqual('AS abc', inst._formatTableAlias('abc'));
             });
         });
 
         describe('_formatFieldAlias', () => {
             it('default()', () => {
-                assert.same('"abc"', inst._formatFieldAlias('abc'));
+                areEqual('"abc"', inst._formatFieldAlias('abc'));
             });
 
             it('custom quote character', () => {
                 inst.options.fieldAliasQuoteCharacter = '~';
-                assert.same('~abc~', inst._formatFieldAlias('abc'));
+                areEqual('~abc~', inst._formatFieldAlias('abc'));
             });
 
             it('auto quote alias names is OFF', () => {
                 inst.options.autoQuoteAliasNames = false;
-                assert.same('abc', inst._formatFieldAlias('abc'));
+                areEqual('abc', inst._formatFieldAlias('abc'));
             });
         });
 
         describe('_formatFieldName', () => {
             it('default()', () => {
-                assert.same('abc', inst._formatFieldName('abc'));
+                areEqual('abc', inst._formatFieldName('abc'));
             });
 
             describe('auto quote names', () => {
@@ -855,26 +782,26 @@ describe('Base Classes', () => {
                 });
 
                 it('default quote character', () => {
-                    assert.same(
+                    areEqual(
                         '`abc`.`def`',
                         inst._formatFieldName('abc.def')
                     );
                 });
 
                 it('do not quote *', () => {
-                    assert.same('`abc`.*', inst._formatFieldName('abc.*'));
+                    areEqual('`abc`.*', inst._formatFieldName('abc.*'));
                 });
 
                 it('custom quote character', () => {
                     inst.options.nameQuoteCharacter = '|';
-                    assert.same(
+                    areEqual(
                         '|abc|.|def|',
                         inst._formatFieldName('abc.def')
                     );
                 });
 
                 it('ignore periods when quoting', () => {
-                    assert.same(
+                    areEqual(
                         '`abc.def`',
                         inst._formatFieldName('abc.def', {
                             ignorePeriodsForFieldNameQuotes: true,
@@ -886,27 +813,27 @@ describe('Base Classes', () => {
 
         describe('_formatCustomValue', () => {
             it('not a custom value type', () => {
-                assert.same(
+                areEqual(
                     { formatted: false, value: null },
                     inst._formatCustomValue(null)
                 );
-                assert.same(
+                areEqual(
                     { formatted: false, value: 'abc' },
                     inst._formatCustomValue('abc')
                 );
-                assert.same(
+                areEqual(
                     { formatted: false, value: 12 },
                     inst._formatCustomValue(12)
                 );
-                assert.same(
+                areEqual(
                     { formatted: false, value: 1.2 },
                     inst._formatCustomValue(1.2)
                 );
-                assert.same(
+                areEqual(
                     { formatted: false, value: true },
                     inst._formatCustomValue(true)
                 );
-                assert.same(
+                areEqual(
                     { formatted: false, value: false },
                     inst._formatCustomValue(false)
                 );
@@ -920,11 +847,11 @@ describe('Base Classes', () => {
                     squel.registerValueHandler(MyClass, () => 3.14);
                     squel.registerValueHandler('boolean', (v) => `a${v}`);
 
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 3.14 },
                         inst._formatCustomValue(myObj)
                     );
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 'atrue' },
                         inst._formatCustomValue(true)
                     );
@@ -937,11 +864,11 @@ describe('Base Classes', () => {
                     inst.registerValueHandler(MyClass, () => 3.14);
                     inst.registerValueHandler('number', (v) => `${v}a`);
 
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 3.14 },
                         inst._formatCustomValue(myObj)
                     );
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: '5.2a' },
                         inst._formatCustomValue(5.2)
                     );
@@ -951,7 +878,7 @@ describe('Base Classes', () => {
                     inst.registerValueHandler(Date, (d) => 'hello');
                     squel.registerValueHandler(Date, (d) => 'goodbye');
 
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 'hello' },
                         inst._formatCustomValue(new Date())
                     );
@@ -959,7 +886,7 @@ describe('Base Classes', () => {
                     inst = new BaseBuilder({
                         valueHandlers: [],
                     });
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 'goodbye' },
                         inst._formatCustomValue(new Date())
                     );
@@ -976,11 +903,11 @@ describe('Base Classes', () => {
 
                     const val = new Date();
 
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 'foo' },
                         inst._formatCustomValue(val, true)
                     );
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 'bar' },
                         inst._formatCustomValue(val)
                     );
@@ -995,13 +922,13 @@ describe('Base Classes', () => {
 
                     const val = new Date();
 
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: 'foo' },
                         inst._formatCustomValue(val, true, {
                             dontQuote: true,
                         })
                     );
-                    assert.same(
+                    areEqual(
                         { formatted: true, value: '"foo"' },
                         inst._formatCustomValue(val, true, {
                             dontQuote: false,
@@ -1016,7 +943,7 @@ describe('Base Classes', () => {
 
                     const val = new Date();
 
-                    assert.same(
+                    areEqual(
                         { rawNesting: true, formatted: true, value: 'foo' },
                         inst._formatCustomValue(val, true)
                     );
@@ -1028,7 +955,7 @@ describe('Base Classes', () => {
             it('Query builder', () => {
                 const s = squel.select().from('table');
 
-                assert.same(s, inst._formatValueForParamArray(s));
+                areEqual(s, inst._formatValueForParamArray(s));
             });
 
             it('else calls _formatCustomValue', () => {
@@ -1041,23 +968,23 @@ describe('Base Classes', () => {
                     })
                 );
 
-                assert.same('testfoo', inst._formatValueForParamArray(null));
-                assert.same('testfoo', inst._formatValueForParamArray('abc'));
-                assert.same('testfoo', inst._formatValueForParamArray(12));
-                assert.same('testfoo', inst._formatValueForParamArray(1.2));
+                areEqual('testfoo', inst._formatValueForParamArray(null));
+                areEqual('testfoo', inst._formatValueForParamArray('abc'));
+                areEqual('testfoo', inst._formatValueForParamArray(12));
+                areEqual('testfoo', inst._formatValueForParamArray(1.2));
 
                 const opts = { dummy: true };
 
-                assert.same(
+                areEqual(
                     'testfoo',
                     inst._formatValueForParamArray(true, opts)
                 );
 
-                assert.same('testfoo', inst._formatValueForParamArray(false));
+                areEqual('testfoo', inst._formatValueForParamArray(false));
 
-                assert.same(6, spy.callCount);
+                areEqual(6, spy.callCount);
 
-                assert.same(spy.getCall(4).args[2], opts);
+                areEqual(spy.getCall(4).args[2], opts);
             });
 
             it('Array - recursively calls itself on each element', () => {
@@ -1068,39 +995,39 @@ describe('Base Classes', () => {
                 const opts = { dummy: true };
                 const res = inst._formatValueForParamArray(v, opts);
 
-                assert.same(v, res);
+                areEqual(v, res);
 
-                assert.same(3, spy.callCount);
-                assert.ok(spy.calledWith(v[0]));
-                assert.ok(spy.calledWith(v[1]));
+                areEqual(3, spy.callCount);
+                expect(spy.calledWith(v[0])).toBeTruthy();
+                expect(spy.calledWith(v[1])).toBeTruthy();
 
-                assert.same(spy.getCall(1).args[1], opts);
+                areEqual(spy.getCall(1).args[1], opts);
             });
         });
 
         describe('_formatValueForQueryString', () => {
             it('null', () => {
-                assert.same('NULL', inst._formatValueForQueryString(null));
+                areEqual('NULL', inst._formatValueForQueryString(null));
             });
 
             it('boolean', () => {
-                assert.same('TRUE', inst._formatValueForQueryString(true));
-                assert.same('FALSE', inst._formatValueForQueryString(false));
+                areEqual('TRUE', inst._formatValueForQueryString(true));
+                areEqual('FALSE', inst._formatValueForQueryString(false));
             });
 
             it('integer', () => {
-                assert.same(12, inst._formatValueForQueryString(12));
+                areEqual(12, inst._formatValueForQueryString(12));
             });
 
             it('float', () => {
-                assert.same(1.2, inst._formatValueForQueryString(1.2));
+                areEqual(1.2, inst._formatValueForQueryString(1.2));
             });
 
             describe('string', () => {
                 it('have string formatter function', () => {
                     inst.options.stringFormatter = (str) => `N(${str})`;
 
-                    assert.same(
+                    areEqual(
                         'N(test)',
                         inst._formatValueForQueryString('test')
                     );
@@ -1115,14 +1042,14 @@ describe('Base Classes', () => {
                         (str) => escapedValue || str
                     );
 
-                    assert.same(
+                    areEqual(
                         "'test'",
                         inst._formatValueForQueryString('test')
                     );
 
-                    assert.ok(inst._escapeValue.calledWithExactly('test'));
+                    expect(inst._escapeValue.calledWithExactly('test')).toBeTruthy();
                     escapedValue = 'blah';
-                    assert.same(
+                    areEqual(
                         "'blah'",
                         inst._formatValueForQueryString('test')
                     );
@@ -1137,14 +1064,14 @@ describe('Base Classes', () => {
                         (str) => escapedValue || str
                     );
 
-                    assert.same(
+                    areEqual(
                         'test',
                         inst._formatValueForQueryString('test', {
                             dontQuote: true,
                         })
                     );
 
-                    assert.ok(inst._escapeValue.notCalled);
+                    expect(inst._escapeValue.notCalled).toBeTruthy();
                 });
             });
 
@@ -1153,7 +1080,7 @@ describe('Base Classes', () => {
 
                 const expected = "('test', 123, TRUE, 1.2, NULL)";
 
-                assert.same(
+                areEqual(
                     expected,
                     inst._formatValueForQueryString([
                         'test',
@@ -1164,12 +1091,12 @@ describe('Base Classes', () => {
                     ])
                 );
 
-                assert.same(6, spy.callCount);
-                assert.ok(spy.calledWith('test'));
-                assert.ok(spy.calledWith(123));
-                assert.ok(spy.calledWith(true));
-                assert.ok(spy.calledWith(1.2));
-                assert.ok(spy.calledWith(null));
+                areEqual(6, spy.callCount);
+                expect(spy.calledWith('test')).toBeTruthy();
+                expect(spy.calledWith(123)).toBeTruthy();
+                expect(spy.calledWith(true)).toBeTruthy();
+                expect(spy.calledWith(1.2)).toBeTruthy();
+                expect(spy.calledWith(null)).toBeTruthy();
             });
 
             it('BaseBuilder', () => {
@@ -1180,7 +1107,7 @@ describe('Base Classes', () => {
                 );
                 const s = squel.select().from('table');
 
-                assert.same(
+                areEqual(
                     '{{SELECT * FROM table}}',
                     inst._formatValueForQueryString(s)
                 );
@@ -1192,7 +1119,7 @@ describe('Base Classes', () => {
                     value: 12 + (asParam ? 25 : 65),
                 }));
                 mocker.stub(inst, '_applyNestingFormatting', (v) => `{${v}}`);
-                assert.same('{77}', inst._formatValueForQueryString(123));
+                areEqual('{77}', inst._formatValueForQueryString(123));
             });
 
             it('#292 - custom value type specifies raw nesting', () => {
@@ -1202,42 +1129,42 @@ describe('Base Classes', () => {
                     value: 12,
                 }));
                 mocker.stub(inst, '_applyNestingFormatting', (v) => `{${v}}`);
-                assert.same(12, inst._formatValueForQueryString(123));
+                areEqual(12, inst._formatValueForQueryString(123));
             });
         });
 
         describe('_applyNestingFormatting', () => {
             it('default()', () => {
-                assert.same('(77)', inst._applyNestingFormatting('77'));
-                assert.same('((77)', inst._applyNestingFormatting('(77'));
-                assert.same('(77))', inst._applyNestingFormatting('77)'));
-                assert.same('(77)', inst._applyNestingFormatting('(77)'));
+                areEqual('(77)', inst._applyNestingFormatting('77'));
+                areEqual('((77)', inst._applyNestingFormatting('(77'));
+                areEqual('(77))', inst._applyNestingFormatting('77)'));
+                areEqual('(77)', inst._applyNestingFormatting('(77)'));
             });
             it('no nesting', () => {
-                assert.same('77', inst._applyNestingFormatting('77', false));
+                areEqual('77', inst._applyNestingFormatting('77', false));
             });
             it('rawNesting turned on', () => {
                 inst = new BaseBuilder({ rawNesting: true });
-                assert.same('77', inst._applyNestingFormatting('77'));
+                areEqual('77', inst._applyNestingFormatting('77'));
             });
         });
 
         describe('_buildString', () => {
             it('empty', () => {
-                assert.same(inst._buildString('', []), {
+                areEqual(inst._buildString('', []), {
                     text: '',
                     values: [],
                 });
             });
             describe('no params', () => {
                 it('non-parameterized', () => {
-                    assert.same(inst._buildString('abc = 3', []), {
+                    areEqual(inst._buildString('abc = 3', []), {
                         text: 'abc = 3',
                         values: [],
                     });
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString('abc = 3', [], {
                             buildParameterized: true,
                         }),
@@ -1250,7 +1177,7 @@ describe('Base Classes', () => {
             });
             describe('non-array', () => {
                 it('non-parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString('a = ? ? ? ?', [
                             2,
                             'abc',
@@ -1264,7 +1191,7 @@ describe('Base Classes', () => {
                     );
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString(
                             'a = ? ? ? ?',
                             [2, 'abc', false, null],
@@ -1279,13 +1206,13 @@ describe('Base Classes', () => {
             });
             describe('array', () => {
                 it('non-parameterized', () => {
-                    assert.same(inst._buildString('a = ?', [[1, 2, 3]]), {
+                    areEqual(inst._buildString('a = ?', [[1, 2, 3]]), {
                         text: 'a = (1, 2, 3)',
                         values: [],
                     });
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString('a = ?', [[1, 2, 3]], {
                             buildParameterized: true,
                         }),
@@ -1297,23 +1224,21 @@ describe('Base Classes', () => {
                 });
             });
             describe('nested builder', () => {
-                beforeEach(
-                    () =>
-                        (this.s = squel
-                            .select()
-                            .from('master')
-                            .where('b = ?', 5))
-                );
+                beforeEach(() =>
+                    (testContext.s = squel
+                        .select()
+                        .from('master')
+                        .where('b = ?', 5)));
 
                 it('non-parameterized', () => {
-                    assert.same(inst._buildString('a = ?', [this.s]), {
+                    areEqual(inst._buildString('a = ?', [testContext.s]), {
                         text: 'a = (SELECT * FROM master WHERE (b = 5))',
                         values: [],
                     });
                 });
                 it('parameterized', () => {
-                    assert.same(
-                        inst._buildString('a = ?', [this.s], {
+                    areEqual(
+                        inst._buildString('a = ?', [testContext.s], {
                             buildParameterized: true,
                         }),
                         {
@@ -1325,7 +1250,7 @@ describe('Base Classes', () => {
             });
             describe('return nested output', () => {
                 it('non-parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString('a = ?', [3], { nested: true }),
                         {
                             text: '(a = 3)',
@@ -1334,7 +1259,7 @@ describe('Base Classes', () => {
                     );
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString('a = ?', [3], {
                             buildParameterized: true,
                             nested: true,
@@ -1353,7 +1278,7 @@ describe('Base Classes', () => {
                     },
                 };
 
-                assert.same(inst._buildString('a = ?', ['NOW()'], options), {
+                areEqual(inst._buildString('a = ?', ['NOW()'], options), {
                     text: 'a = NOW()',
                     values: [],
                 });
@@ -1370,7 +1295,7 @@ describe('Base Classes', () => {
 
                 inst._buildString('a = ?', [3], options);
 
-                assert.same(spy.getCall(0).args[1], options.formattingOptions);
+                areEqual(spy.getCall(0).args[1], options.formattingOptions);
             });
             describe('custom parameter character', () => {
                 beforeEach(() => {
@@ -1378,13 +1303,13 @@ describe('Base Classes', () => {
                 });
 
                 it('non-parameterized', () => {
-                    assert.same(inst._buildString('a = @@', [[1, 2, 3]]), {
+                    areEqual(inst._buildString('a = @@', [[1, 2, 3]]), {
                         text: 'a = (1, 2, 3)',
                         values: [],
                     });
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildString('a = @@', [[1, 2, 3]], {
                             buildParameterized: true,
                         }),
@@ -1399,21 +1324,21 @@ describe('Base Classes', () => {
 
         describe('_buildManyStrings', () => {
             it('empty', () => {
-                assert.same(inst._buildManyStrings([], []), {
+                areEqual(inst._buildManyStrings([], []), {
                     text: '',
                     values: [],
                 });
             });
             describe('simple', () => {
                 beforeEach(() => {
-                    this.strings = ['a = ?', 'b IN ? AND c = ?'];
+                    testContext.strings = ['a = ?', 'b IN ? AND c = ?'];
 
-                    this.values = [['elephant'], [[1, 2, 3], 4]];
+                    testContext.values = [['elephant'], [[1, 2, 3], 4]];
                 });
 
                 it('non-parameterized', () => {
-                    assert.same(
-                        inst._buildManyStrings(this.strings, this.values),
+                    areEqual(
+                        inst._buildManyStrings(testContext.strings, testContext.values),
                         {
                             text: "a = 'elephant' b IN (1, 2, 3) AND c = 4",
                             values: [],
@@ -1421,8 +1346,8 @@ describe('Base Classes', () => {
                     );
                 });
                 it('parameterized', () => {
-                    assert.same(
-                        inst._buildManyStrings(this.strings, this.values, {
+                    areEqual(
+                        inst._buildManyStrings(testContext.strings, testContext.values, {
                             buildParameterized: true,
                         }),
                         {
@@ -1435,7 +1360,7 @@ describe('Base Classes', () => {
 
             describe('return nested', () => {
                 it('non-parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildManyStrings(['a = ?', 'b = ?'], [[1], [2]], {
                             nested: true,
                         }),
@@ -1446,7 +1371,7 @@ describe('Base Classes', () => {
                     );
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildManyStrings(['a = ?', 'b = ?'], [[1], [2]], {
                             buildParameterized: true,
                             nested: true,
@@ -1464,7 +1389,7 @@ describe('Base Classes', () => {
                     inst.options.separator = '|';
                 });
                 it('non-parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildManyStrings(['a = ?', 'b = ?'], [[1], [2]]),
                         {
                             text: 'a = 1|b = 2',
@@ -1473,7 +1398,7 @@ describe('Base Classes', () => {
                     );
                 });
                 it('parameterized', () => {
-                    assert.same(
+                    areEqual(
                         inst._buildManyStrings(['a = ?', 'b = ?'], [[1], [2]], {
                             buildParameterized: true,
                         }),
@@ -1493,12 +1418,12 @@ describe('Base Classes', () => {
         });
 
         it('instanceof base builder', () => {
-            assert.instanceOf(inst, BaseBuilder);
+            expect(inst).toBeInstanceOf(BaseBuilder);
         });
 
         describe('constructor', () => {
             it('default options', () => {
-                assert.same(DefaultQueryBuilderOptions, inst.options);
+                areEqual(DefaultQueryBuilderOptions, inst.options);
             });
 
             it('overridden options', () => {
@@ -1520,11 +1445,11 @@ describe('Base Classes', () => {
                     }
                 );
 
-                assert.same(expectedOptions, inst.options);
+                areEqual(expectedOptions, inst.options);
             });
 
             it('default blocks - none', () => {
-                assert.same([], inst.blocks);
+                areEqual([], inst.blocks);
             });
 
             describe('blocks passed in', () => {
@@ -1547,19 +1472,19 @@ describe('Base Classes', () => {
 
                     inst = new QueryBuilder({}, blocks);
 
-                    assert.ok(limitExposedMethodsSpy.calledOnce);
-                    assert.ok(distinctExposedMethodsSpy.calledOnce);
+                    expect(limitExposedMethodsSpy.calledOnce).toBeTruthy();
+                    expect(distinctExposedMethodsSpy.calledOnce).toBeTruthy();
 
-                    assert.typeOf(inst.distinct, 'function');
-                    assert.typeOf(inst.limit, 'function');
+                    expect(typeof inst.distinct).toBe('function');
+                    expect(typeof inst.limit).toBe('function');
 
-                    assert.same(inst, inst.limit(2));
-                    assert.ok(limitSpy.calledOnce);
-                    assert.ok(limitSpy.calledOn(blocks[0]));
+                    areEqual(inst, inst.limit(2));
+                    expect(limitSpy.calledOnce).toBeTruthy();
+                    expect(limitSpy.calledOn(blocks[0])).toBeTruthy();
 
-                    assert.same(inst, inst.distinct());
-                    assert.ok(distinctSpy.calledOnce);
-                    assert.ok(distinctSpy.calledOn(blocks[1]));
+                    areEqual(inst, inst.distinct());
+                    expect(distinctSpy.calledOnce).toBeTruthy();
+                    expect(distinctSpy.calledOn(blocks[1])).toBeTruthy();
                 });
 
                 it('cannot expose the same method twice', () => {
@@ -1569,7 +1494,7 @@ describe('Base Classes', () => {
                         inst = new QueryBuilder({}, blocks);
                         throw new Error('should not reach here');
                     } catch (err) {
-                        assert.same(
+                        areEqual(
                             'Error: Builder already has a builder method called: distinct',
                             err.toString()
                         );
@@ -1588,7 +1513,7 @@ describe('Base Classes', () => {
 
                 const expected = _.extend(oldOptions, { updated: false });
 
-                assert.same(expected, inst.options);
+                areEqual(expected, inst.options);
             });
 
             it('updates building block options', () => {
@@ -1602,19 +1527,19 @@ describe('Base Classes', () => {
 
                 const expected = _.extend(oldOptions, { updated: false });
 
-                assert.same(expected, inst.blocks[0].options);
+                areEqual(expected, inst.blocks[0].options);
             });
         });
 
         describe('toString()', () => {
             it('returns empty if no blocks', () => {
-                assert.same('', inst.toString());
+                areEqual('', inst.toString());
             });
 
             it('skips empty block strings', () => {
                 inst.blocks = [new StringBlock({}, '')];
 
-                assert.same('', inst.toString());
+                areEqual('', inst.toString());
             });
 
             it('returns final query string', () => {
@@ -1634,24 +1559,24 @@ describe('Base Classes', () => {
                     new StringBlock({}, 'STR3'),
                 ];
 
-                assert.same('ret2 ret3 ret4', inst.toString());
+                areEqual('ret2 ret3 ret4', inst.toString());
 
-                assert.ok(toStringSpy.calledThrice);
-                assert.ok(toStringSpy.calledOn(inst.blocks[0]));
-                assert.ok(toStringSpy.calledOn(inst.blocks[1]));
-                assert.ok(toStringSpy.calledOn(inst.blocks[2]));
+                expect(toStringSpy.calledThrice).toBeTruthy();
+                expect(toStringSpy.calledOn(inst.blocks[0])).toBeTruthy();
+                expect(toStringSpy.calledOn(inst.blocks[1])).toBeTruthy();
+                expect(toStringSpy.calledOn(inst.blocks[2])).toBeTruthy();
             });
         });
 
         describe('toParam()', () => {
             it('returns empty if no blocks', () => {
-                assert.same({ text: '', values: [] }, inst.toParam());
+                areEqual({ text: '', values: [] }, inst.toParam());
             });
 
             it('skips empty block strings', () => {
                 inst.blocks = [new StringBlock({}, '')];
 
-                assert.same({ text: '', values: [] }, inst.toParam());
+                areEqual({ text: '', values: [] }, inst.toParam());
             });
 
             it('returns final query string', () => {
@@ -1671,15 +1596,15 @@ describe('Base Classes', () => {
                     })
                 );
 
-                assert.same(
+                areEqual(
                     { text: 'ret2 ret3 ret4', values: [] },
                     inst.toParam()
                 );
 
-                assert.ok(toStringSpy.calledThrice);
-                assert.ok(toStringSpy.calledOn(inst.blocks[0]));
-                assert.ok(toStringSpy.calledOn(inst.blocks[1]));
-                assert.ok(toStringSpy.calledOn(inst.blocks[2]));
+                expect(toStringSpy.calledThrice).toBeTruthy();
+                expect(toStringSpy.calledOn(inst.blocks[0])).toBeTruthy();
+                expect(toStringSpy.calledOn(inst.blocks[1])).toBeTruthy();
+                expect(toStringSpy.calledOn(inst.blocks[2])).toBeTruthy();
             });
 
             it('returns query with unnumbered parameters', () => {
@@ -1690,7 +1615,7 @@ describe('Base Classes', () => {
                     values: [1, 2, 3],
                 }));
 
-                assert.same(
+                areEqual(
                     { text: 'a = ? AND b in (?, ?)', values: [1, 2, 3] },
                     inst.toParam()
                 );
@@ -1708,7 +1633,7 @@ describe('Base Classes', () => {
                     values: [1, 2, 3],
                 }));
 
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: 'a = $1 AND b in ($2, $3)',
                     values: [1, 2, 3],
                 });
@@ -1727,7 +1652,7 @@ describe('Base Classes', () => {
                     values: [1, 2, 3],
                 }));
 
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: 'a = &%1 AND b in (&%2, &%3)',
                     values: [1, 2, 3],
                 });
@@ -1747,7 +1672,7 @@ describe('Base Classes', () => {
 
                 inst.blocks[0].str = 'TEST2';
 
-                assert.same('TEST', newinst.blocks[0].toString());
+                areEqual('TEST', newinst.blocks[0].toString());
             });
         });
 
@@ -1772,14 +1697,14 @@ describe('Base Classes', () => {
                 inst.registerValueHandler(Date, handler);
                 inst.registerValueHandler('number', handler);
 
-                assert.ok(baseBuilderSpy.calledTwice);
-                assert.ok(baseBuilderSpy.calledOn(inst));
+                expect(baseBuilderSpy.calledTwice).toBeTruthy();
+                expect(baseBuilderSpy.calledOn(inst)).toBeTruthy();
             });
 
             it('returns instance for chainability', () => {
                 const handler = () => 'test';
 
-                assert.same(inst, inst.registerValueHandler(Date, handler));
+                areEqual(inst, inst.registerValueHandler(Date, handler));
             });
 
             it('calls through to blocks', () => {
@@ -1794,8 +1719,8 @@ describe('Base Classes', () => {
 
                 inst.registerValueHandler(Date, handler);
 
-                assert.ok(baseBuilderSpy.calledOnce);
-                assert.ok(baseBuilderSpy.calledOn(inst.blocks[0]));
+                expect(baseBuilderSpy.calledOnce).toBeTruthy();
+                expect(baseBuilderSpy.calledOn(inst.blocks[0])).toBeTruthy();
             });
         });
 
@@ -1804,10 +1729,10 @@ describe('Base Classes', () => {
                 const block = new FunctionBlock();
 
                 inst.blocks.push(block);
-                assert.same(block, inst.getBlock(FunctionBlock));
+                areEqual(block, inst.getBlock(FunctionBlock));
             });
             it('invalid', () => {
-                assert.same(undefined, inst.getBlock(FunctionBlock));
+                areEqual(undefined, inst.getBlock(FunctionBlock));
             });
         });
     });

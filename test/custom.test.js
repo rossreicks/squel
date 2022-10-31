@@ -31,14 +31,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 const squel = require("../dist/squel-basic");
 
-import { assert } from "chai";
-
-assert.same = function (actual, expected, message) {
-    return assert.deepEqual(actual, expected, message);
+const areEqual = function (actual, expected, message) {
+    return expect(actual).toEqual(expected);
 };
 
 describe("Custom queries", () => {
-    it("custom query", function () {
+    it("custom query", () => {
         class CommandBlock extends squel.cls.Block {
             command(command, arg) {
                 this._command = command;
@@ -81,8 +79,8 @@ describe("Custom queries", () => {
 
         const qry = squel.pragma().compress(9);
 
-        assert.same(qry.toString(), "PRAGMA COMPRESS 9");
-        assert.same(qry.toParam(), {
+        areEqual(qry.toString(), "PRAGMA COMPRESS 9");
+        areEqual(qry.toParam(), {
             text: "PRAGMA COMPRESS ?",
             values: [9],
         });

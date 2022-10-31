@@ -30,12 +30,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import _ from 'underscore';
-import { assert } from 'chai';
 import { squel } from '../src';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 
-assert.same = function (actual, expected, message) {
-    assert.deepEqual(actual, expected, message);
+const areEqual = function (actual, expected, message) {
+    expect(actual).toEqual(expected);
 };
 
 let inst = squel.case();
@@ -46,16 +45,16 @@ describe("Case expression builder base class", () => {
     });
 
    it("extends BaseBuilder", () => {
-        assert.ok(inst instanceof BaseBuilder);
+        expect(inst instanceof BaseBuilder).toBeTruthy();
     });
 
    it("toString() returns NULL", () => {
-        assert.same("NULL", inst.toString());
+        areEqual("NULL", inst.toString());
     });
 
     describe('options', () => {
        it("default options", () => {
-            assert.same(
+            areEqual(
                 DefaultQueryBuilderOptions,
                 inst.options
             );
@@ -73,7 +72,7 @@ describe("Case expression builder base class", () => {
                 }
             );
 
-            assert.same(expected, e.options);
+            areEqual(expected, e.options);
         });
     });
 
@@ -84,10 +83,10 @@ describe("Case expression builder base class", () => {
          });
 
          it('toString', () => {
-            assert.same(inst.toString(), 'CASE WHEN (\'foo\') THEN \'bar\' ELSE NULL END');
+            areEqual(inst.toString(), 'CASE WHEN (\'foo\') THEN \'bar\' ELSE NULL END');
           });
          it('toParam', () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
               text: 'CASE WHEN (?) THEN \'bar\' ELSE NULL END',
               values: ['foo']
             });
@@ -99,10 +98,10 @@ describe("Case expression builder base class", () => {
               inst.when('?', 'foo').then('bar').else('foobar');
          });
          it('toString', () => {
-            assert.same(inst.toString(), 'CASE WHEN (\'foo\') THEN \'bar\' ELSE \'foobar\' END');
+            areEqual(inst.toString(), 'CASE WHEN (\'foo\') THEN \'bar\' ELSE \'foobar\' END');
           });
          it('toParam', () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
               text: 'CASE WHEN (?) THEN \'bar\' ELSE \'foobar\' END',
               values: ['foo']
             });
@@ -115,10 +114,10 @@ describe("Case expression builder base class", () => {
           inst = squel.case('name').when('?', 'foo').then('bar');
         });
        it('toString', () => {
-          assert.same(inst.toString(), 'CASE name WHEN (\'foo\') THEN \'bar\' ELSE NULL END');
+          areEqual(inst.toString(), 'CASE name WHEN (\'foo\') THEN \'bar\' ELSE NULL END');
         });
        it('toParam', () => {
-          assert.same(inst.toParam(), {
+          areEqual(inst.toParam(), {
             text: 'CASE name WHEN (?) THEN \'bar\' ELSE NULL END',
             values: ['foo']
           });

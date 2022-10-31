@@ -34,13 +34,11 @@ import _ from "underscore";
 import { squel } from "../src";
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 
-import { assert } from "chai";
-
 let mocker;
 let inst = squel.expr();
 
-assert.same = function (actual, expected, message) {
-    assert.deepEqual(actual, expected, message);
+const areEqual = function (actual, expected, message) {
+    expect(actual).toEqual(expected);
 };
 
 describe("Expression builder base class", () => {
@@ -54,16 +52,16 @@ describe("Expression builder base class", () => {
     });
 
    it("extends BaseBuilder", () => {
-        assert.ok(inst instanceof BaseBuilder);
+        expect(inst instanceof BaseBuilder).toBeTruthy();
     });
 
    it("toString() returns empty", () => {
-        assert.same("", inst.toString());
+        areEqual("", inst.toString());
     });
 
     describe('options', () => {
        it("default options", () => {
-            assert.same(
+            areEqual(
                 DefaultQueryBuilderOptions,
                 inst.options
             );
@@ -81,79 +79,55 @@ describe("Expression builder base class", () => {
                 }
             );
 
-            assert.same(expected, e.options);
+            areEqual(expected, e.options);
         });
     });
 
    describe("and()", () => {
        it("without an argument throws an error", () => {
-            assert.throws(
-                () => inst.and(),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.and()).toThrow();
         });
        it("with an array throws an error", () => {
-            assert.throws(
-                () => inst.and([1]),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.and([1])).toThrow();
         });
        it("with an object throws an error", () => {
-            assert.throws(
-                () => inst.and(new Object()),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.and(new Object())).toThrow();
         });
        it("with a function throws an error", () => {
-            assert.throws(
-                () => inst.and(() => 1),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.and(() => 1)).toThrow();
         });
        it("with an Expression returns object instance", () => {
-            assert.same(inst, inst.and(squel.expr()));
+            areEqual(inst, inst.and(squel.expr()));
         });
        it("with a builder returns object instance", () => {
-            assert.same(inst, inst.and(squel.str()));
+            areEqual(inst, inst.and(squel.str()));
         });
        it("with a string returns object instance", () => {
-            assert.same(inst, inst.and("bla"));
+            areEqual(inst, inst.and("bla"));
         });
     });
 
    describe("or()", () => {
        it("without an argument throws an error", () => {
-            assert.throws(
-                () => inst.or(),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.or()).toThrow();
         });
        it("with an array throws an error", () => {
-            assert.throws(
-                () => inst.or([1]),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.or([1])).toThrow();
         });
        it("with an object throws an error", () => {
-            assert.throws(
-                () => inst.or(new Object()),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.or(new Object())).toThrow();
         });
        it("with a function throws an error", () => {
-            assert.throws(
-                () => inst.or(() => 1),
-                "expression must be a string or builder instance"
-            );
+            expect(() => inst.or(() => 1)).toThrow();
         });
        it("with an Expression returns object instance", () => {
-            assert.same(inst, inst.or(squel.expr()));
+            areEqual(inst, inst.or(squel.expr()));
         });
        it("with a builder returns object instance", () => {
-            assert.same(inst, inst.or(squel.str()));
+            areEqual(inst, inst.or(squel.str()));
         });
        it("with a string returns object instance", () => {
-            assert.same(inst, inst.or("bla"));
+            areEqual(inst, inst.or("bla"));
         });
     });
 
@@ -163,11 +137,11 @@ describe("Expression builder base class", () => {
         });
 
        it(">> toString()", () => {
-            assert.same(inst.toString(), "test = 3");
+            areEqual(inst.toString(), "test = 3");
         });
 
        it(">> toParam()", () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "test = 3",
                 values: [],
             });
@@ -179,14 +153,14 @@ describe("Expression builder base class", () => {
             });
 
            it(">> toString()", () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "test = 3 AND flight = '4'"
                 );
             });
 
            it(">> toParam()", () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "test = 3 AND flight = '4'",
                     values: [],
                 });
@@ -198,14 +172,14 @@ describe("Expression builder base class", () => {
                 });
 
                it(">> toString()", () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "test = 3 AND flight = '4' OR dummy IN (1,2,3)"
                     );
                 });
 
                it(">> toParam()", () => {
-                    assert.same(inst.toParam(), {
+                    areEqual(inst.toParam(), {
                         text: "test = 3 AND flight = '4' OR dummy IN (1,2,3)",
                         values: [],
                     });
@@ -220,11 +194,11 @@ describe("Expression builder base class", () => {
         });
 
        it(">> toString()", () => {
-            assert.same(inst.toString(), "test = NULL");
+            areEqual(inst.toString(), "test = NULL");
         });
 
        it(">> toParam()", () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "test = ?",
                 values: [null],
             });
@@ -237,11 +211,11 @@ describe("Expression builder base class", () => {
         });
 
        it(">> toString()", () => {
-            assert.same(inst.toString(), "test = 3");
+            areEqual(inst.toString(), "test = 3");
         });
 
        it(">> toParam()", () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "test = ?",
                 values: [3],
             });
@@ -253,14 +227,14 @@ describe("Expression builder base class", () => {
             });
 
            it(">> toString()", () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "test = 3 AND flight = '4'"
                 );
             });
 
            it(">> toParam()", () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "test = ? AND flight = ?",
                     values: [3, "4"],
                 });
@@ -272,14 +246,14 @@ describe("Expression builder base class", () => {
                 });
 
                it(">> toString()", () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "test = 3 AND flight = '4' OR dummy IN (FALSE, 2, NULL, 'str')"
                     );
                 });
 
                it(">> toParam()", () => {
-                    assert.same(inst.toParam(), {
+                    areEqual(inst.toParam(), {
                         text: "test = ? AND flight = ? OR dummy IN (?, ?, ?, ?)",
                         values: [3, "4", false, 2, null, "str"],
                     });
@@ -294,11 +268,11 @@ describe("Expression builder base class", () => {
         });
 
        it(">> toString()", () => {
-            assert.same(inst.toString(), "test = 3");
+            areEqual(inst.toString(), "test = 3");
         });
 
        it(">> toParam()", () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "test = 3",
                 values: [],
             });
@@ -310,14 +284,14 @@ describe("Expression builder base class", () => {
             });
 
            it(">> toString()", () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "test = 3 OR flight = '4'"
                 );
             });
 
            it(">> toString()", () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "test = 3 OR flight = '4'",
                     values: [],
                 });
@@ -329,14 +303,14 @@ describe("Expression builder base class", () => {
                 });
 
                it(">> toString()", () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "test = 3 OR flight = '4' AND dummy IN (1,2,3)"
                     );
                 });
 
                it(">> toParam()", () => {
-                    assert.same(inst.toParam(), {
+                    areEqual(inst.toParam(), {
                         text: "test = 3 OR flight = '4' AND dummy IN (1,2,3)",
                         values: [],
                     });
@@ -351,11 +325,11 @@ describe("Expression builder base class", () => {
         });
 
        it(">> toString()", () => {
-            assert.same(inst.toString(), "test = 3");
+            areEqual(inst.toString(), "test = 3");
         });
 
        it(">> toParam()", () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "test = ?",
                 values: [3],
             });
@@ -367,14 +341,14 @@ describe("Expression builder base class", () => {
             });
 
            it(">> toString()", () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "test = 3 OR flight = '4'"
                 );
             });
 
            it(">> toParam()", () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "test = ? OR flight = ?",
                     values: [3, "4"],
                 });
@@ -386,14 +360,14 @@ describe("Expression builder base class", () => {
                 });
 
                it(">> toString()", () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "test = 3 OR flight = '4' AND dummy IN (FALSE, 2, NULL, 'str')"
                     );
                 });
 
                it(">> toParam()", () => {
-                    assert.same(inst.toParam(), {
+                    areEqual(inst.toParam(), {
                         text: "test = ? OR flight = ? AND dummy IN (?, ?, ?, ?)",
                         values: [3, "4", false, 2, null, "str"],
                     });
@@ -413,14 +387,14 @@ describe("Expression builder base class", () => {
             });
 
            it(">> toString()", () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "test = 4 AND (inner = 1)"
                 );
             });
 
            it(">> toParam()", () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "test = ? AND (inner = ?)",
                     values: [4, 1],
                 });
@@ -438,14 +412,14 @@ describe("Expression builder base class", () => {
             });
 
            it(">> toString()", () => {
-                assert.same(
+                areEqual(
                     inst.toString(),
                     "test = 4 AND (inner = 1 OR (another = 34))"
                 );
             });
 
            it(">> toParam()", () => {
-                assert.same(inst.toParam(), {
+                areEqual(inst.toParam(), {
                     text: "test = ? AND (inner = ? OR (another = ?))",
                     values: [4, 1, 34],
                 });
@@ -467,14 +441,14 @@ describe("Expression builder base class", () => {
                 });
 
                it(">> toString()", () => {
-                    assert.same(
+                    areEqual(
                         inst.toString(),
                         "test = 3 AND flight = '4' OR dummy IN (FALSE, 2, NULL, 'str')"
                     );
                 });
 
                it(">> toParam()", () => {
-                    assert.same(inst.toParam(), {
+                    areEqual(inst.toParam(), {
                         text: "test = @@ AND flight = @@ OR dummy IN (@@, @@, @@, @@)",
                         values: [3, "4", false, 2, null, "str"],
                     });
@@ -490,8 +464,8 @@ describe("Expression builder base class", () => {
             .clone();
         newinst.or("inner = 3");
 
-        assert.same(inst.toString(), "test = 4 OR inner = 1 OR inner = 2");
-        assert.same(
+        areEqual(inst.toString(), "test = 4 OR inner = 1 OR inner = 2");
+        areEqual(
             newinst.toString(),
             "test = 4 OR inner = 1 OR inner = 2 OR inner = 3"
         );
@@ -514,13 +488,13 @@ describe("Expression builder base class", () => {
                 .or(squel.select().from("blah").where("a = ?", 9));
         });
         it('toString()', () => {
-            assert.same(
+            areEqual(
                 inst.toString(),
                 "b = 5 OR (SELECT * FROM blah WHERE (a = 9))"
             );
         });
         it('toParam()', () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "b = ? OR (SELECT * FROM blah WHERE (a = ?))",
                 values: [5, 9],
             });
@@ -540,13 +514,13 @@ describe("Expression builder base class", () => {
                 .and("E"));
         });
         it('toString()', () => {
-            assert.same(
+            areEqual(
                 inst.toString(),
                 "((A AND B) OR (C AND D)) AND E"
             );
         });
         it('toParam()', () => {
-            assert.same(inst.toParam(), {
+            areEqual(inst.toParam(), {
                 text: "((A AND B) OR (C AND D)) AND E",
                 values: [],
             });
