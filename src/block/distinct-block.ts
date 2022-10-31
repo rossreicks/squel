@@ -1,4 +1,4 @@
-import { Block } from "./block";
+import { Block } from './block';
 
 export class DistinctBlock extends Block {
     private _useDistinct: boolean;
@@ -10,7 +10,7 @@ export class DistinctBlock extends Block {
 
     _toParamString() {
         return {
-            text: this._useDistinct ? "DISTINCT" : "",
+            text: this._useDistinct ? 'DISTINCT' : '',
             values: [],
         };
     }

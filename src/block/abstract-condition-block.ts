@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { BaseBuilder } from "../base-builder";
-import { Block } from "./block";
-import { isSquelBuilder } from "../helpers";
-import { Options } from "../types/options";
+import { BaseBuilder } from '../base-builder';
+import { Block } from './block';
+import { isSquelBuilder } from '../helpers';
+import { Options } from '../types/options';
 
 export abstract class AbstractConditionBlock extends Block {
     private _conditions: { expr: string | BaseBuilder; values: any[] }[];
@@ -33,7 +33,7 @@ export abstract class AbstractConditionBlock extends Block {
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = [];
+        const totalStr = [];
         const totalValues = [];
 
         for (const { expr, values } of this._conditions) {
@@ -44,6 +44,7 @@ export abstract class AbstractConditionBlock extends Block {
                 : this._buildString(expr as string, values, {
                       buildParameterized: options.buildParameterized,
                   });
+
             if (ret.text.length) {
                 totalStr.push(ret.text);
             }
@@ -51,16 +52,14 @@ export abstract class AbstractConditionBlock extends Block {
             ret.values.forEach((value) => totalValues.push(value));
         }
 
-        let joinedString = "";
+        let joinedString = '';
 
         if (totalStr.length) {
-            joinedString = totalStr.join(") AND (");
+            joinedString = totalStr.join(') AND (');
         }
 
         return {
-            text: joinedString.length
-                ? `${this.options.verb} (${joinedString})`
-                : "",
+            text: joinedString.length ? `${this.options.verb} (${joinedString})` : '',
             values: totalValues,
         };
     }

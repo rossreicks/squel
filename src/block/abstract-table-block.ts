@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { Block } from "./block";
-import { Options } from "../types/options";
-import { _pad, isSquelBuilder } from "../helpers";
-import { BaseBuilder } from "../base-builder";
+import { Block } from './block';
+import { Options } from '../types/options';
+import { _pad, isSquelBuilder } from '../helpers';
+import { BaseBuilder } from '../base-builder';
 
 export abstract class AbstractTableBlock extends Block {
     private _tables: { table: string | BaseBuilder; alias: string }[];
@@ -47,20 +47,18 @@ export abstract class AbstractTableBlock extends Block {
      * @override
      */
     _toParamString(options: Options = {}) {
-        let totalStr = "";
+        let totalStr = '';
         const totalValues = [];
 
         if (this._hasTable()) {
             // retrieve the parameterized queries
             for (const { table, alias } of this._tables) {
-                totalStr = _pad(totalStr, ", ");
+                totalStr = _pad(totalStr, ', ');
 
                 let tableStr;
 
                 if (isSquelBuilder(table)) {
-                    const { text, values } = (
-                        table as BaseBuilder
-                    )._toParamString({
+                    const { text, values } = (table as BaseBuilder)._toParamString({
                         buildParameterized: options.buildParameterized,
                         nested: true,
                     });

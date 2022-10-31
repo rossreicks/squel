@@ -1,7 +1,6 @@
-/* eslint-disable no-param-reassign */
-import { BaseBuilder, DefaultQueryBuilderOptions } from "./base-builder";
-import { _extend, _pad, _isPlainObject } from "./helpers";
-import { Options } from "./types/options";
+import { BaseBuilder, DefaultQueryBuilderOptions } from './base-builder';
+import { _extend, _pad, _isPlainObject } from './helpers';
+import { Options } from './types/options';
 
 /**
  * An SQL CASE expression builder.
@@ -43,7 +42,7 @@ export class Case extends BaseBuilder {
 
     then(result) {
         if (this._cases.length === 0) {
-            throw new Error("when() needs to be called first");
+            throw new Error('when() needs to be called first');
         }
 
         this._cases[0].result = result;
@@ -58,27 +57,23 @@ export class Case extends BaseBuilder {
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = "";
+        let totalStr = '';
         const totalValues = [];
 
         for (const { expression, values, result } of this._cases) {
-            totalStr = _pad(totalStr, " ");
+            totalStr = _pad(totalStr, ' ');
 
             const ret = this._buildString(expression, values, {
                 buildParameterized: options.buildParameterized,
                 nested: true,
             });
 
-            totalStr += `WHEN ${
-                ret.text
-            } THEN ${this._formatValueForQueryString(result)}`;
+            totalStr += `WHEN ${ret.text} THEN ${this._formatValueForQueryString(result)}`;
             ret.values.forEach((value) => totalValues.push(value));
         }
 
         if (totalStr.length) {
-            totalStr += ` ELSE ${this._formatValueForQueryString(
-                this._elseValue
-            )} END`;
+            totalStr += ` ELSE ${this._formatValueForQueryString(this._elseValue)} END`;
 
             if (this._fieldName) {
                 totalStr = `${this._fieldName} ${totalStr}`;

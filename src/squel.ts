@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { Expression } from './expression';
 import { Case } from './case';
 import { Select } from './methods/select';
@@ -20,17 +19,14 @@ export class Squel {
     constructor(flavour?: string) {
         this.flavour = flavour || null;
 
-        this.registerValueHandler(
-            FunctionBlock,
-            function (value, asParam = false) {
-                return asParam ? value.toParam() : value.toString();
-            }
-        );
+        this.registerValueHandler(FunctionBlock, function (value, asParam = false) {
+            return asParam ? value.toParam() : value.toString();
+        });
     }
 
     registerValueHandler(type, handler) {
         registerValueHandlerHelper(this.globalValueHandlers, type, handler);
-    };
+    }
 
     expr(options) {
         return new Expression(options);
@@ -93,7 +89,7 @@ export class Squel {
         }
 
         throw new Error(`Flavour not available: ${flavour}`);
-    };
+    }
 
     // aliases
     remove = this.delete;

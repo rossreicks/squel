@@ -1,4 +1,4 @@
-import { _clone, _extend } from "./helpers";
+import { _clone, _extend } from './helpers';
 
 export class Cloneable {
     /**

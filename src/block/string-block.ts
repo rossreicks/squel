@@ -1,5 +1,5 @@
-import { Options } from "../types/options";
-import { Block } from "./block";
+import { Options } from '../types/options';
+import { Block } from './block';
 
 // A fixed string which always gets output
 export class StringBlock extends Block {

@@ -39,88 +39,81 @@ const areEqual = function (actual, expected, message) {
 
 let inst = squel.case();
 
-describe("Case expression builder base class", () => {
-   beforeEach(() => {
+describe('Case expression builder base class', () => {
+    beforeEach(() => {
         inst = squel.case();
     });
 
-   it("extends BaseBuilder", () => {
+    it('extends BaseBuilder', () => {
         expect(inst instanceof BaseBuilder).toBeTruthy();
     });
 
-   it("toString() returns NULL", () => {
-        areEqual("NULL", inst.toString());
+    it('toString() returns NULL', () => {
+        areEqual('NULL', inst.toString());
     });
 
     describe('options', () => {
-       it("default options", () => {
-            areEqual(
-                DefaultQueryBuilderOptions,
-                inst.options
-            );
+        it('default options', () => {
+            areEqual(DefaultQueryBuilderOptions, inst.options);
         });
-       it("custom options", () => {
+        it('custom options', () => {
             const e = squel.case({
-                separator: ",asdf",
+                separator: ',asdf',
             });
 
-            const expected = _.extend(
-                {},
-                DefaultQueryBuilderOptions,
-                {
-                    separator: ",asdf",
-                }
-            );
+            const expected = _.extend({}, DefaultQueryBuilderOptions, {
+                separator: ',asdf',
+            });
 
             areEqual(expected, e.options);
         });
     });
 
-     describe('build expression', () => {
-       describe('>> when().then()', () => {
-         beforeEach(() => {
-            inst.when('?', 'foo').then('bar')
-         });
-
-         it('toString', () => {
-            areEqual(inst.toString(), 'CASE WHEN (\'foo\') THEN \'bar\' ELSE NULL END');
-          });
-         it('toParam', () => {
-            areEqual(inst.toParam(), {
-              text: 'CASE WHEN (?) THEN \'bar\' ELSE NULL END',
-              values: ['foo']
+    describe('build expression', () => {
+        describe('>> when().then()', () => {
+            beforeEach(() => {
+                inst.when('?', 'foo').then('bar');
             });
-          });
-        });
 
-       describe('>> when().then().else()', () => {
-         beforeEach(() => {
-              inst.when('?', 'foo').then('bar').else('foobar');
-         });
-         it('toString', () => {
-            areEqual(inst.toString(), 'CASE WHEN (\'foo\') THEN \'bar\' ELSE \'foobar\' END');
-          });
-         it('toParam', () => {
-            areEqual(inst.toParam(), {
-              text: 'CASE WHEN (?) THEN \'bar\' ELSE \'foobar\' END',
-              values: ['foo']
+            it('toString', () => {
+                areEqual(inst.toString(), "CASE WHEN ('foo') THEN 'bar' ELSE NULL END");
             });
-          });
+            it('toParam', () => {
+                areEqual(inst.toParam(), {
+                    text: "CASE WHEN (?) THEN 'bar' ELSE NULL END",
+                    values: ['foo'],
+                });
+            });
         });
-      });
 
-     describe('field case', () => {
-       beforeEach(() => {
-          inst = squel.case('name').when('?', 'foo').then('bar');
+        describe('>> when().then().else()', () => {
+            beforeEach(() => {
+                inst.when('?', 'foo').then('bar').else('foobar');
+            });
+            it('toString', () => {
+                areEqual(inst.toString(), "CASE WHEN ('foo') THEN 'bar' ELSE 'foobar' END");
+            });
+            it('toParam', () => {
+                areEqual(inst.toParam(), {
+                    text: "CASE WHEN (?) THEN 'bar' ELSE 'foobar' END",
+                    values: ['foo'],
+                });
+            });
         });
-       it('toString', () => {
-          areEqual(inst.toString(), 'CASE name WHEN (\'foo\') THEN \'bar\' ELSE NULL END');
+    });
+
+    describe('field case', () => {
+        beforeEach(() => {
+            inst = squel.case('name').when('?', 'foo').then('bar');
         });
-       it('toParam', () => {
-          areEqual(inst.toParam(), {
-            text: 'CASE name WHEN (?) THEN \'bar\' ELSE NULL END',
-            values: ['foo']
-          });
-       });
-      });
+        it('toString', () => {
+            areEqual(inst.toString(), "CASE name WHEN ('foo') THEN 'bar' ELSE NULL END");
+        });
+        it('toParam', () => {
+            areEqual(inst.toParam(), {
+                text: "CASE name WHEN (?) THEN 'bar' ELSE NULL END",
+                values: ['foo'],
+            });
+        });
+    });
 });

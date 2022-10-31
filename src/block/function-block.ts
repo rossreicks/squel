@@ -1,5 +1,5 @@
-import { Options } from "../types/options";
-import { Block } from "./block";
+import { Options } from '../types/options';
+import { Block } from './block';
 
 // A function string block
 export class FunctionBlock extends Block {

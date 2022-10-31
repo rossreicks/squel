@@ -1,6 +1,6 @@
-import { BaseBuilder } from "../base-builder";
-import { Options } from "../types/options";
-import { Block } from "./block";
+import { BaseBuilder } from '../base-builder';
+import { Options } from '../types/options';
+import { Block } from './block';
 
 // (INSERT INTO) ... field ... (SELECT ... FROM ...)
 export class InsertFieldsFromQueryBlock extends Block {
@@ -21,7 +21,7 @@ export class InsertFieldsFromQueryBlock extends Block {
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = "";
+        let totalStr = '';
 
         let totalValues = [];
 
@@ -31,9 +31,7 @@ export class InsertFieldsFromQueryBlock extends Block {
                 nested: true,
             });
 
-            totalStr = `(${this._fields.join(
-                ", "
-            )}) ${this._applyNestingFormatting(text)}`;
+            totalStr = `(${this._fields.join(', ')}) ${this._applyNestingFormatting(text)}`;
             totalValues = values;
         }
 

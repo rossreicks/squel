@@ -1,6 +1,6 @@
-import { BaseBuilder } from "../base-builder";
-import { Options } from "../types/options";
-import { Block } from "./block";
+import { BaseBuilder } from '../base-builder';
+import { Options } from '../types/options';
+import { Block } from './block';
 
 export class GroupByBlock extends Block {
     _groups: (string | BaseBuilder)[];
@@ -18,9 +18,7 @@ export class GroupByBlock extends Block {
 
     _toParamString(options: Options = {}) {
         return {
-            text: this._groups.length
-                ? `GROUP BY ${this._groups.join(", ")}`
-                : "",
+            text: this._groups.length ? `GROUP BY ${this._groups.join(', ')}` : '',
             values: [],
         };
     }

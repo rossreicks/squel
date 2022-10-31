@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
-import { BaseBuilder } from "../base-builder";
-import { Block } from "./block";
-import { FromTableBlock } from "./from-table-block";
-import { Options } from "../types/options";
-import { _isArray, _pad } from "../helpers";
-import { AbstractTableBlock } from "./abstract-table-block";
+import { BaseBuilder } from '../base-builder';
+import { Block } from './block';
+import { FromTableBlock } from './from-table-block';
+import { Options } from '../types/options';
+import { _isArray, _pad } from '../helpers';
+import { AbstractTableBlock } from './abstract-table-block';
 
 export class GetFieldBlock extends Block {
     _fields: { name: string | BaseBuilder; alias: string; options: Options }[];
@@ -56,9 +56,8 @@ export class GetFieldBlock extends Block {
         field = this._sanitizeField(field);
 
         // if field-alias combo already present then don't add
-        const existingField = this._fields.filter(
-            (f) => f.name === field && f.alias === alias
-        );
+        const existingField = this._fields.filter((f) => f.name === field && f.alias === alias);
+
         if (existingField.length) {
             return this;
         }
@@ -73,15 +72,15 @@ export class GetFieldBlock extends Block {
     _toParamString(opts: Options = {}) {
         const { queryBuilder, buildParameterized } = opts;
 
-        let totalStr = "";
+        let totalStr = '';
         const totalValues = [];
 
         for (const field of this._fields) {
-            totalStr = _pad(totalStr, ", ");
+            totalStr = _pad(totalStr, ', ');
 
             const { name, alias, options } = field;
 
-            if (typeof name === "string") {
+            if (typeof name === 'string') {
                 totalStr += this._formatFieldName(name, options);
             } else {
                 const ret = name._toParamString({
@@ -100,14 +99,10 @@ export class GetFieldBlock extends Block {
 
         if (!totalStr.length) {
             // if select query and a table is set then all fields wanted
-            const fromTableBlock =
-                queryBuilder && queryBuilder.getBlock(FromTableBlock);
-            if (
-                fromTableBlock &&
-                fromTableBlock instanceof AbstractTableBlock &&
-                fromTableBlock._hasTable()
-            ) {
-                totalStr = "*";
+            const fromTableBlock = queryBuilder && queryBuilder.getBlock(FromTableBlock);
+
+            if (fromTableBlock && fromTableBlock instanceof AbstractTableBlock && fromTableBlock._hasTable()) {
+                totalStr = '*';
             }
         }
 

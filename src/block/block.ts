@@ -1,7 +1,7 @@
 /* eslint-disable no-loop-func */
 /* eslint-disable no-useless-constructor */
-import { BaseBuilder } from "../base-builder";
-import { Options } from "../types/options";
+import { BaseBuilder } from '../base-builder';
+import { Options } from '../types/options';
 
 /*
  * ---------------------------------------------------------------------------------------------------------
@@ -40,14 +40,15 @@ export abstract class Block extends BaseBuilder {
     exposedMethods() {
         const ret = {};
 
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         let obj = this;
 
         while (obj) {
             Object.getOwnPropertyNames(obj).forEach((prop) => {
                 if (
-                    prop !== "constructor" &&
-                    typeof obj[prop] === "function" &&
-                    prop.charAt(0) !== "_" &&
+                    prop !== 'constructor' &&
+                    typeof obj[prop] === 'function' &&
+                    prop.charAt(0) !== '_' &&
                     !Block.prototype[prop]
                 ) {
                     ret[prop] = obj[prop];

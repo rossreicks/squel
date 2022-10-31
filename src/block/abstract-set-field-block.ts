@@ -2,9 +2,9 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
-import { BaseBuilder } from "../base-builder";
-import { Block } from "./block";
-import { _isArray } from "../helpers";
+import { BaseBuilder } from '../base-builder';
+import { Block } from './block';
+import { _isArray } from '../helpers';
 
 /**
  * Base class for setting fields to values (used for INSERT and UPDATE queries)
@@ -30,10 +30,10 @@ export abstract class AbstractSetFieldBlock extends Block {
     // This will override any previously set value for the given field.
     _set(field, value, valueOptions = {}) {
         if (this._values.length > 1) {
-            throw new Error("Cannot set multiple rows of fields this way.");
+            throw new Error('Cannot set multiple rows of fields this way.');
         }
 
-        if (typeof value !== "undefined") {
+        if (typeof value !== 'undefined') {
             value = this._sanitizeValue(value);
         }
 
@@ -54,7 +54,7 @@ export abstract class AbstractSetFieldBlock extends Block {
 
     // Insert fields based on the key/value pairs in the given object
     _setFields(fields, valueOptions = {}) {
-        if (typeof fields !== "object") {
+        if (typeof fields !== 'object') {
             throw new Error(`Expected an object but got ${typeof fields}`);
         }
 
@@ -67,9 +67,7 @@ export abstract class AbstractSetFieldBlock extends Block {
     // This will override all previously set values for every field.
     _setFieldsRows(fieldsRows, valueOptions = {}) {
         if (!_isArray(fieldsRows)) {
-            throw new Error(
-                `Expected an array of objects but got ${typeof fieldsRows}`
-            );
+            throw new Error(`Expected an array of objects but got ${typeof fieldsRows}`);
         }
 
         // Reset the objects stored fields and values
@@ -89,9 +87,7 @@ export abstract class AbstractSetFieldBlock extends Block {
                 let index = this._fields.indexOf(field);
 
                 if (i > 0 && index === -1) {
-                    throw new Error(
-                        "All fields in subsequent rows must match the fields in the first row"
-                    );
+                    throw new Error('All fields in subsequent rows must match the fields in the first row');
                 }
 
                 // Add field only if it hasn't been added before

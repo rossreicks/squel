@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-sequences */
 /* eslint-disable no-param-reassign */
-import { BaseBuilder } from "../base-builder";
-import { Block } from "./block";
-import { Options } from "../types/options";
-import { _isArray, _pad } from "../helpers";
+import { BaseBuilder } from '../base-builder';
+import { Block } from './block';
+import { Options } from '../types/options';
+import { _isArray, _pad } from '../helpers';
 
-type OrderByDirection = "ASC" | "DESC";
+type OrderByDirection = 'ASC' | 'DESC';
 
 export class OrderByBlock extends Block {
     _orders: {
@@ -29,11 +29,11 @@ export class OrderByBlock extends Block {
     order(field: string | BaseBuilder, dir?: OrderByDirection, ...values) {
         field = this._sanitizeField(field);
 
-        if (!(typeof dir === "string")) {
+        if (!(typeof dir === 'string')) {
             if (dir === undefined) {
-                dir = "ASC"; // Default to asc
+                dir = 'ASC'; // Default to asc
             } else if (dir !== null) {
-                dir = dir ? "ASC" : "DESC"; // Convert truthy to asc
+                dir = dir ? 'ASC' : 'DESC'; // Convert truthy to asc
             }
         }
 
@@ -45,19 +45,17 @@ export class OrderByBlock extends Block {
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = "";
+        let totalStr = '';
         const totalValues = [];
 
         for (const { field, dir, values } of this._orders) {
-            totalStr = _pad(totalStr, ", ");
+            totalStr = _pad(totalStr, ', ');
 
             const ret = this._buildString(field.toString(), values, {
                 buildParameterized: options.buildParameterized,
             });
 
-            (totalStr += ret.text),
-                _isArray(ret.values) &&
-                    ret.values.forEach((value) => totalValues.push(value));
+            (totalStr += ret.text), _isArray(ret.values) && ret.values.forEach((value) => totalValues.push(value));
 
             if (dir !== null) {
                 totalStr += ` ${dir}`;
@@ -65,7 +63,7 @@ export class OrderByBlock extends Block {
         }
 
         return {
-            text: totalStr.length ? `ORDER BY ${totalStr}` : "",
+            text: totalStr.length ? `ORDER BY ${totalStr}` : '',
             values: totalValues,
         };
     }

@@ -1,5 +1,5 @@
-import { BaseBuilder } from "../base-builder";
-import { AbstractTableBlock } from "./abstract-table-block";
+import { BaseBuilder } from '../base-builder';
+import { AbstractTableBlock } from './abstract-table-block';
 
 /**
  * * target table for DELETE queries, DELETE <??> FROM

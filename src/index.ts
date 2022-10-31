@@ -1,4 +1,4 @@
-import { Squel } from "./squel";
+import { Squel } from './squel';
 
 const squel = new Squel();
 

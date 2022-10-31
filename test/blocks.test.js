@@ -31,9 +31,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import sinon from "sinon";
-import _ from "underscore";
-import { squel } from "../src";
+import sinon from 'sinon';
+import _ from 'underscore';
+import { squel } from '../src';
 import {
     FunctionBlock,
     OrderByBlock,
@@ -52,15 +52,15 @@ import {
     JoinBlock,
     StringBlock,
     Block,
-} from "../src/block";
-import { AbstractConditionBlock } from "../src/block/abstract-condition-block";
-import { AbstractVerbSingleValueBlock } from "../src/block/abstract-verb-single-value-block";
-import { AbstractSetFieldBlock } from "../src/block/abstract-set-field-block";
-import { DefaultQueryBuilderOptions } from "../src/base-builder";
-import { AbstractTableBlock } from "../src/block/abstract-table-block";
-import { SetFieldBlock } from "../src/block/set-field-block";
-import { Select } from "../src/methods/select";
-import { UpdateTableBlock } from "../src/block/update-table-block";
+} from '../src/block';
+import { AbstractConditionBlock } from '../src/block/abstract-condition-block';
+import { AbstractVerbSingleValueBlock } from '../src/block/abstract-verb-single-value-block';
+import { AbstractSetFieldBlock } from '../src/block/abstract-set-field-block';
+import { DefaultQueryBuilderOptions } from '../src/base-builder';
+import { AbstractTableBlock } from '../src/block/abstract-table-block';
+import { SetFieldBlock } from '../src/block/set-field-block';
+import { Select } from '../src/methods/select';
+import { UpdateTableBlock } from '../src/block/update-table-block';
 
 let mocker;
 let inst = new Block();
@@ -69,7 +69,7 @@ const areEqual = function (actual, expected, message) {
     return expect(actual).toEqual(expected);
 };
 
-describe("Blocks", () => {
+describe('Blocks', () => {
     let testContext;
 
     beforeEach(() => {
@@ -80,19 +80,16 @@ describe("Blocks", () => {
     afterEach(() => {
         mocker.restore();
     });
-    describe("Block base class", () => {
+    describe('Block base class', () => {
         beforeEach(() => {
             return (inst = new Block());
         });
 
-        it("instanceof of BaseBuilder", () => {
-            const expectedOptions = _.extend({},
-                DefaultQueryBuilderOptions,
-                {
-                    usingValuePlaceholders: true,
-                    dummy: true,
-                }
-            );
+        it('instanceof of BaseBuilder', () => {
+            const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+                usingValuePlaceholders: true,
+                dummy: true,
+            });
 
             inst = new Block({
                 usingValuePlaceholders: true,
@@ -102,48 +99,58 @@ describe("Blocks", () => {
             areEqual(expectedOptions, inst.options);
         });
 
-        describe("exposedMethods()", () => {
-            it("returns methods", () => {
-                inst["method1"] = () => false;
-                inst["method2"] = () => false;
+        describe('exposedMethods()', () => {
+            it('returns methods', () => {
+                inst['method1'] = () => false;
+                inst['method2'] = () => false;
 
-                expect(["method1", "method2"]).toBeTruthy();
+                expect(['method1', 'method2']).toBeTruthy();
             });
 
-            it("ignores methods prefixed with _", () => {
+            it('ignores methods prefixed with _', () => {
                 let name;
-                inst["_method"] = () => false;
 
-                expect(undefined ===
-                    _.find(
-                        (() => {
-                            const result = [];
-                            for (name in inst.exposedMethods()) {
-                                result.push(name);
-                            }
-                            return result;
-                        })(),
-                        (name) => name === "_method"
-                    )).toBeTruthy();
+                inst['_method'] = () => false;
+
+                expect(
+                    undefined ===
+                        _.find(
+                            (() => {
+                                const result = [];
+
+                                for (name in inst.exposedMethods()) {
+                                    result.push(name);
+                                }
+
+                                return result;
+                            })(),
+                            (name) => name === '_method'
+                        )
+                ).toBeTruthy();
             });
 
-            it("ignores toString()", () => {
+            it('ignores toString()', () => {
                 let name;
-                expect(undefined ===
-                    _.find(
-                        (() => {
-                            const result = [];
-                            for (name in inst.exposedMethods()) {
-                                result.push(name);
-                            }
-                            return result;
-                        })(),
-                        (name) => name === "toString"
-                    )).toBeTruthy();
+
+                expect(
+                    undefined ===
+                        _.find(
+                            (() => {
+                                const result = [];
+
+                                for (name in inst.exposedMethods()) {
+                                    result.push(name);
+                                }
+
+                                return result;
+                            })(),
+                            (name) => name === 'toString'
+                        )
+                ).toBeTruthy();
             });
         });
 
-        it("cloning copies the options over", () => {
+        it('cloning copies the options over', () => {
             inst.options.dummy = true;
 
             const newinst = inst.clone();
@@ -154,123 +161,120 @@ describe("Blocks", () => {
         });
     });
 
-    describe("StringBlock", () => {
+    describe('StringBlock', () => {
         beforeEach(() => {
             testContext.cls = StringBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("_toParamString()", () => {
-            it("non-parameterized", () => {
-                inst = new testContext.cls({}, "TAG");
+        describe('_toParamString()', () => {
+            it('non-parameterized', () => {
+                inst = new testContext.cls({}, 'TAG');
 
                 areEqual(inst._toParamString(), {
-                    text: "TAG",
+                    text: 'TAG',
                     values: [],
                 });
             });
-            it("parameterized", () => {
-                inst = new testContext.cls({}, "TAG");
+            it('parameterized', () => {
+                inst = new testContext.cls({}, 'TAG');
 
                 areEqual(inst._toParamString({ buildParameterized: true }), {
-                    text: "TAG",
+                    text: 'TAG',
                     values: [],
                 });
             });
         });
     });
 
-    describe("FunctionBlock", () => {
+    describe('FunctionBlock', () => {
         beforeEach(() => {
             testContext.cls = FunctionBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        it("initial member values", () => {
+        it('initial member values', () => {
             areEqual([], inst._values);
             areEqual([], inst._strings);
         });
 
-        describe("_toParamString()", () => {
-            it("when not set", () => {
+        describe('_toParamString()', () => {
+            it('when not set', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
-            it("non-parameterized", () => {
-                inst.function("bla");
-                inst.function("bla2");
+            it('non-parameterized', () => {
+                inst.function('bla');
+                inst.function('bla2');
 
                 areEqual(inst._toParamString(), {
-                    text: "bla bla2",
+                    text: 'bla bla2',
                     values: [],
                 });
             });
-            it("parameterized", () => {
-                inst.function("bla ?", 2);
-                inst.function("bla2 ?", 3);
+            it('parameterized', () => {
+                inst.function('bla ?', 2);
+                inst.function('bla2 ?', 3);
 
-                areEqual(
-                    inst._toParamString({ buildParameterized: true }),
-                    {
-                        text: "bla ? bla2 ?",
-                        values: [2, 3],
-                    }
-                );
+                areEqual(inst._toParamString({ buildParameterized: true }), {
+                    text: 'bla ? bla2 ?',
+                    values: [2, 3],
+                });
             });
         });
     });
 
-    describe("AbstractTableBlock", () => {
+    describe('AbstractTableBlock', () => {
         beforeEach(() => {
             testContext.cls = AbstractTableBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        it("initial field values", () => {
+        it('initial field values', () => {
             areEqual([], inst._tables);
         });
 
-        describe("has table", () => {
-            it("no", () => {
+        describe('has table', () => {
+            it('no', () => {
                 areEqual(false, inst._hasTable());
             });
-            it("yes", () => {
-                inst._table("blah");
+            it('yes', () => {
+                inst._table('blah');
                 areEqual(true, inst._hasTable());
             });
         });
 
-        describe("_table()", () => {
-            it("saves inputs", () => {
-                inst._table("table1");
-                inst._table("table2", "alias2");
-                inst._table("table3");
+        describe('_table()', () => {
+            it('saves inputs', () => {
+                inst._table('table1');
+                inst._table('table2', 'alias2');
+                inst._table('table3');
 
                 const expectedFroms = [
                     {
-                        table: "table1",
+                        table: 'table1',
                         alias: null,
                     },
                     {
-                        table: "table2",
-                        alias: "alias2",
+                        table: 'table2',
+                        alias: 'alias2',
                     },
                     {
-                        table: "table3",
+                        table: 'table3',
                         alias: null,
                     },
                 ];
@@ -278,39 +282,28 @@ describe("Blocks", () => {
                 areEqual(expectedFroms, inst._tables);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeTableSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeTable",
-                    () => "_t"
-                );
-                const sanitizeAliasSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeTableAlias",
-                    () => "_a"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeTableSpy = mocker.stub(testContext.cls.prototype, '_sanitizeTable', () => '_t');
+                const sanitizeAliasSpy = mocker.stub(testContext.cls.prototype, '_sanitizeTableAlias', () => '_a');
 
-                inst._table("table", "alias");
+                inst._table('table', 'alias');
 
-                expect(sanitizeTableSpy.calledWith("table")).toBeTruthy();
-                expect(sanitizeAliasSpy.calledWithExactly("alias")).toBeTruthy();
+                expect(sanitizeTableSpy.calledWith('table')).toBeTruthy();
+                expect(sanitizeAliasSpy.calledWithExactly('alias')).toBeTruthy();
 
-                areEqual(
-                    [{ table: "_t", alias: "_a" }],
-                    inst._tables
-                );
+                areEqual([{ table: '_t', alias: '_a' }], inst._tables);
             });
 
-            it("handles single-table mode", () => {
+            it('handles single-table mode', () => {
                 inst.options.singleTable = true;
 
-                inst._table("table1");
-                inst._table("table2");
-                inst._table("table3");
+                inst._table('table1');
+                inst._table('table2');
+                inst._table('table3');
 
                 const expected = [
                     {
-                        table: "table3",
+                        table: 'table3',
                         alias: null,
                     },
                 ];
@@ -318,17 +311,14 @@ describe("Blocks", () => {
                 areEqual(expected, inst._tables);
             });
 
-            it("builder as table", () => {
-                const sanitizeTableSpy = mocker.spy(
-                    testContext.cls.prototype,
-                    "_sanitizeTable"
-                );
+            it('builder as table', () => {
+                const sanitizeTableSpy = mocker.spy(testContext.cls.prototype, '_sanitizeTable');
 
                 const innerTable1 = squel.select();
                 const innerTable2 = squel.select();
 
                 inst._table(innerTable1);
-                inst._table(innerTable2, "Inner2");
+                inst._table(innerTable2, 'Inner2');
 
                 expect(sanitizeTableSpy.calledWithExactly(innerTable1)).toBeTruthy();
                 expect(sanitizeTableSpy.calledWithExactly(innerTable2)).toBeTruthy();
@@ -339,7 +329,7 @@ describe("Blocks", () => {
                         table: innerTable1,
                     },
                     {
-                        alias: "Inner2",
+                        alias: 'Inner2',
                         table: innerTable2,
                     },
                 ];
@@ -348,217 +338,196 @@ describe("Blocks", () => {
             });
         });
 
-        describe("_toParamString()", () => {
+        describe('_toParamString()', () => {
             beforeEach(() => {
-                return testContext.innerTable1 = squel
-                    .select()
-                    .from("inner1")
-                    .where("a = ?", 3);
+                return (testContext.innerTable1 = squel.select().from('inner1').where('a = ?', 3));
             });
 
-            it("no table", () => {
+            it('no table', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
 
-            it("prefix", () => {
-                inst.options.prefix = "TEST";
+            it('prefix', () => {
+                inst.options.prefix = 'TEST';
 
-                inst._table("table2", "alias2");
+                inst._table('table2', 'alias2');
 
                 areEqual(inst._toParamString(), {
-                    text: "TEST table2 `alias2`",
+                    text: 'TEST table2 `alias2`',
                     values: [],
                 });
             });
 
-            it("non-parameterized", () => {
+            it('non-parameterized', () => {
                 inst._table(testContext.innerTable1);
-                inst._table("table2", "alias2");
-                inst._table("table3");
+                inst._table('table2', 'alias2');
+                inst._table('table3');
 
                 areEqual(inst._toParamString(), {
-                    text: "(SELECT * FROM inner1 WHERE (a = 3)), table2 `alias2`, table3",
+                    text: '(SELECT * FROM inner1 WHERE (a = 3)), table2 `alias2`, table3',
                     values: [],
                 });
             });
-            it("parameterized", () => {
+            it('parameterized', () => {
                 inst._table(testContext.innerTable1);
-                inst._table("table2", "alias2");
-                inst._table("table3");
+                inst._table('table2', 'alias2');
+                inst._table('table3');
 
-                areEqual(
-                    inst._toParamString({ buildParameterized: true }),
-                    {
-                        text: "(SELECT * FROM inner1 WHERE (a = ?)), table2 `alias2`, table3",
-                        values: [3],
-                    }
-                );
+                areEqual(inst._toParamString({ buildParameterized: true }), {
+                    text: '(SELECT * FROM inner1 WHERE (a = ?)), table2 `alias2`, table3',
+                    values: [3],
+                });
             });
         });
     });
 
-    describe("FromTableBlock", () => {
+    describe('FromTableBlock', () => {
         beforeEach(() => {
             testContext.cls = FromTableBlock;
             inst = new testContext.cls();
         });
 
-        it("check prefix", () => {
-            areEqual(inst.options.prefix, "FROM");
+        it('check prefix', () => {
+            areEqual(inst.options.prefix, 'FROM');
         });
 
-        it("instanceof of AbstractTableBlock", () => {
+        it('instanceof of AbstractTableBlock', () => {
             expect(inst).toBeInstanceOf(AbstractTableBlock);
         });
 
-        describe("from()", () => {
-            it("calls base class handler", () => {
-                const baseMethodSpy = mocker.stub(
-                    AbstractTableBlock.prototype,
-                    "_table"
-                );
+        describe('from()', () => {
+            it('calls base class handler', () => {
+                const baseMethodSpy = mocker.stub(AbstractTableBlock.prototype, '_table');
 
-                inst.from("table1");
-                inst.from("table2", "alias2");
+                inst.from('table1');
+                inst.from('table2', 'alias2');
 
                 areEqual(2, baseMethodSpy.callCount);
-                expect(baseMethodSpy.calledWithExactly("table1", null)).toBeTruthy();
-                expect(baseMethodSpy.calledWithExactly("table2", "alias2")).toBeTruthy();
+                expect(baseMethodSpy.calledWithExactly('table1', null)).toBeTruthy();
+                expect(baseMethodSpy.calledWithExactly('table2', 'alias2')).toBeTruthy();
             });
         });
     });
 
-    describe("UpdateTableBlock", () => {
+    describe('UpdateTableBlock', () => {
         beforeEach(() => {
             testContext.cls = UpdateTableBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractTableBlock", () => {
+        it('instanceof of AbstractTableBlock', () => {
             expect(inst).toBeInstanceOf(AbstractTableBlock);
         });
 
-        it("check prefix", () => {
+        it('check prefix', () => {
             areEqual(inst.options.prefix, undefined);
         });
 
-        describe("table()", () => {
-            it("calls base class handler", () => {
-                const baseMethodSpy = mocker.stub(
-                    AbstractTableBlock.prototype,
-                    "_table"
-                );
+        describe('table()', () => {
+            it('calls base class handler', () => {
+                const baseMethodSpy = mocker.stub(AbstractTableBlock.prototype, '_table');
 
-                inst.table("table1");
-                inst.table("table2", "alias2");
+                inst.table('table1');
+                inst.table('table2', 'alias2');
 
                 areEqual(2, baseMethodSpy.callCount);
-                expect(baseMethodSpy.calledWithExactly("table1", null)).toBeTruthy();
-                expect(baseMethodSpy.calledWithExactly("table2", "alias2")).toBeTruthy();
+                expect(baseMethodSpy.calledWithExactly('table1', null)).toBeTruthy();
+                expect(baseMethodSpy.calledWithExactly('table2', 'alias2')).toBeTruthy();
             });
         });
     });
 
-    describe("TargetTableBlock", () => {
+    describe('TargetTableBlock', () => {
         beforeEach(() => {
             testContext.cls = TargetTableBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractTableBlock", () => {
+        it('instanceof of AbstractTableBlock', () => {
             expect(inst).toBeInstanceOf(AbstractTableBlock);
         });
 
-        it("check prefix", () => {
+        it('check prefix', () => {
             areEqual(inst.options.prefix, undefined);
         });
 
-        describe("table()", () => {
-            it("calls base class handler", () => {
-                const baseMethodSpy = mocker.stub(
-                    AbstractTableBlock.prototype,
-                    "_table"
-                );
+        describe('table()', () => {
+            it('calls base class handler', () => {
+                const baseMethodSpy = mocker.stub(AbstractTableBlock.prototype, '_table');
 
-                inst.target("table1");
-                inst.target("table2");
+                inst.target('table1');
+                inst.target('table2');
 
                 areEqual(2, baseMethodSpy.callCount);
-                expect(baseMethodSpy.calledWithExactly("table1")).toBeTruthy();
-                expect(baseMethodSpy.calledWithExactly("table2")).toBeTruthy();
+                expect(baseMethodSpy.calledWithExactly('table1')).toBeTruthy();
+                expect(baseMethodSpy.calledWithExactly('table2')).toBeTruthy();
             });
         });
     });
 
-    describe("IntoTableBlock", () => {
+    describe('IntoTableBlock', () => {
         beforeEach(() => {
             testContext.cls = IntoTableBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractTableBlock", () => {
+        it('instanceof of AbstractTableBlock', () => {
             expect(inst).toBeInstanceOf(AbstractTableBlock);
         });
 
-        it("check prefix", () => {
-            areEqual(inst.options.prefix, "INTO");
+        it('check prefix', () => {
+            areEqual(inst.options.prefix, 'INTO');
         });
 
-        it("single table", () => {
+        it('single table', () => {
             expect(inst.options.singleTable).toBeTruthy();
         });
 
-        describe("into()", () => {
-            it("calls base class handler", () => {
-                const baseMethodSpy = mocker.stub(
-                    AbstractTableBlock.prototype,
-                    "_table"
-                );
+        describe('into()', () => {
+            it('calls base class handler', () => {
+                const baseMethodSpy = mocker.stub(AbstractTableBlock.prototype, '_table');
 
-                inst.into("table1");
-                inst.into("table2");
+                inst.into('table1');
+                inst.into('table2');
 
                 areEqual(2, baseMethodSpy.callCount);
-                expect(baseMethodSpy.calledWith("table1")).toBeTruthy();
-                expect(baseMethodSpy.calledWith("table2")).toBeTruthy();
+                expect(baseMethodSpy.calledWith('table1')).toBeTruthy();
+                expect(baseMethodSpy.calledWith('table2')).toBeTruthy();
             });
         });
 
-        describe("_toParamString()", () => {
-            it("requires table to have been provided", () => {
+        describe('_toParamString()', () => {
+            it('requires table to have been provided', () => {
                 try {
                     inst._toParamString();
-                    throw new Error("should not reach here");
+                    throw new Error('should not reach here');
                 } catch (err) {
-                    areEqual(
-                        "Error: into() needs to be called",
-                        err.toString()
-                    );
+                    areEqual('Error: into() needs to be called', err.toString());
                 }
             });
         });
     });
 
-    describe("GetFieldBlock", () => {
+    describe('GetFieldBlock', () => {
         beforeEach(() => {
             testContext.cls = GetFieldBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("fields() - object", () => {
-            it("saves inputs", () => {
-                const fieldSpy = mocker.spy(inst, "field");
+        describe('fields() - object', () => {
+            it('saves inputs', () => {
+                const fieldSpy = mocker.spy(inst, 'field');
 
                 inst.fields({
                     field1: null,
-                    field2: "alias2",
+                    field2: 'alias2',
                     field3: null,
                 });
                 {
@@ -567,21 +536,21 @@ describe("Blocks", () => {
 
                 const expected = [
                     {
-                        name: "field1",
+                        name: 'field1',
                         alias: null,
                         options: {
                             dummy: true,
                         },
                     },
                     {
-                        name: "field2",
-                        alias: "alias2",
+                        name: 'field2',
+                        alias: 'alias2',
                         options: {
                             dummy: true,
                         },
                     },
                     {
-                        name: "field3",
+                        name: 'field3',
                         alias: null,
                         options: {
                             dummy: true,
@@ -590,45 +559,51 @@ describe("Blocks", () => {
                 ];
 
                 expect(fieldSpy.calledThrice).toBeTruthy();
-                expect(fieldSpy.calledWithExactly("field1", null, {
-                    dummy: true,
-                })).toBeTruthy();
-                expect(fieldSpy.calledWithExactly("field2", "alias2", {
-                    dummy: true,
-                })).toBeTruthy();
-                expect(fieldSpy.calledWithExactly("field3", null, {
-                    dummy: true,
-                })).toBeTruthy();
+                expect(
+                    fieldSpy.calledWithExactly('field1', null, {
+                        dummy: true,
+                    })
+                ).toBeTruthy();
+                expect(
+                    fieldSpy.calledWithExactly('field2', 'alias2', {
+                        dummy: true,
+                    })
+                ).toBeTruthy();
+                expect(
+                    fieldSpy.calledWithExactly('field3', null, {
+                        dummy: true,
+                    })
+                ).toBeTruthy();
 
                 areEqual(expected, inst._fields);
             });
         });
 
-        describe("fields() - array", () => {
-            it("saves inputs", () => {
-                const fieldSpy = mocker.spy(inst, "field");
+        describe('fields() - array', () => {
+            it('saves inputs', () => {
+                const fieldSpy = mocker.spy(inst, 'field');
 
-                inst.fields(["field1", "field2", "field3"], {
+                inst.fields(['field1', 'field2', 'field3'], {
                     dummy: true,
                 });
 
                 const expected = [
                     {
-                        name: "field1",
+                        name: 'field1',
                         alias: null,
                         options: {
                             dummy: true,
                         },
                     },
                     {
-                        name: "field2",
+                        name: 'field2',
                         alias: null,
                         options: {
                             dummy: true,
                         },
                     },
                     {
-                        name: "field3",
+                        name: 'field3',
                         alias: null,
                         options: {
                             dummy: true,
@@ -637,39 +612,45 @@ describe("Blocks", () => {
                 ];
 
                 expect(fieldSpy.calledThrice).toBeTruthy();
-                expect(fieldSpy.calledWithExactly("field1", null, {
-                    dummy: true,
-                })).toBeTruthy();
-                expect(fieldSpy.calledWithExactly("field2", null, {
-                    dummy: true,
-                })).toBeTruthy();
-                expect(fieldSpy.calledWithExactly("field3", null, {
-                    dummy: true,
-                })).toBeTruthy();
+                expect(
+                    fieldSpy.calledWithExactly('field1', null, {
+                        dummy: true,
+                    })
+                ).toBeTruthy();
+                expect(
+                    fieldSpy.calledWithExactly('field2', null, {
+                        dummy: true,
+                    })
+                ).toBeTruthy();
+                expect(
+                    fieldSpy.calledWithExactly('field3', null, {
+                        dummy: true,
+                    })
+                ).toBeTruthy();
 
                 areEqual(expected, inst._fields);
             });
         });
 
-        describe("field()", () => {
-            it("saves inputs", () => {
-                inst.field("field1");
-                inst.field("field2", "alias2");
-                inst.field("field3");
+        describe('field()', () => {
+            it('saves inputs', () => {
+                inst.field('field1');
+                inst.field('field2', 'alias2');
+                inst.field('field3');
 
                 const expected = [
                     {
-                        name: "field1",
+                        name: 'field1',
                         alias: null,
                         options: {},
                     },
                     {
-                        name: "field2",
-                        alias: "alias2",
+                        name: 'field2',
+                        alias: 'alias2',
                         options: {},
                     },
                     {
-                        name: "field3",
+                        name: 'field3',
                         alias: null,
                         options: {},
                     },
@@ -679,27 +660,27 @@ describe("Blocks", () => {
             });
         });
 
-        describe("field() - discard duplicates", () => {
-            it("saves inputs", () => {
-                inst.field("field1");
-                inst.field("field2", "alias2");
-                inst.field("field2", "alias2");
-                inst.field("field1", "alias1");
+        describe('field() - discard duplicates', () => {
+            it('saves inputs', () => {
+                inst.field('field1');
+                inst.field('field2', 'alias2');
+                inst.field('field2', 'alias2');
+                inst.field('field1', 'alias1');
 
                 const expected = [
                     {
-                        name: "field1",
+                        name: 'field1',
                         alias: null,
                         options: {},
                     },
                     {
-                        name: "field2",
-                        alias: "alias2",
+                        name: 'field2',
+                        alias: 'alias2',
                         options: {},
                     },
                     {
-                        name: "field1",
-                        alias: "alias1",
+                        name: 'field1',
+                        alias: 'alias1',
                         options: {},
                     },
                 ];
@@ -707,27 +688,19 @@ describe("Blocks", () => {
                 areEqual(expected, inst._fields);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeField",
-                    () => "_f"
-                );
-                const sanitizeAliasSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeFieldAlias",
-                    () => "_a"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeField', () => '_f');
+                const sanitizeAliasSpy = mocker.stub(testContext.cls.prototype, '_sanitizeFieldAlias', () => '_a');
 
-                inst.field("field1", "alias1", { dummy: true });
+                inst.field('field1', 'alias1', { dummy: true });
 
-                expect(sanitizeFieldSpy.calledWithExactly("field1")).toBeTruthy();
-                expect(sanitizeAliasSpy.calledWithExactly("alias1")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('field1')).toBeTruthy();
+                expect(sanitizeAliasSpy.calledWithExactly('alias1')).toBeTruthy();
 
                 areEqual(inst._fields, [
                     {
-                        name: "_f",
-                        alias: "_a",
+                        name: '_f',
+                        alias: '_a',
                         options: {
                             dummy: true,
                         },
@@ -736,14 +709,14 @@ describe("Blocks", () => {
             });
         });
 
-        describe("_toParamString()", () => {
+        describe('_toParamString()', () => {
             beforeEach(() => {
                 testContext.queryBuilder = squel.select();
-                return testContext.fromTableBlock =
-                    testContext.queryBuilder.getBlock(FromTableBlock);
+
+                return (testContext.fromTableBlock = testContext.queryBuilder.getBlock(FromTableBlock));
             });
 
-            it("returns all fields when none provided and table is set", () => {
+            it('returns all fields when none provided and table is set', () => {
                 testContext.fromTableBlock._hasTable = () => true;
 
                 areEqual(
@@ -751,13 +724,13 @@ describe("Blocks", () => {
                         queryBuilder: testContext.queryBuilder,
                     }),
                     {
-                        text: "*",
+                        text: '*',
                         values: [],
                     }
                 );
             });
 
-            it("but returns nothing if no table set", () => {
+            it('but returns nothing if no table set', () => {
                 testContext.fromTableBlock._hasTable = () => false;
 
                 areEqual(
@@ -765,20 +738,20 @@ describe("Blocks", () => {
                         queryBuilder: testContext.queryBuilder,
                     }),
                     {
-                        text: "",
+                        text: '',
                         values: [],
                     }
                 );
             });
 
-            describe("returns formatted query phrase", () => {
+            describe('returns formatted query phrase', () => {
                 beforeEach(() => {
                     testContext.fromTableBlock._hasTable = () => true;
-                    inst.field(squel.str("GETDATE(?)", 3), "alias1");
-                    inst.field("field2", "alias2", { dummy: true });
-                    inst.field("field3");
+                    inst.field(squel.str('GETDATE(?)', 3), 'alias1');
+                    inst.field('field2', 'alias2', { dummy: true });
+                    inst.field('field3');
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             queryBuilder: testContext.queryBuilder,
@@ -789,7 +762,7 @@ describe("Blocks", () => {
                         }
                     );
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             queryBuilder: testContext.queryBuilder,
@@ -805,73 +778,56 @@ describe("Blocks", () => {
         });
     });
 
-    describe("AbstractSetFieldBlock", () => {
+    describe('AbstractSetFieldBlock', () => {
         beforeEach(() => {
             testContext.cls = AbstractSetFieldBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("_set()", () => {
-            it("saves inputs", () => {
-                inst._set("field1", "value1", { dummy: 1 });
-                inst._set("field2", "value2", { dummy: 2 });
-                inst._set("field3", "value3", { dummy: 3 });
-                inst._set("field4");
+        describe('_set()', () => {
+            it('saves inputs', () => {
+                inst._set('field1', 'value1', { dummy: 1 });
+                inst._set('field2', 'value2', { dummy: 2 });
+                inst._set('field3', 'value3', { dummy: 3 });
+                inst._set('field4');
 
-                const expectedFields = [
-                    "field1",
-                    "field2",
-                    "field3",
-                    "field4",
-                ];
-                const expectedValues = [
-                    ["value1", "value2", "value3", undefined],
-                ];
-                const expectedFieldOptions = [
-                    [{ dummy: 1 }, { dummy: 2 }, { dummy: 3 }, {}],
-                ];
+                const expectedFields = ['field1', 'field2', 'field3', 'field4'];
+                const expectedValues = [['value1', 'value2', 'value3', undefined]];
+                const expectedFieldOptions = [[{ dummy: 1 }, { dummy: 2 }, { dummy: 3 }, {}]];
 
                 areEqual(expectedFields, inst._fields);
                 areEqual(expectedValues, inst._values);
                 areEqual(expectedFieldOptions, inst._valueOptions);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeField",
-                    () => "_f"
-                );
-                const sanitizeValueSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeValue",
-                    () => "_v"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeField', () => '_f');
+                const sanitizeValueSpy = mocker.stub(testContext.cls.prototype, '_sanitizeValue', () => '_v');
 
-                inst._set("field1", "value1", { dummy: true });
+                inst._set('field1', 'value1', { dummy: true });
 
-                expect(sanitizeFieldSpy.calledWithExactly("field1")).toBeTruthy();
-                expect(sanitizeValueSpy.calledWithExactly("value1")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('field1')).toBeTruthy();
+                expect(sanitizeValueSpy.calledWithExactly('value1')).toBeTruthy();
 
-                areEqual(["_f"], inst._fields);
-                areEqual([["_v"]], inst._values);
+                areEqual(['_f'], inst._fields);
+                areEqual([['_v']], inst._values);
             });
         });
 
-        describe("_setFields()", () => {
-            it("saves inputs", () => {
+        describe('_setFields()', () => {
+            it('saves inputs', () => {
                 inst._setFields({
-                    field1: "value1",
-                    field2: "value2",
-                    field3: "value3",
+                    field1: 'value1',
+                    field2: 'value2',
+                    field3: 'value3',
                 });
 
-                const expectedFields = ["field1", "field2", "field3"];
-                const expectedValues = [["value1", "value2", "value3"]];
+                const expectedFields = ['field1', 'field2', 'field3'];
+                const expectedValues = [['value1', 'value2', 'value3']];
                 const expectedFieldOptions = [[{}, {}, {}]];
 
                 areEqual(expectedFields, inst._fields);
@@ -879,47 +835,39 @@ describe("Blocks", () => {
                 areEqual(expectedFieldOptions, inst._valueOptions);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeField",
-                    () => "_f"
-                );
-                const sanitizeValueSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeValue",
-                    () => "_v"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeField', () => '_f');
+                const sanitizeValueSpy = mocker.stub(testContext.cls.prototype, '_sanitizeValue', () => '_v');
 
-                inst._setFields({ field1: "value1" }, { dummy: true });
+                inst._setFields({ field1: 'value1' }, { dummy: true });
 
-                expect(sanitizeFieldSpy.calledWithExactly("field1")).toBeTruthy();
-                expect(sanitizeValueSpy.calledWithExactly("value1")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('field1')).toBeTruthy();
+                expect(sanitizeValueSpy.calledWithExactly('value1')).toBeTruthy();
 
-                areEqual(["_f"], inst._fields);
-                areEqual([["_v"]], inst._values);
+                areEqual(['_f'], inst._fields);
+                areEqual([['_v']], inst._values);
             });
         });
 
-        describe("_setFieldsRows()", () => {
-            it("saves inputs", () => {
+        describe('_setFieldsRows()', () => {
+            it('saves inputs', () => {
                 inst._setFieldsRows([
                     {
-                        field1: "value1",
-                        field2: "value2",
-                        field3: "value3",
+                        field1: 'value1',
+                        field2: 'value2',
+                        field3: 'value3',
                     },
                     {
-                        field1: "value21",
-                        field2: "value22",
-                        field3: "value23",
+                        field1: 'value21',
+                        field2: 'value22',
+                        field3: 'value23',
                     },
                 ]);
 
-                const expectedFields = ["field1", "field2", "field3"];
+                const expectedFields = ['field1', 'field2', 'field3'];
                 const expectedValues = [
-                    ["value1", "value2", "value3"],
-                    ["value21", "value22", "value23"],
+                    ['value1', 'value2', 'value3'],
+                    ['value21', 'value22', 'value23'],
                 ];
                 const expectedFieldOptions = [
                     [{}, {}, {}],
@@ -931,110 +879,96 @@ describe("Blocks", () => {
                 areEqual(expectedFieldOptions, inst._valueOptions);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeField",
-                    () => "_f"
-                );
-                const sanitizeValueSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeValue",
-                    () => "_v"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeField', () => '_f');
+                const sanitizeValueSpy = mocker.stub(testContext.cls.prototype, '_sanitizeValue', () => '_v');
 
                 inst._setFieldsRows(
                     [
                         {
-                            field1: "value1",
+                            field1: 'value1',
                         },
                         {
-                            field1: "value21",
+                            field1: 'value21',
                         },
                     ],
                     { dummy: true }
                 );
 
-                expect(sanitizeFieldSpy.calledWithExactly("field1")).toBeTruthy();
-                expect(sanitizeValueSpy.calledWithExactly("value1")).toBeTruthy();
-                expect(sanitizeValueSpy.calledWithExactly("value21")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('field1')).toBeTruthy();
+                expect(sanitizeValueSpy.calledWithExactly('value1')).toBeTruthy();
+                expect(sanitizeValueSpy.calledWithExactly('value21')).toBeTruthy();
 
-                areEqual(["_f"], inst._fields);
-                areEqual([["_v"], ["_v"]], inst._values);
+                areEqual(['_f'], inst._fields);
+                areEqual([['_v'], ['_v']], inst._values);
             });
         });
 
-        it("_toParamString()", () => {
+        it('_toParamString()', () => {
             expect(() => inst._toParamString()).toThrow();
         });
     });
 
-    describe("SetFieldBlock", () => {
+    describe('SetFieldBlock', () => {
         beforeEach(() => {
             return (inst = new SetFieldBlock());
         });
 
-        it("instanceof of AbstractSetFieldBlock", () => {
+        it('instanceof of AbstractSetFieldBlock', () => {
             expect(inst).toBeInstanceOf(AbstractSetFieldBlock);
         });
 
-        describe("set()", () => {
-            it("calls to _set()", () => {
-                const spy = mocker.stub(inst, "_set");
+        describe('set()', () => {
+            it('calls to _set()', () => {
+                const spy = mocker.stub(inst, '_set');
 
-                inst.set("f", "v", { dummy: true });
+                inst.set('f', 'v', { dummy: true });
 
-                expect(spy.calledWithExactly("f", "v", { dummy: true })).toBeTruthy();
+                expect(spy.calledWithExactly('f', 'v', { dummy: true })).toBeTruthy();
             });
         });
 
-        describe("setFields()", () => {
-            it("calls to _setFields()", () => {
-                const spy = mocker.stub(inst, "_setFields");
+        describe('setFields()', () => {
+            it('calls to _setFields()', () => {
+                const spy = mocker.stub(inst, '_setFields');
 
-                inst.setFields("f", { dummy: true });
+                inst.setFields('f', { dummy: true });
 
-                expect(spy.calledWithExactly("f", { dummy: true })).toBeTruthy();
+                expect(spy.calledWithExactly('f', { dummy: true })).toBeTruthy();
             });
         });
 
-        describe("_toParamString()", () => {
-            it("needs at least one field to have been provided", () => {
+        describe('_toParamString()', () => {
+            it('needs at least one field to have been provided', () => {
                 try {
                     inst.toString();
-                    throw new Error("should not reach here");
+                    throw new Error('should not reach here');
                 } catch (err) {
-                    areEqual(
-                        "Error: set() needs to be called",
-                        err.toString()
-                    );
+                    areEqual('Error: set() needs to be called', err.toString());
                 }
             });
 
-            describe("fields set", () => {
+            describe('fields set', () => {
                 beforeEach(() => {
-                    inst.set("field0 = field0 + 1");
-                    inst.set("field1", "value1", { dummy: true });
-                    inst.set("field2", "value2");
-                    inst.set(
-                        "field3",
-                        squel.str("GETDATE(?)", 4)
-                    );
+                    inst.set('field0 = field0 + 1');
+                    inst.set('field1', 'value1', { dummy: true });
+                    inst.set('field2', 'value2');
+                    inst.set('field3', squel.str('GETDATE(?)', 4));
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
                         text: "SET field0 = field0 + 1, field1 = 'value1', field2 = 'value2', field3 = (GETDATE(4))",
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "SET field0 = field0 + 1, field1 = ?, field2 = ?, field3 = (GETDATE(?))",
-                            values: ["value1", "value2", 4],
+                            text: 'SET field0 = field0 + 1, field1 = ?, field2 = ?, field3 = (GETDATE(?))',
+                            values: ['value1', 'value2', 4],
                         }
                     );
                 });
@@ -1042,76 +976,76 @@ describe("Blocks", () => {
         });
     });
 
-    describe("InsertFieldValueBlock", () => {
+    describe('InsertFieldValueBlock', () => {
         beforeEach(() => {
             testContext.cls = InsertFieldValueBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractSetFieldBlock", () => {
+        it('instanceof of AbstractSetFieldBlock', () => {
             expect(inst).toBeInstanceOf(AbstractSetFieldBlock);
         });
 
-        describe("set()", () => {
-            it("calls to _set()", () => {
-                const spy = mocker.stub(inst, "_set");
+        describe('set()', () => {
+            it('calls to _set()', () => {
+                const spy = mocker.stub(inst, '_set');
 
-                inst.set("f", "v", { dummy: true });
+                inst.set('f', 'v', { dummy: true });
 
-                expect(spy.calledWithExactly("f", "v", { dummy: true })).toBeTruthy();
+                expect(spy.calledWithExactly('f', 'v', { dummy: true })).toBeTruthy();
             });
         });
 
-        describe("setFields()", () => {
-            it("calls to _setFields()", () => {
-                const spy = mocker.stub(inst, "_setFields");
+        describe('setFields()', () => {
+            it('calls to _setFields()', () => {
+                const spy = mocker.stub(inst, '_setFields');
 
-                inst.setFields("f", { dummy: true });
+                inst.setFields('f', { dummy: true });
 
-                expect(spy.calledWithExactly("f", { dummy: true })).toBeTruthy();
+                expect(spy.calledWithExactly('f', { dummy: true })).toBeTruthy();
             });
         });
 
-        describe("setFieldsRows()", () => {
-            it("calls to _setFieldsRows()", () => {
-                const spy = mocker.stub(inst, "_setFieldsRows");
+        describe('setFieldsRows()', () => {
+            it('calls to _setFieldsRows()', () => {
+                const spy = mocker.stub(inst, '_setFieldsRows');
 
-                inst.setFieldsRows("f", { dummy: true });
+                inst.setFieldsRows('f', { dummy: true });
 
-                expect(spy.calledWithExactly("f", { dummy: true })).toBeTruthy();
+                expect(spy.calledWithExactly('f', { dummy: true })).toBeTruthy();
             });
         });
 
-        describe("_toParamString()", () => {
-            it("needs at least one field to have been provided", () => {
-                areEqual("", inst.toString());
+        describe('_toParamString()', () => {
+            it('needs at least one field to have been provided', () => {
+                areEqual('', inst.toString());
             });
 
-            describe("got fields", () => {
+            describe('got fields', () => {
                 beforeEach(() => {
                     inst.setFieldsRows([
                         {
                             field1: 9,
-                            field2: "value2",
-                            field3: squel.str("GETDATE(?)", 5),
+                            field2: 'value2',
+                            field3: squel.str('GETDATE(?)', 5),
                         },
                         { field1: 8, field2: true, field3: null },
                     ]);
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
                         text: "(field1, field2, field3) VALUES (9, 'value2', (GETDATE(5))), (8, TRUE, NULL)",
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "(field1, field2, field3) VALUES (?, ?, (GETDATE(?))), (?, ?, ?)",
-                            values: [9, "value2", 5, 8, true, null],
+                            text: '(field1, field2, field3) VALUES (?, ?, (GETDATE(?))), (?, ?, ?)',
+                            values: [9, 'value2', 5, 8, true, null],
                         }
                     );
                 });
@@ -1119,93 +1053,80 @@ describe("Blocks", () => {
         });
     });
 
-    describe("InsertFieldsFromQueryBlock", () => {
+    describe('InsertFieldsFromQueryBlock', () => {
         beforeEach(() => {
             testContext.cls = InsertFieldsFromQueryBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("fromQuery()", () => {
-            it("sanitizes field names", () => {
-                const spy = mocker.stub(
-                    inst,
-                    "_sanitizeField",
-                    () => 1
-                );
+        describe('fromQuery()', () => {
+            it('sanitizes field names', () => {
+                const spy = mocker.stub(inst, '_sanitizeField', () => 1);
 
                 const qry = squel.select();
 
-                inst.fromQuery(["test", "one", "two"], qry);
+                inst.fromQuery(['test', 'one', 'two'], qry);
 
                 expect(spy.calledThrice).toBeTruthy();
-                expect(spy.calledWithExactly("test")).toBeTruthy();
-                expect(spy.calledWithExactly("one")).toBeTruthy();
-                expect(spy.calledWithExactly("two")).toBeTruthy();
+                expect(spy.calledWithExactly('test')).toBeTruthy();
+                expect(spy.calledWithExactly('one')).toBeTruthy();
+                expect(spy.calledWithExactly('two')).toBeTruthy();
             });
 
-            it("sanitizes query", () => {
-                const spy = mocker.stub(
-                    inst,
-                    "_sanitizeBaseBuilder",
-                    () => 1
-                );
+            it('sanitizes query', () => {
+                const spy = mocker.stub(inst, '_sanitizeBaseBuilder', () => 1);
 
                 const qry = 123;
 
-                inst.fromQuery(["test", "one", "two"], qry);
+                inst.fromQuery(['test', 'one', 'two'], qry);
 
                 expect(spy.calledOnce).toBeTruthy();
                 expect(spy.calledWithExactly(qry)).toBeTruthy();
             });
 
-            it("overwrites existing values", () => {
+            it('overwrites existing values', () => {
                 inst._fields = 1;
                 inst._query = 2;
 
                 const qry = squel.select();
-                inst.fromQuery(["test", "one", "two"], qry);
+
+                inst.fromQuery(['test', 'one', 'two'], qry);
 
                 areEqual(qry, inst._query);
-                areEqual(["test", "one", "two"], inst._fields);
+                areEqual(['test', 'one', 'two'], inst._fields);
             });
         });
 
-        describe("_toParamString()", () => {
-            it("needs fromQuery() to have been called", () => {
+        describe('_toParamString()', () => {
+            it('needs fromQuery() to have been called', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
 
-            describe("default", () => {
+            describe('default', () => {
                 beforeEach(() => {
-                    testContext.qry = squel
-                        .select()
-                        .from("mega")
-                        .where("a = ?", 5);
-                    inst.fromQuery(
-                        ["test", "one", "two"],
-                        testContext.qry
-                    );
+                    testContext.qry = squel.select().from('mega').where('a = ?', 5);
+                    inst.fromQuery(['test', 'one', 'two'], testContext.qry);
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
-                        text: "(test, one, two) (SELECT * FROM mega WHERE (a = 5))",
+                        text: '(test, one, two) (SELECT * FROM mega WHERE (a = 5))',
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "(test, one, two) (SELECT * FROM mega WHERE (a = ?))",
+                            text: '(test, one, two) (SELECT * FROM mega WHERE (a = ?))',
                             values: [5],
                         }
                     );
@@ -1214,95 +1135,91 @@ describe("Blocks", () => {
         });
     });
 
-    describe("DistinctBlock", () => {
+    describe('DistinctBlock', () => {
         beforeEach(() => {
             testContext.cls = DistinctBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("_toParamString()", () => {
-            it("output nothing if not set", () => {
+        describe('_toParamString()', () => {
+            it('output nothing if not set', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
-            it("output DISTINCT if set", () => {
+            it('output DISTINCT if set', () => {
                 inst.distinct();
                 areEqual(inst._toParamString(), {
-                    text: "DISTINCT",
+                    text: 'DISTINCT',
                     values: [],
                 });
             });
         });
     });
 
-    describe("GroupByBlock", () => {
+    describe('GroupByBlock', () => {
         beforeEach(() => {
             testContext.cls = GroupByBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("group()", () => {
-            it("adds to list", () => {
-                inst.group("field1");
-                inst.group("field2");
+        describe('group()', () => {
+            it('adds to list', () => {
+                inst.group('field1');
+                inst.group('field2');
 
-                areEqual(["field1", "field2"], inst._groups);
+                areEqual(['field1', 'field2'], inst._groups);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeField",
-                    () => "_f"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeField', () => '_f');
 
-                inst.group("field1");
+                inst.group('field1');
 
-                expect(sanitizeFieldSpy.calledWithExactly("field1")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('field1')).toBeTruthy();
 
-                areEqual(["_f"], inst._groups);
+                areEqual(['_f'], inst._groups);
             });
         });
 
-        describe("toString()", () => {
-            it("output nothing if no fields set", () => {
+        describe('toString()', () => {
+            it('output nothing if no fields set', () => {
                 inst._groups = [];
-                areEqual("", inst.toString());
+                areEqual('', inst.toString());
             });
 
-            it("output GROUP BY", () => {
-                inst.group("field1");
-                inst.group("field2");
+            it('output GROUP BY', () => {
+                inst.group('field1');
+                inst.group('field2');
 
-                areEqual("GROUP BY field1, field2", inst.toString());
+                areEqual('GROUP BY field1, field2', inst.toString());
             });
         });
     });
 
-    describe("AbstractVerbSingleValueBlock", () => {
+    describe('AbstractVerbSingleValueBlock', () => {
         beforeEach(() => {
             testContext.cls = AbstractVerbSingleValueBlock;
             inst = new testContext.cls({
-                verb: "TEST",
+                verb: 'TEST',
             });
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("offset()", () => {
-            it("set value", () => {
+        describe('offset()', () => {
+            it('set value', () => {
                 inst._setValue(1);
 
                 areEqual(1, inst._value);
@@ -1312,12 +1229,8 @@ describe("Blocks", () => {
                 areEqual(22, inst._value);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeLimitOffset",
-                    () => 234
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeSpy = mocker.stub(testContext.cls.prototype, '_sanitizeLimitOffset', () => 234);
 
                 inst._setValue(23);
 
@@ -1327,50 +1240,44 @@ describe("Blocks", () => {
             });
         });
 
-        describe("toString()", () => {
-            it("output nothing if not set", () => {
-                areEqual("", inst.toString());
+        describe('toString()', () => {
+            it('output nothing if not set', () => {
+                areEqual('', inst.toString());
             });
 
-            it("output verb", () => {
+            it('output verb', () => {
                 inst._setValue(12);
 
-                areEqual("TEST 12", inst.toString());
+                areEqual('TEST 12', inst.toString());
             });
         });
 
-        describe("toParam()", () => {
-            it("output nothing if not set", () => {
-                areEqual({ text: "", values: [] }, inst.toParam());
+        describe('toParam()', () => {
+            it('output nothing if not set', () => {
+                areEqual({ text: '', values: [] }, inst.toParam());
             });
 
-            it("output verb", () => {
+            it('output verb', () => {
                 inst._setValue(12);
 
-                areEqual(
-                    { text: "TEST ?", values: [12] },
-                    inst.toParam()
-                );
+                areEqual({ text: 'TEST ?', values: [12] }, inst.toParam());
             });
         });
     });
 
-    describe("OffsetBlock", () => {
+    describe('OffsetBlock', () => {
         beforeEach(() => {
             testContext.cls = OffsetBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractVerbSingleValueBlock", () => {
+        it('instanceof of AbstractVerbSingleValueBlock', () => {
             expect(inst).toBeInstanceOf(AbstractVerbSingleValueBlock);
         });
 
-        describe("offset()", () => {
-            it("calls base method", () => {
-                const callSpy = mocker.spy(
-                    testContext.cls.prototype,
-                    "_setValue"
-                );
+        describe('offset()', () => {
+            it('calls base method', () => {
+                const callSpy = mocker.spy(testContext.cls.prototype, '_setValue');
 
                 inst.offset(1);
 
@@ -1378,57 +1285,51 @@ describe("Blocks", () => {
             });
         });
 
-        describe("toString()", () => {
-            it("output nothing if not set", () => {
-                areEqual("", inst.toString());
+        describe('toString()', () => {
+            it('output nothing if not set', () => {
+                areEqual('', inst.toString());
             });
 
-            it("output verb", () => {
+            it('output verb', () => {
                 inst.offset(12);
 
-                areEqual("OFFSET 12", inst.toString());
+                areEqual('OFFSET 12', inst.toString());
             });
         });
 
-        describe("toParam()", () => {
-            it("output nothing if not set", () => {
-                areEqual({ text: "", values: [] }, inst.toParam());
+        describe('toParam()', () => {
+            it('output nothing if not set', () => {
+                areEqual({ text: '', values: [] }, inst.toParam());
             });
 
-            it("output verb", () => {
+            it('output verb', () => {
                 inst.offset(12);
 
-                areEqual(
-                    { text: "OFFSET ?", values: [12] },
-                    inst.toParam()
-                );
+                areEqual({ text: 'OFFSET ?', values: [12] }, inst.toParam());
             });
         });
 
-        it("can be removed using null", () => {
+        it('can be removed using null', () => {
             inst.offset(1);
             inst.offset(null);
 
-            areEqual({ text: "", values: [] }, inst.toParam());
+            areEqual({ text: '', values: [] }, inst.toParam());
         });
     });
 
-    describe("LimitBlock", () => {
+    describe('LimitBlock', () => {
         beforeEach(() => {
             testContext.cls = LimitBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractVerbSingleValueBlock", () => {
+        it('instanceof of AbstractVerbSingleValueBlock', () => {
             expect(inst).toBeInstanceOf(AbstractVerbSingleValueBlock);
         });
 
-        describe("limit()", () => {
-            it("calls base method", () => {
-                const callSpy = mocker.spy(
-                    testContext.cls.prototype,
-                    "_setValue"
-                );
+        describe('limit()', () => {
+            it('calls base method', () => {
+                const callSpy = mocker.spy(testContext.cls.prototype, '_setValue');
 
                 inst.limit(1);
 
@@ -1436,59 +1337,53 @@ describe("Blocks", () => {
             });
         });
 
-        describe("toString()", () => {
-            it("output nothing if not set", () => {
-                areEqual("", inst.toString());
+        describe('toString()', () => {
+            it('output nothing if not set', () => {
+                areEqual('', inst.toString());
             });
 
-            it("output verb", () => {
+            it('output verb', () => {
                 inst.limit(12);
 
-                areEqual("LIMIT 12", inst.toString());
+                areEqual('LIMIT 12', inst.toString());
             });
         });
 
-        describe("toParam()", () => {
-            it("output nothing if not set", () => {
-                areEqual({ text: "", values: [] }, inst.toParam());
+        describe('toParam()', () => {
+            it('output nothing if not set', () => {
+                areEqual({ text: '', values: [] }, inst.toParam());
             });
 
-            it("output verb", () => {
+            it('output verb', () => {
                 inst.limit(12);
 
-                areEqual(
-                    { text: "LIMIT ?", values: [12] },
-                    inst.toParam()
-                );
+                areEqual({ text: 'LIMIT ?', values: [12] }, inst.toParam());
             });
         });
 
-        it("can be removed using null", () => {
+        it('can be removed using null', () => {
             inst.limit(1);
             inst.limit(null);
 
-            areEqual({ text: "", values: [] }, inst.toParam());
+            areEqual({ text: '', values: [] }, inst.toParam());
         });
     });
 
-    describe("AbstractConditionBlock", () => {
+    describe('AbstractConditionBlock', () => {
         class MockConditionBlock extends AbstractConditionBlock {
             constructor(options) {
-                super(_.extend({}, options, { verb: "MOCKVERB" }));
+                super(_.extend({}, options, { verb: 'MOCKVERB' }));
             }
 
             mockCondition(condition, ...values) {
-                return this._condition(
-                    condition,
-                    ...Array.from(values)
-                );
+                return this._condition(condition, ...Array.from(values));
             }
         }
 
         class MockSelectWithCondition extends Select {
             constructor(options, blocks = null) {
                 blocks = [
-                    new StringBlock(options, "SELECT"),
+                    new StringBlock(options, 'SELECT'),
                     new GetFieldBlock(options),
                     new FromTableBlock(options),
                     new MockConditionBlock(options),
@@ -1501,27 +1396,27 @@ describe("Blocks", () => {
         beforeEach(() => {
             testContext.cls = AbstractConditionBlock;
             inst = new testContext.cls({
-                verb: "ACB",
+                verb: 'ACB',
             });
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("_condition()", () => {
-            it("adds to list", () => {
-                inst._condition("a = 1");
-                inst._condition("b = 2 OR c = 3");
+        describe('_condition()', () => {
+            it('adds to list', () => {
+                inst._condition('a = 1');
+                inst._condition('b = 2 OR c = 3');
 
                 areEqual(
                     [
                         {
-                            expr: "a = 1",
+                            expr: 'a = 1',
                             values: [],
                         },
                         {
-                            expr: "b = 2 OR c = 3",
+                            expr: 'b = 2 OR c = 3',
                             values: [],
                         },
                     ],
@@ -1529,21 +1424,17 @@ describe("Blocks", () => {
                 );
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeExpression",
-                    () => "_c"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeExpression', () => '_c');
 
-                inst._condition("a = 1");
+                inst._condition('a = 1');
 
-                expect(sanitizeFieldSpy.calledWithExactly("a = 1")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('a = 1')).toBeTruthy();
 
                 areEqual(
                     [
                         {
-                            expr: "_c",
+                            expr: '_c',
                             values: [],
                         },
                     ],
@@ -1551,89 +1442,87 @@ describe("Blocks", () => {
                 );
             });
 
-            describe("_toParamString()", () => {
-                it("output nothing if no conditions set", () => {
+            describe('_toParamString()', () => {
+                it('output nothing if no conditions set', () => {
                     areEqual(inst._toParamString(), {
-                        text: "",
+                        text: '',
                         values: [],
                     });
                 });
 
-                describe("output QueryBuilder ", () => {
+                describe('output QueryBuilder ', () => {
                     beforeEach(() => {
                         const subquery = new MockSelectWithCondition();
-                        subquery
-                            .field("col1")
-                            .from("table1")
-                            .mockCondition("field1 = ?", 10);
-                        inst._condition("a in ?", subquery);
-                        inst._condition("b = ? OR c = ?", 2, 3);
-                        inst._condition("d in ?", [4, 5, 6]);
+
+                        subquery.field('col1').from('table1').mockCondition('field1 = ?', 10);
+                        inst._condition('a in ?', subquery);
+                        inst._condition('b = ? OR c = ?', 2, 3);
+                        inst._condition('d in ?', [4, 5, 6]);
                     });
-                    it("non-parameterized", () => {
+                    it('non-parameterized', () => {
                         areEqual(inst._toParamString(), {
-                            text: "ACB (a in (SELECT col1 FROM table1 MOCKVERB (field1 = 10))) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))",
+                            text: 'ACB (a in (SELECT col1 FROM table1 MOCKVERB (field1 = 10))) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))',
                             values: [],
                         });
                     });
-                    it("parameterized", () => {
+                    it('parameterized', () => {
                         areEqual(
                             inst._toParamString({
                                 buildParameterized: true,
                             }),
                             {
-                                text: "ACB (a in (SELECT col1 FROM table1 MOCKVERB (field1 = ?))) AND (b = ? OR c = ?) AND (d in (?, ?, ?))",
+                                text: 'ACB (a in (SELECT col1 FROM table1 MOCKVERB (field1 = ?))) AND (b = ? OR c = ?) AND (d in (?, ?, ?))',
                                 values: [10, 2, 3, 4, 5, 6],
                             }
                         );
                     });
                 });
 
-                describe("Fix for #64 - toString() does not change object", () => {
+                describe('Fix for #64 - toString() does not change object', () => {
                     beforeEach(() => {
-                        inst._condition("a = ?", 1);
-                        inst._condition("b = ? OR c = ?", 2, 3);
-                        inst._condition("d in ?", [4, 5, 6]);
+                        inst._condition('a = ?', 1);
+                        inst._condition('b = ? OR c = ?', 2, 3);
+                        inst._condition('d in ?', [4, 5, 6]);
                         inst._toParamString();
                         inst._toParamString();
                     });
-                    it("non-parameterized", () => {
+                    it('non-parameterized', () => {
                         areEqual(inst._toParamString(), {
-                            text: "ACB (a = 1) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))",
+                            text: 'ACB (a = 1) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))',
                             values: [],
                         });
                     });
-                    it("parameterized", () => {
+                    it('parameterized', () => {
                         areEqual(
                             inst._toParamString({
                                 buildParameterized: true,
                             }),
                             {
-                                text: "ACB (a = ?) AND (b = ? OR c = ?) AND (d in (?, ?, ?))",
+                                text: 'ACB (a = ?) AND (b = ? OR c = ?) AND (d in (?, ?, ?))',
                                 values: [1, 2, 3, 4, 5, 6],
                             }
                         );
                     });
                 });
 
-                describe("Fix for #226 - empty expressions", () => {
+                describe('Fix for #226 - empty expressions', () => {
                     beforeEach(() => {
-                        inst._condition("a = ?", 1);
+                        inst._condition('a = ?', 1);
                         inst._condition(squel.expr());
                     });
-                    it("non-parameterized", () => {
+                    it('non-parameterized', () => {
                         areEqual(inst._toParamString(), {
-                            text: "ACB (a = 1)",
+                            text: 'ACB (a = 1)',
                             values: [],
                         });
                     });
-                    it("parameterized", () => {
+                    it('parameterized', () => {
                         areEqual(
                             inst._toParamString({
                                 buildParameterized: true,
                             }),
                             {
-                                text: "ACB (a = ?)",
+                                text: 'ACB (a = ?)',
                                 values: [1],
                             }
                         );
@@ -1643,54 +1532,52 @@ describe("Blocks", () => {
         });
     });
 
-    describe("WhereBlock", () => {
+    describe('WhereBlock', () => {
         beforeEach(() => {
             testContext.cls = WhereBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractConditionBlock", () => {
+        it('instanceof of AbstractConditionBlock', () => {
             expect(inst).toBeInstanceOf(AbstractConditionBlock);
         });
 
-        it("sets verb to WHERE", () => {
+        it('sets verb to WHERE', () => {
             inst = new testContext.cls();
 
-            areEqual("WHERE", inst.options.verb);
+            areEqual('WHERE', inst.options.verb);
         });
 
-        describe("_toParamString()", () => {
-            it("output nothing if no conditions set", () => {
+        describe('_toParamString()', () => {
+            it('output nothing if no conditions set', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
 
-            describe("output", () => {
+            describe('output', () => {
                 beforeEach(() => {
                     const subquery = new Select();
-                    subquery
-                        .field("col1")
-                        .from("table1")
-                        .where("field1 = ?", 10);
-                    inst.where("a in ?", subquery);
-                    inst.where("b = ? OR c = ?", 2, 3);
-                    inst.where("d in ?", [4, 5, 6]);
+
+                    subquery.field('col1').from('table1').where('field1 = ?', 10);
+                    inst.where('a in ?', subquery);
+                    inst.where('b = ? OR c = ?', 2, 3);
+                    inst.where('d in ?', [4, 5, 6]);
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
-                        text: "WHERE (a in (SELECT col1 FROM table1 WHERE (field1 = 10))) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))",
+                        text: 'WHERE (a in (SELECT col1 FROM table1 WHERE (field1 = 10))) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))',
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "WHERE (a in (SELECT col1 FROM table1 WHERE (field1 = ?))) AND (b = ? OR c = ?) AND (d in (?, ?, ?))",
+                            text: 'WHERE (a in (SELECT col1 FROM table1 WHERE (field1 = ?))) AND (b = ? OR c = ?) AND (d in (?, ?, ?))',
                             values: [10, 2, 3, 4, 5, 6],
                         }
                     );
@@ -1699,54 +1586,52 @@ describe("Blocks", () => {
         });
     });
 
-    describe("HavingBlock", () => {
+    describe('HavingBlock', () => {
         beforeEach(() => {
             testContext.cls = HavingBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of AbstractConditionBlock", () => {
+        it('instanceof of AbstractConditionBlock', () => {
             expect(inst).toBeInstanceOf(AbstractConditionBlock);
         });
 
-        it("sets verb", () => {
+        it('sets verb', () => {
             inst = new testContext.cls();
 
-            areEqual("HAVING", inst.options.verb);
+            areEqual('HAVING', inst.options.verb);
         });
 
-        describe("_toParamString()", () => {
-            it("output nothing if no conditions set", () => {
+        describe('_toParamString()', () => {
+            it('output nothing if no conditions set', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
 
-            describe("output", () => {
+            describe('output', () => {
                 beforeEach(() => {
                     const subquery = new Select();
-                    subquery
-                        .field("col1")
-                        .from("table1")
-                        .where("field1 = ?", 10);
-                    inst.having("a in ?", subquery);
-                    inst.having("b = ? OR c = ?", 2, 3);
-                    inst.having("d in ?", [4, 5, 6]);
+
+                    subquery.field('col1').from('table1').where('field1 = ?', 10);
+                    inst.having('a in ?', subquery);
+                    inst.having('b = ? OR c = ?', 2, 3);
+                    inst.having('d in ?', [4, 5, 6]);
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
-                        text: "HAVING (a in (SELECT col1 FROM table1 WHERE (field1 = 10))) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))",
+                        text: 'HAVING (a in (SELECT col1 FROM table1 WHERE (field1 = 10))) AND (b = 2 OR c = 3) AND (d in (4, 5, 6))',
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "HAVING (a in (SELECT col1 FROM table1 WHERE (field1 = ?))) AND (b = ? OR c = ?) AND (d in (?, ?, ?))",
+                            text: 'HAVING (a in (SELECT col1 FROM table1 WHERE (field1 = ?))) AND (b = ? OR c = ?) AND (d in (?, ?, ?))',
                             values: [10, 2, 3, 4, 5, 6],
                         }
                     );
@@ -1755,36 +1640,36 @@ describe("Blocks", () => {
         });
     });
 
-    describe("OrderByBlock", () => {
+    describe('OrderByBlock', () => {
         beforeEach(() => {
             testContext.cls = OrderByBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("order()", () => {
-            it("adds to list", () => {
-                inst.order("field1");
-                inst.order("field2", false);
-                inst.order("field3", true);
+        describe('order()', () => {
+            it('adds to list', () => {
+                inst.order('field1');
+                inst.order('field2', false);
+                inst.order('field3', true);
 
                 const expected = [
                     {
-                        field: "field1",
-                        dir: "ASC",
+                        field: 'field1',
+                        dir: 'ASC',
                         values: [],
                     },
                     {
-                        field: "field2",
-                        dir: "DESC",
+                        field: 'field2',
+                        dir: 'DESC',
                         values: [],
                     },
                     {
-                        field: "field3",
-                        dir: "ASC",
+                        field: 'field3',
+                        dir: 'ASC',
                         values: [],
                     },
                 ];
@@ -1792,67 +1677,56 @@ describe("Blocks", () => {
                 areEqual(inst._orders, expected);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeFieldSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeField",
-                    () => "_f"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeFieldSpy = mocker.stub(testContext.cls.prototype, '_sanitizeField', () => '_f');
 
-                inst.order("field1");
+                inst.order('field1');
 
-                expect(sanitizeFieldSpy.calledWithExactly("field1")).toBeTruthy();
+                expect(sanitizeFieldSpy.calledWithExactly('field1')).toBeTruthy();
 
-                areEqual(inst._orders, [
-                    { field: "_f", dir: "ASC", values: [] },
-                ]);
+                areEqual(inst._orders, [{ field: '_f', dir: 'ASC', values: [] }]);
             });
 
-            it("saves additional values", () => {
-                inst.order("field1", false, 1.2, 4);
+            it('saves additional values', () => {
+                inst.order('field1', false, 1.2, 4);
 
                 areEqual(inst._orders, [
                     {
-                        field: "field1",
-                        dir: "DESC",
+                        field: 'field1',
+                        dir: 'DESC',
                         values: [1.2, 4],
                     },
                 ]);
             });
         });
 
-        describe("_toParamString()", () => {
-            it("empty", () => {
+        describe('_toParamString()', () => {
+            it('empty', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
 
-            describe("default", () => {
+            describe('default', () => {
                 beforeEach(() => {
-                    inst.order("field1");
-                    inst.order("field2", false);
-                    inst.order(
-                        "GET(?, ?)",
-                        true,
-                        2.5,
-                        5
-                    );
+                    inst.order('field1');
+                    inst.order('field2', false);
+                    inst.order('GET(?, ?)', true, 2.5, 5);
                 });
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
-                        text: "ORDER BY field1 ASC, field2 DESC, GET(2.5, 5) ASC",
+                        text: 'ORDER BY field1 ASC, field2 DESC, GET(2.5, 5) ASC',
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "ORDER BY field1 ASC, field2 DESC, GET(?, ?) ASC",
+                            text: 'ORDER BY field1 ASC, field2 DESC, GET(?, ?) ASC',
                             values: [2.5, 5],
                         }
                     );
@@ -1861,68 +1735,53 @@ describe("Blocks", () => {
         });
     });
 
-    describe("JoinBlock", () => {
+    describe('JoinBlock', () => {
         beforeEach(() => {
             testContext.cls = JoinBlock;
             inst = new testContext.cls();
         });
 
-        it("instanceof of Block", () => {
+        it('instanceof of Block', () => {
             expect(inst).toBeInstanceOf(Block);
         });
 
-        describe("join()", () => {
-            it("adds to list", () => {
-                inst.join("table1");
-                inst.join("table2", null, "b = 1", "LEFT");
-                inst.join(
-                    "table3",
-                    "alias3",
-                    "c = 1",
-                    "RIGHT"
-                );
-                inst.join(
-                    "table4",
-                    "alias4",
-                    "d = 1",
-                    "OUTER"
-                );
-                inst.join(
-                    "table5",
-                    "alias5",
-                    null,
-                    "CROSS"
-                );
+        describe('join()', () => {
+            it('adds to list', () => {
+                inst.join('table1');
+                inst.join('table2', null, 'b = 1', 'LEFT');
+                inst.join('table3', 'alias3', 'c = 1', 'RIGHT');
+                inst.join('table4', 'alias4', 'd = 1', 'OUTER');
+                inst.join('table5', 'alias5', null, 'CROSS');
 
                 const expected = [
                     {
-                        type: "INNER",
-                        table: "table1",
+                        type: 'INNER',
+                        table: 'table1',
                         alias: null,
                         condition: null,
                     },
                     {
-                        type: "LEFT",
-                        table: "table2",
+                        type: 'LEFT',
+                        table: 'table2',
                         alias: null,
-                        condition: "b = 1",
+                        condition: 'b = 1',
                     },
                     {
-                        type: "RIGHT",
-                        table: "table3",
-                        alias: "alias3",
-                        condition: "c = 1",
+                        type: 'RIGHT',
+                        table: 'table3',
+                        alias: 'alias3',
+                        condition: 'c = 1',
                     },
                     {
-                        type: "OUTER",
-                        table: "table4",
-                        alias: "alias4",
-                        condition: "d = 1",
+                        type: 'OUTER',
+                        table: 'table4',
+                        alias: 'alias4',
+                        condition: 'd = 1',
                     },
                     {
-                        type: "CROSS",
-                        table: "table5",
-                        alias: "alias5",
+                        type: 'CROSS',
+                        table: 'table5',
+                        alias: 'alias5',
                         condition: null,
                     },
                 ];
@@ -1930,112 +1789,79 @@ describe("Blocks", () => {
                 areEqual(inst._joins, expected);
             });
 
-            it("sanitizes inputs", () => {
-                const sanitizeTableSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeTable",
-                    () => "_t"
-                );
-                const sanitizeAliasSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeTableAlias",
-                    () => "_a"
-                );
-                const sanitizeConditionSpy = mocker.stub(
-                    testContext.cls.prototype,
-                    "_sanitizeExpression",
-                    () => "_c"
-                );
+            it('sanitizes inputs', () => {
+                const sanitizeTableSpy = mocker.stub(testContext.cls.prototype, '_sanitizeTable', () => '_t');
+                const sanitizeAliasSpy = mocker.stub(testContext.cls.prototype, '_sanitizeTableAlias', () => '_a');
+                const sanitizeConditionSpy = mocker.stub(testContext.cls.prototype, '_sanitizeExpression', () => '_c');
 
-                inst.join("table1", "alias1", "a = 1");
+                inst.join('table1', 'alias1', 'a = 1');
 
-                expect(sanitizeTableSpy.calledWithExactly(
-                    "table1",
-                    true
-                )).toBeTruthy();
-                expect(sanitizeAliasSpy.calledWithExactly(
-                    "alias1"
-                )).toBeTruthy();
-                expect(sanitizeConditionSpy.calledWithExactly(
-                    "a = 1"
-                )).toBeTruthy();
+                expect(sanitizeTableSpy.calledWithExactly('table1', true)).toBeTruthy();
+                expect(sanitizeAliasSpy.calledWithExactly('alias1')).toBeTruthy();
+                expect(sanitizeConditionSpy.calledWithExactly('a = 1')).toBeTruthy();
 
                 const expected = [
                     {
-                        type: "INNER",
-                        table: "_t",
-                        alias: "_a",
-                        condition: "_c",
+                        type: 'INNER',
+                        table: '_t',
+                        alias: '_a',
+                        condition: '_c',
                     },
                 ];
 
                 areEqual(inst._joins, expected);
             });
 
-            it("nested queries", () => {
+            it('nested queries', () => {
                 const inner1 = squel.select();
                 const inner2 = squel.select();
                 const inner3 = squel.select();
                 const inner4 = squel.select();
                 const inner5 = squel.select();
                 const inner6 = squel.select();
+
                 inst.join(inner1);
-                inst.join(inner2, null, "b = 1", "LEFT");
-                inst.join(
-                    inner3,
-                    "alias3",
-                    "c = 1",
-                    "RIGHT"
-                );
-                inst.join(
-                    inner4,
-                    "alias4",
-                    "d = 1",
-                    "OUTER"
-                );
-                inst.join(
-                    inner5,
-                    "alias5",
-                    "e = 1",
-                    "FULL"
-                );
-                inst.join(inner6, "alias6", null, "CROSS");
+                inst.join(inner2, null, 'b = 1', 'LEFT');
+                inst.join(inner3, 'alias3', 'c = 1', 'RIGHT');
+                inst.join(inner4, 'alias4', 'd = 1', 'OUTER');
+                inst.join(inner5, 'alias5', 'e = 1', 'FULL');
+                inst.join(inner6, 'alias6', null, 'CROSS');
 
                 const expected = [
                     {
-                        type: "INNER",
+                        type: 'INNER',
                         table: inner1,
                         alias: null,
                         condition: null,
                     },
                     {
-                        type: "LEFT",
+                        type: 'LEFT',
                         table: inner2,
                         alias: null,
-                        condition: "b = 1",
+                        condition: 'b = 1',
                     },
                     {
-                        type: "RIGHT",
+                        type: 'RIGHT',
                         table: inner3,
-                        alias: "alias3",
-                        condition: "c = 1",
+                        alias: 'alias3',
+                        condition: 'c = 1',
                     },
                     {
-                        type: "OUTER",
+                        type: 'OUTER',
                         table: inner4,
-                        alias: "alias4",
-                        condition: "d = 1",
+                        alias: 'alias4',
+                        condition: 'd = 1',
                     },
                     {
-                        type: "FULL",
+                        type: 'FULL',
                         table: inner5,
-                        alias: "alias5",
-                        condition: "e = 1",
+                        alias: 'alias5',
+                        condition: 'e = 1',
                     },
                     {
-                        type: "CROSS",
+                        type: 'CROSS',
                         table: inner6,
-                        alias: "alias6",
+                        alias: 'alias6',
                         condition: null,
                     },
                 ];
@@ -2044,82 +1870,53 @@ describe("Blocks", () => {
             });
         });
 
-        describe("left_join()", () => {
-            it("calls join()", () => {
-                const joinSpy = mocker.stub(inst, "join");
+        describe('left_join()', () => {
+            it('calls join()', () => {
+                const joinSpy = mocker.stub(inst, 'join');
 
-                inst.left_join("t", "a", "c");
+                inst.left_join('t', 'a', 'c');
 
                 expect(joinSpy.calledOnce).toBeTruthy();
-                expect(joinSpy.calledWithExactly(
-                    "t",
-                    "a",
-                    "c",
-                    "LEFT"
-                )).toBeTruthy();
+                expect(joinSpy.calledWithExactly('t', 'a', 'c', 'LEFT')).toBeTruthy();
             });
         });
 
-        describe("_toParamString()", () => {
-            it("output nothing if nothing set", () => {
+        describe('_toParamString()', () => {
+            it('output nothing if nothing set', () => {
                 areEqual(inst._toParamString(), {
-                    text: "",
+                    text: '',
                     values: [],
                 });
             });
 
-            describe("output JOINs with nested queries", () => {
+            describe('output JOINs with nested queries', () => {
                 beforeEach(() => {
-                    const inner2 = squel
-                        .select()
-                        .function("GETDATE(?)", 2);
-                    const inner3 = squel.select().from("3");
-                    const inner4 = squel.select().from("4");
-                    const inner5 = squel.select().from("5");
-                    const expr = squel
-                        .expr()
-                        .and("field1 = ?", 99);
+                    const inner2 = squel.select().function('GETDATE(?)', 2);
+                    const inner3 = squel.select().from('3');
+                    const inner4 = squel.select().from('4');
+                    const inner5 = squel.select().from('5');
+                    const expr = squel.expr().and('field1 = ?', 99);
 
-                    inst.join("table");
-                    inst.join(
-                        inner2,
-                        null,
-                        "b = 1",
-                        "LEFT"
-                    );
-                    inst.join(
-                        inner3,
-                        "alias3",
-                        "c = 1",
-                        "RIGHT"
-                    );
-                    inst.join(
-                        inner4,
-                        "alias4",
-                        "e = 1",
-                        "FULL"
-                    );
-                    inst.join(
-                        inner5,
-                        "alias5",
-                        expr,
-                        "CROSS"
-                    );
+                    inst.join('table');
+                    inst.join(inner2, null, 'b = 1', 'LEFT');
+                    inst.join(inner3, 'alias3', 'c = 1', 'RIGHT');
+                    inst.join(inner4, 'alias4', 'e = 1', 'FULL');
+                    inst.join(inner5, 'alias5', expr, 'CROSS');
                 });
 
-                it("non-parameterized", () => {
+                it('non-parameterized', () => {
                     areEqual(inst._toParamString(), {
-                        text: "INNER JOIN table LEFT JOIN (SELECT GETDATE(2)) ON (b = 1) RIGHT JOIN (SELECT * FROM 3) `alias3` ON (c = 1) FULL JOIN (SELECT * FROM 4) `alias4` ON (e = 1) CROSS JOIN (SELECT * FROM 5) `alias5` ON (field1 = 99)",
+                        text: 'INNER JOIN table LEFT JOIN (SELECT GETDATE(2)) ON (b = 1) RIGHT JOIN (SELECT * FROM 3) `alias3` ON (c = 1) FULL JOIN (SELECT * FROM 4) `alias4` ON (e = 1) CROSS JOIN (SELECT * FROM 5) `alias5` ON (field1 = 99)',
                         values: [],
                     });
                 });
-                it("parameterized", () => {
+                it('parameterized', () => {
                     areEqual(
                         inst._toParamString({
                             buildParameterized: true,
                         }),
                         {
-                            text: "INNER JOIN table LEFT JOIN (SELECT GETDATE(?)) ON (b = 1) RIGHT JOIN (SELECT * FROM 3) `alias3` ON (c = 1) FULL JOIN (SELECT * FROM 4) `alias4` ON (e = 1) CROSS JOIN (SELECT * FROM 5) `alias5` ON (field1 = ?)",
+                            text: 'INNER JOIN table LEFT JOIN (SELECT GETDATE(?)) ON (b = 1) RIGHT JOIN (SELECT * FROM 3) `alias3` ON (c = 1) FULL JOIN (SELECT * FROM 4) `alias4` ON (e = 1) CROSS JOIN (SELECT * FROM 5) `alias5` ON (field1 = ?)',
                             values: [2, 99],
                         }
                     );

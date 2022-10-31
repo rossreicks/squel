@@ -1,11 +1,11 @@
-import { AbstractVerbSingleValueBlock } from "./abstract-verb-single-value-block";
-import { _extend } from "../helpers";
+import { AbstractVerbSingleValueBlock } from './abstract-verb-single-value-block';
+import { _extend } from '../helpers';
 
 export class OffsetBlock extends AbstractVerbSingleValueBlock {
     constructor(options) {
         super(
             _extend({}, options, {
-                verb: "OFFSET",
+                verb: 'OFFSET',
             })
         );
     }

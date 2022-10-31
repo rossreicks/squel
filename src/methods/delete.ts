@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { QueryBuilder } from "../query-builder";
+import { QueryBuilder } from '../query-builder';
 import {
     StringBlock,
     TargetTableBlock,
@@ -8,13 +8,13 @@ import {
     WhereBlock,
     OrderByBlock,
     LimitBlock,
-} from "../block";
-import { _extend } from "../helpers";
+} from '../block';
+import { _extend } from '../helpers';
 
 export class Delete extends QueryBuilder {
     constructor(options, blocks = null) {
         blocks = blocks || [
-            new StringBlock(options, "DELETE"),
+            new StringBlock(options, 'DELETE'),
             new TargetTableBlock(options),
             new FromTableBlock(
                 _extend({}, options, {

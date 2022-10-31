@@ -1,5 +1,5 @@
-import { Block } from "./block";
-import { Options } from "../types/options";
+import { Block } from './block';
+import { Options } from '../types/options';
 
 export abstract class AbstractVerbSingleValueBlock extends Block {
     private _value: string | number;
@@ -18,10 +18,7 @@ export abstract class AbstractVerbSingleValueBlock extends Block {
     }
 
     _toParamString(options: Options = {}) {
-        const expr =
-            this._value !== null
-                ? `${this.options.verb} ${this.options.parameterCharacter}`
-                : "";
+        const expr = this._value !== null ? `${this.options.verb} ${this.options.parameterCharacter}` : '';
 
         const values = this._value !== null ? [this._value] : [];
 

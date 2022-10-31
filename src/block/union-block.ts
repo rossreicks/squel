@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { Block } from "./block";
-import { BaseBuilder } from "../base-builder";
-import { Options } from "../types/options";
-import { _pad } from "../helpers";
+import { Block } from './block';
+import { BaseBuilder } from '../base-builder';
+import { Options } from '../types/options';
+import { _pad } from '../helpers';
 
 export class UnionBlock extends Block {
     _unions: { table: string | BaseBuilder; type: string }[];
@@ -20,7 +20,7 @@ export class UnionBlock extends Block {
      *
      * 'type' must be either one of UNION or UNION ALL.... Default is 'UNION'.
      */
-    union(table, type = "UNION") {
+    union(table, type = 'UNION') {
         table = this._sanitizeTable(table);
 
         this._unions.push({
@@ -31,11 +31,11 @@ export class UnionBlock extends Block {
 
     // Add a UNION ALL with the given table/query.
     union_all(table) {
-        this.union(table, "UNION ALL");
+        this.union(table, 'UNION ALL');
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = "";
+        let totalStr = '';
         const totalValues = [];
 
         for (const { type, table } of this._unions) {

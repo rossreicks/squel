@@ -1,4 +1,4 @@
-import { BaseBuilder } from "./base-builder";
+import { BaseBuilder } from './base-builder';
 
 // get whether object is a plain object
 export function _isPlainObject(obj) {
@@ -13,7 +13,7 @@ export function _isArray(obj) {
 export function _extend<T>(dst: T, ...sources: T[]): T {
     if (dst && sources) {
         for (const src of sources) {
-            if (typeof src === "object") {
+            if (typeof src === 'object') {
                 Object.getOwnPropertyNames(src).forEach((key) => {
                     dst[key] = src[key];
                 });
@@ -29,20 +29,21 @@ export function _clone(src) {
         return src;
     }
 
-    if (typeof src.clone === "function") {
+    if (typeof src.clone === 'function') {
         return src.clone();
     }
     if (_isPlainObject(src) || _isArray(src)) {
         const ret = new src.constructor();
 
         Object.getOwnPropertyNames(src).forEach((key) => {
-            if (typeof src[key] !== "function") {
+            if (typeof src[key] !== 'function') {
                 ret[key] = _clone(src[key]);
             }
         });
 
         return ret;
     }
+
     return JSON.parse(JSON.stringify(src));
 }
 
@@ -62,12 +63,12 @@ export function _pad(str, pad) {
 export function registerValueHandler(handlers, type, handler) {
     const typeofType = typeof type;
 
-    if (typeofType !== "function" && typeofType !== "string") {
-        throw new Error("type must be a class constructor or string");
+    if (typeofType !== 'function' && typeofType !== 'string') {
+        throw new Error('type must be a class constructor or string');
     }
 
-    if (typeof handler !== "function") {
-        throw new Error("handler must be a function");
+    if (typeof handler !== 'function') {
+        throw new Error('handler must be a function');
     }
 
     for (const typeHandler of handlers) {

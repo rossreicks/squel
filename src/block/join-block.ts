@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { Block } from "./block";
-import { BaseBuilder } from "../base-builder";
-import { Options } from "../types/options";
-import { _pad, isSquelBuilder } from "../helpers";
+import { Block } from './block';
+import { BaseBuilder } from '../base-builder';
+import { Options } from '../types/options';
+import { _pad, isSquelBuilder } from '../helpers';
 
 export class JoinBlock extends Block {
     _joins: { type; table; alias: string; condition: string | BaseBuilder }[];
@@ -25,7 +25,7 @@ export class JoinBlock extends Block {
      * 'type' must be either one of INNER, OUTER, LEFT or RIGHT. Default is 'INNER'.
      *
      */
-    join(table, alias = null, condition = null, type = "INNER") {
+    join(table, alias = null, condition = null, type = 'INNER') {
         table = this._sanitizeTable(table);
         alias = alias ? this._sanitizeTableAlias(alias) : alias;
         condition = condition ? this._sanitizeExpression(condition) : condition;
@@ -39,31 +39,31 @@ export class JoinBlock extends Block {
     }
 
     left_join(table, alias = null, condition = null) {
-        this.join(table, alias, condition, "LEFT");
+        this.join(table, alias, condition, 'LEFT');
     }
 
     right_join(table, alias = null, condition = null) {
-        this.join(table, alias, condition, "RIGHT");
+        this.join(table, alias, condition, 'RIGHT');
     }
 
     outer_join(table, alias = null, condition = null) {
-        this.join(table, alias, condition, "OUTER");
+        this.join(table, alias, condition, 'OUTER');
     }
 
     left_outer_join(table, alias = null, condition = null) {
-        this.join(table, alias, condition, "LEFT OUTER");
+        this.join(table, alias, condition, 'LEFT OUTER');
     }
 
     full_join(table, alias = null, condition = null) {
-        this.join(table, alias, condition, "FULL");
+        this.join(table, alias, condition, 'FULL');
     }
 
     cross_join(table, alias = null, condition = null) {
-        this.join(table, alias, condition, "CROSS");
+        this.join(table, alias, condition, 'CROSS');
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = "";
+        let totalStr = '';
         const totalValues = [];
 
         for (const { type, table, alias, condition } of this._joins) {
@@ -90,7 +90,7 @@ export class JoinBlock extends Block {
             }
 
             if (condition) {
-                totalStr += " ON ";
+                totalStr += ' ON ';
 
                 let ret;
 

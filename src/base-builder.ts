@@ -1,30 +1,18 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-plusplus */
-import { Cloneable } from "./cloneable";
-import {
-    isSquelBuilder,
-    _extend,
-    _isArray,
-    _shouldApplyNesting,
-    registerValueHandler,
-} from "./helpers";
-import { Options } from "./types/options";
+import { Cloneable } from './cloneable';
+import { isSquelBuilder, _extend, _isArray, _shouldApplyNesting, registerValueHandler } from './helpers';
+import { Options } from './types/options';
 
 type Handler = {
     type: string | Function;
     handler: (value: any, asParam: boolean, options: Options) => string;
 };
 
-function getValueHandler(
-    value: string | Function,
-    localHandlers: Handler[],
-    globalHandlers: Handler[]
-) {
-    return (
-        _getValueHandler(value, localHandlers) ||
-        _getValueHandler(value, globalHandlers)
-    );
+function getValueHandler(value: string | Function, localHandlers: Handler[], globalHandlers: Handler[]) {
+    return _getValueHandler(value, localHandlers) || _getValueHandler(value, globalHandlers);
 }
 
 function _getValueHandler(value: string | Function, handlers: Handler[]) {
@@ -35,8 +23,7 @@ function _getValueHandler(value: string | Function, handlers: Handler[]) {
         if (
             // eslint-disable-next-line valid-typeof
             typeof value === typeHandler.type ||
-            (typeof typeHandler.type !== "string" &&
-                value instanceof typeHandler.type)
+            (typeof typeHandler.type !== 'string' && value instanceof typeHandler.type)
         ) {
             return typeHandler.handler;
         }
@@ -53,19 +40,19 @@ export const DefaultQueryBuilderOptions = {
     // If true then table alias names will rendered after AS keyword.
     useAsForTableAliasNames: false,
     // The quote character used for when quoting table and field names
-    nameQuoteCharacter: "`",
+    nameQuoteCharacter: '`',
     // The quote character used for when quoting table alias names
-    tableAliasQuoteCharacter: "`",
+    tableAliasQuoteCharacter: '`',
     // The quote character used for when quoting table alias names
     fieldAliasQuoteCharacter: '"',
     // Custom value handlers where key is the value type and the value is the handler function
     valueHandlers: [],
     // Character used to represent a parameter value
-    parameterCharacter: "?",
+    parameterCharacter: '?',
     // Numbered parameters returned from toParam() as $1, $2, etc.
     numberedParameters: false,
     // Numbered parameters prefix character(s)
-    numberedParametersPrefix: "$",
+    numberedParametersPrefix: '$',
     // Numbered parameters start at this number.
     numberedParametersStartAt: 1,
     // If true then replaces all single quotes within strings. The replacement string used is configurable via the `singleQuoteReplacement` option.
@@ -73,7 +60,7 @@ export const DefaultQueryBuilderOptions = {
     // The string to replace single quotes with in query strings
     singleQuoteReplacement: "''",
     // String used to join individual blocks in a query when it's stringified
-    separator: " ",
+    separator: ' ',
     // Function for formatting string values prior to insertion into query string
     stringFormatter: null,
     // Whether to prevent the addition of brackets () when nesting this query builder's output
@@ -96,7 +83,7 @@ export abstract class BaseBuilder extends Cloneable {
         const defaults = JSON.parse(JSON.stringify(DefaultQueryBuilderOptions));
         // for function values, etc we need to manually copy
 
-        ["stringFormatter"].forEach((p) => {
+        ['stringFormatter'].forEach((p) => {
             defaults[p] = DefaultQueryBuilderOptions[p];
         });
 
@@ -121,10 +108,8 @@ export abstract class BaseBuilder extends Cloneable {
         // If it's not a base builder instance
         if (!isSquelBuilder(expr)) {
             // It must then be a string
-            if (typeof expr !== "string") {
-                throw new Error(
-                    "expression must be a string or builder instance"
-                );
+            if (typeof expr !== 'string') {
+                throw new Error('expression must be a string or builder instance');
             }
         }
 
@@ -137,7 +122,7 @@ export abstract class BaseBuilder extends Cloneable {
      * The 'type' parameter is used to construct a meaningful error message in case validation fails.
      */
     _sanitizeName(value: string, type: string) {
-        if (typeof value !== "string") {
+        if (typeof value !== 'string') {
             throw new Error(`${type} must be a string`);
         }
 
@@ -146,7 +131,7 @@ export abstract class BaseBuilder extends Cloneable {
 
     _sanitizeField<T extends string | BaseBuilder>(item: T): T {
         if (!isSquelBuilder(item)) {
-            return this._sanitizeName(item as string, "field name") as T;
+            return this._sanitizeName(item as string, 'field name') as T;
         }
 
         return item;
@@ -157,29 +142,29 @@ export abstract class BaseBuilder extends Cloneable {
             return item;
         }
 
-        throw new Error("must be a builder instance");
+        throw new Error('must be a builder instance');
     }
 
     _sanitizeTable(item: string | BaseBuilder) {
-        if (typeof item !== "string") {
+        if (typeof item !== 'string') {
             try {
                 item = this._sanitizeBaseBuilder(item);
             } catch (e) {
-                throw new Error("table name must be a string or a builder");
+                throw new Error('table name must be a string or a builder');
             }
         } else {
-            item = this._sanitizeName(item, "table");
+            item = this._sanitizeName(item, 'table');
         }
 
         return item;
     }
 
     _sanitizeTableAlias(item: string) {
-        return this._sanitizeName(item, "table alias");
+        return this._sanitizeName(item, 'table alias');
     }
 
     _sanitizeFieldAlias(item: string) {
-        return this._sanitizeName(item, "field alias");
+        return this._sanitizeName(item, 'field alias');
     }
 
     // Sanitize the given limit/offset value.
@@ -187,7 +172,7 @@ export abstract class BaseBuilder extends Cloneable {
         value = parseInt(value as string);
 
         if (value < 0 || Number.isNaN(value)) {
-            throw new Error("limit/offset must be >= 0");
+            throw new Error('limit/offset must be >= 0');
         }
 
         return value;
@@ -199,24 +184,16 @@ export abstract class BaseBuilder extends Cloneable {
 
         if (item === null) {
             // null is allowed
-        } else if (
-            itemType === "string" ||
-            itemType === "number" ||
-            itemType === "boolean"
-        ) {
+        } else if (itemType === 'string' || itemType === 'number' || itemType === 'boolean') {
             // primitives are allowed
         } else if (isSquelBuilder(item)) {
             // Builders allowed
         } else {
-            const typeIsValid = !!getValueHandler(
-                item,
-                this.options.valueHandlers,
-                this.globalValueHandlers
-            );
+            const typeIsValid = !!getValueHandler(item, this.options.valueHandlers, this.globalValueHandlers);
 
             if (!typeIsValid) {
                 throw new Error(
-                    "field value must be a string, number, boolean, null or one of the registered custom value types"
+                    'field value must be a string, number, boolean, null or one of the registered custom value types'
                 );
             }
         }
@@ -261,10 +238,7 @@ export abstract class BaseBuilder extends Cloneable {
         return this.options.useAsForTableAliasNames ? `AS ${item}` : item;
     }
 
-    _formatFieldName(
-        item: string | BaseBuilder,
-        formattingOptions: Options = {}
-    ) {
+    _formatFieldName(item: string | BaseBuilder, formattingOptions: Options = {}) {
         if (this.options.autoQuoteFieldNames) {
             const quoteChar = this.options.nameQuoteCharacter;
 
@@ -275,12 +249,12 @@ export abstract class BaseBuilder extends Cloneable {
                 // a.b.c -> `a`.`b`.`c`
                 item = item
                     .toString()
-                    .split(".")
+                    .split('.')
                     .map((v) =>
                         // treat '*' as special case (#79)
-                        v === "*" ? v : `${quoteChar}${v}${quoteChar}`
+                        v === '*' ? v : `${quoteChar}${v}${quoteChar}`
                     )
-                    .join(".");
+                    .join('.');
             }
         }
 
@@ -291,11 +265,7 @@ export abstract class BaseBuilder extends Cloneable {
     // TODO: figure out this type
     _formatCustomValue(value: any, asParam: boolean, formattingOptions = {}) {
         // user defined custom handlers takes precedence
-        const customHandler = getValueHandler(
-            value,
-            this.options.valueHandlers,
-            this.globalValueHandlers
-        );
+        const customHandler = getValueHandler(value, this.options.valueHandlers, this.globalValueHandlers);
 
         // use the custom handler if available
         if (customHandler) {
@@ -322,9 +292,7 @@ export abstract class BaseBuilder extends Cloneable {
      */
     _formatValueForParamArray(value: any, formattingOptions = {}) {
         if (_isArray(value)) {
-            return value.map((v) =>
-                this._formatValueForParamArray(v, formattingOptions)
-            );
+            return value.map((v) => this._formatValueForParamArray(v, formattingOptions));
         }
 
         return this._formatCustomValue(value, true, formattingOptions).value;
@@ -333,16 +301,10 @@ export abstract class BaseBuilder extends Cloneable {
     /**
      * Format the given field value for inclusion into the query string
      */
-    _formatValueForQueryString(
-        initialValue: any,
-        formattingOptions: Options = {}
-    ) {
+    _formatValueForQueryString(initialValue: any, formattingOptions: Options = {}) {
         // maybe we have a cusotm value handler
-        let { rawNesting, formatted, value } = this._formatCustomValue(
-            initialValue,
-            false,
-            formattingOptions
-        );
+        // eslint-disable-next-line prefer-const
+        let { rawNesting, formatted, value } = this._formatCustomValue(initialValue, false, formattingOptions);
 
         // if formatting took place then return it directly
         if (formatted) {
@@ -350,35 +312,26 @@ export abstract class BaseBuilder extends Cloneable {
                 return value;
             }
 
-            return this._applyNestingFormatting(
-                value,
-                _shouldApplyNesting(initialValue)
-            );
+            return this._applyNestingFormatting(value, _shouldApplyNesting(initialValue));
         }
 
         // if it's an array then format each element separately
         if (_isArray(value)) {
             value = value.map((v) => this._formatValueForQueryString(v));
 
-            value = this._applyNestingFormatting(
-                value.join(", "),
-                _shouldApplyNesting(value)
-            );
+            value = this._applyNestingFormatting(value.join(', '), _shouldApplyNesting(value));
         } else {
             const typeofValue = typeof value;
 
             if (value === null) {
-                value = "NULL";
-            } else if (typeofValue === "boolean") {
-                value = value ? "TRUE" : "FALSE";
+                value = 'NULL';
+            } else if (typeofValue === 'boolean') {
+                value = value ? 'TRUE' : 'FALSE';
             } else if (isSquelBuilder(value)) {
-                value = this._applyNestingFormatting(
-                    value.toString(),
-                    _shouldApplyNesting(value)
-                );
-            } else if (typeofValue !== "number") {
+                value = this._applyNestingFormatting(value.toString(), _shouldApplyNesting(value));
+            } else if (typeofValue !== 'number') {
                 // if it's a string and we have custom string formatting turned on then use that
-                if (typeofValue === "string" && this.options.stringFormatter) {
+                if (typeofValue === 'string' && this.options.stringFormatter) {
                     return this.options.stringFormatter(value);
                 }
 
@@ -396,15 +349,9 @@ export abstract class BaseBuilder extends Cloneable {
     }
 
     _applyNestingFormatting(str, nesting = true) {
-        if (
-            str &&
-            typeof str === "string" &&
-            nesting &&
-            !this.options.rawNesting
-        ) {
+        if (str && typeof str === 'string' && nesting && !this.options.rawNesting) {
             // apply brackets if they're not already existing
-            let alreadyHasBrackets =
-                str.charAt(0) === "(" && str.charAt(str.length - 1) === ")";
+            let alreadyHasBrackets = str.charAt(0) === '(' && str.charAt(str.length - 1) === ')';
 
             if (alreadyHasBrackets) {
                 // check that it's the form "((x)..(y))" rather than "(x)..(y)"
@@ -415,9 +362,9 @@ export abstract class BaseBuilder extends Cloneable {
                 while (str.length - 1 > ++idx) {
                     const c = str.charAt(idx);
 
-                    if (c === "(") {
+                    if (c === '(') {
                         open++;
-                    } else if (c === ")") {
+                    } else if (c === ')') {
                         open--;
                         if (open < 1) {
                             alreadyHasBrackets = false;
@@ -460,9 +407,9 @@ export abstract class BaseBuilder extends Cloneable {
         const { nested, buildParameterized, formattingOptions } = options;
 
         values = values || [];
-        str = str || "";
+        str = str || '';
 
-        let formattedStr = "";
+        let formattedStr = '';
 
         let curValue = -1;
         const formattedValues = [];
@@ -486,16 +433,11 @@ export abstract class BaseBuilder extends Cloneable {
                         formattedStr += ret.text;
                         ret.values.forEach((v) => formattedValues.push(v));
                     } else {
-                        value = this._formatValueForParamArray(
-                            value,
-                            formattingOptions
-                        );
+                        value = this._formatValueForParamArray(value, formattingOptions);
 
                         if (_isArray(value)) {
                             // Array(6) -> "(??, ??, ??, ??, ??, ??)"
-                            const tmpStr = value
-                                .map(() => paramChar)
-                                .join(", ");
+                            const tmpStr = value.map(() => paramChar).join(', ');
 
                             formattedStr += `(${tmpStr})`;
 
@@ -507,10 +449,7 @@ export abstract class BaseBuilder extends Cloneable {
                         }
                     }
                 } else {
-                    formattedStr += this._formatValueForQueryString(
-                        value,
-                        formattingOptions
-                    );
+                    formattedStr += this._formatValueForQueryString(value, formattingOptions);
                 }
 
                 idx += paramChar.length;
@@ -538,26 +477,18 @@ export abstract class BaseBuilder extends Cloneable {
      * @param {Boolean} [options.nested] Whether this expression is nested within another.
      * @return {Object}
      */
-    _buildManyStrings(
-        strings: string[],
-        strValues: string[][],
-        options: Options = {},
-    ) {
-        let totalStr: string[] = [];
+    _buildManyStrings(strings: string[], strValues: string[][], options: Options = {}) {
+        const totalStr: string[] = [];
         const totalValues = [];
 
         for (let idx = 0; strings.length > idx; ++idx) {
             const inputString = strings[idx];
             const inputValues = strValues[idx];
 
-            const { text, values } = this._buildString(
-                inputString,
-                inputValues,
-                {
-                    buildParameterized: options.buildParameterized,
-                    nested: false,
-                }
-            );
+            const { text, values } = this._buildString(inputString, inputValues, {
+                buildParameterized: options.buildParameterized,
+                nested: false,
+            });
 
             totalStr.push(text);
             values.forEach((value) => totalValues.push(value));
@@ -566,9 +497,7 @@ export abstract class BaseBuilder extends Cloneable {
         const totalStrJoined = totalStr.join(this.options.separator);
 
         return {
-            text: totalStrJoined.length
-                ? this._applyNestingFormatting(totalStrJoined, !!options.nested)
-                : "",
+            text: totalStrJoined.length ? this._applyNestingFormatting(totalStrJoined, !!options.nested) : '',
             values: totalValues,
         };
     }

@@ -1,5 +1,5 @@
-import { Options } from "../types/options";
-import { AbstractTableBlock } from "./abstract-table-block";
+import { Options } from '../types/options';
+import { AbstractTableBlock } from './abstract-table-block';
 
 export class UpdateTableBlock extends AbstractTableBlock {
     table(table, alias = null) {
@@ -8,7 +8,7 @@ export class UpdateTableBlock extends AbstractTableBlock {
 
     _toParamString(options: Options = {}) {
         if (!this._hasTable()) {
-            throw new Error("table() needs to be called");
+            throw new Error('table() needs to be called');
         }
 
         return super._toParamString(options);

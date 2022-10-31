@@ -1,7 +1,6 @@
-/* eslint-disable no-param-reassign */
-import { BaseBuilder } from "./base-builder";
-import { Options } from "./types/options";
-import { isSquelBuilder } from "./helpers";
+import { BaseBuilder } from './base-builder';
+import { Options } from './types/options';
+import { isSquelBuilder } from './helpers';
 
 /**
  * An SQL expression builder.
@@ -29,7 +28,7 @@ export class Expression extends BaseBuilder {
         expr = this._sanitizeExpression(expr);
 
         this._nodes.push({
-            type: "AND",
+            type: 'AND',
             expr,
             para: params,
         });
@@ -42,7 +41,7 @@ export class Expression extends BaseBuilder {
         expr = this._sanitizeExpression(expr);
 
         this._nodes.push({
-            type: "OR",
+            type: 'OR',
             expr,
             para: params,
         });
@@ -51,7 +50,7 @@ export class Expression extends BaseBuilder {
     }
 
     _toParamString(options: Options = {}) {
-        let totalStr = [];
+        const totalStr = [];
         const totalValues = [];
 
         for (const node of this._nodes) {
@@ -65,6 +64,7 @@ export class Expression extends BaseBuilder {
                 : this._buildString(expr as string, para, {
                       buildParameterized: options.buildParameterized,
                   });
+
             if (totalStr.length) {
                 totalStr.push(type);
             }
@@ -73,7 +73,7 @@ export class Expression extends BaseBuilder {
             values.forEach((value) => totalValues.push(value));
         }
 
-        const joinString = totalStr.join(" ");
+        const joinString = totalStr.join(' ');
 
         return {
             text: this._applyNestingFormatting(joinString, !!options.nested),

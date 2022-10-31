@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { QueryBuilder } from "../query-builder";
+import { QueryBuilder } from '../query-builder';
 import {
     FunctionBlock,
     StringBlock,
@@ -14,13 +14,13 @@ import {
     LimitBlock,
     OffsetBlock,
     UnionBlock,
-} from "../block";
+} from '../block';
 
 // SELECT query builder.
 export class Select extends QueryBuilder {
     constructor(options, blocks = null) {
         blocks = blocks || [
-            new StringBlock(options, "SELECT"),
+            new StringBlock(options, 'SELECT'),
             new FunctionBlock(options),
             new DistinctBlock(options),
             new GetFieldBlock(options),

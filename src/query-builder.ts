@@ -1,17 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable no-plusplus */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-shadow */
-/* eslint-disable no-param-reassign */
-import { BaseBuilder } from "./base-builder";
-import { Block } from "./block";
-import { Options } from "./types/options";
-import { _extend } from "./helpers";
+import { BaseBuilder } from './base-builder';
+import { Block } from './block';
+import { Options } from './types/options';
+import { _extend } from './helpers';
 
 /**
  * Query builder base class
@@ -41,9 +31,7 @@ export class QueryBuilder extends BaseBuilder {
                 const methodBody = exposedMethods[methodName];
 
                 if (undefined !== this[methodName]) {
-                    throw new Error(
-                        `Builder already has a builder method called: ${methodName}`
-                    );
+                    throw new Error(`Builder already has a builder method called: ${methodName}`);
                 }
 
                 ((block, name, body) => {
@@ -100,33 +88,20 @@ export class QueryBuilder extends BaseBuilder {
         const blockTexts = blockResults.map((b) => b.text);
         const blockValues = blockResults.map((b) => b.values);
 
-        let totalStr = blockTexts
-            .filter((v) => v.length > 0)
-            .join(options.separator);
+        let totalStr = blockTexts.filter((v) => v.length > 0).join(options.separator);
 
         const totalValues = [];
 
-        blockValues.forEach((block) =>
-            block.forEach((value) => totalValues.push(value))
-        );
+        blockValues.forEach((block) => block.forEach((value) => totalValues.push(value)));
 
         if (!options.nested) {
             if (options.numberedParameters) {
-                let i =
-                    undefined !== options.numberedParametersStartAt
-                        ? options.numberedParametersStartAt
-                        : 1;
+                let i = undefined !== options.numberedParametersStartAt ? options.numberedParametersStartAt : 1;
 
                 // construct regex for searching
-                const regex = options.parameterCharacter.replace(
-                    /[-[\]{}()*+?.,\\^$|#\s]/g,
-                    "\\$&"
-                );
+                const regex = options.parameterCharacter.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-                totalStr = totalStr.replace(
-                    new RegExp(regex, "g"),
-                    () => `${options.numberedParametersPrefix}${i++}`
-                );
+                totalStr = totalStr.replace(new RegExp(regex, 'g'), () => `${options.numberedParametersPrefix}${i++}`);
             }
         }
 

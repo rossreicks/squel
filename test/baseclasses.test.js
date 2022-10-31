@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable no-plusplus */
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-new-object */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable max-classes-per-file */
 
 /*
@@ -43,14 +37,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 import sinon from 'sinon';
 import _ from 'underscore';
 import { squel } from '../src';
-import {
-    StringBlock,
-    FunctionBlock,
-    LimitBlock,
-    DistinctBlock,
-    WhereBlock,
-    Block,
-} from '../src/block';
+import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../src/block';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 import { QueryBuilder } from '../src/query-builder';
 import { Cloneable } from '../src/cloneable';
@@ -79,7 +66,7 @@ describe('Base Classes', () => {
     });
 
     it('Version number', () => {
-        // eslint-disable-next-line global-require
+        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
         areEqual(squel.VERSION, require('../package.json').version);
     });
 
@@ -191,10 +178,7 @@ describe('Base Classes', () => {
             squel.registerValueHandler(Date, handler2);
 
             areEqual(1, squel.globalValueHandlers.length);
-            areEqual(
-                { type: Date, handler: handler2 },
-                squel.globalValueHandlers[0]
-            );
+            areEqual({ type: Date, handler: handler2 }, squel.globalValueHandlers[0]);
         });
     });
 
@@ -213,10 +197,7 @@ describe('Base Classes', () => {
             beforeEach(() => {
                 inst = squel.str('G(?,?)', 12, 23, 65);
 
-                const handlerConfig = _.find(
-                    squel.globalValueHandlers,
-                    (hc) => hc.type === FunctionBlock
-                );
+                const handlerConfig = _.find(squel.globalValueHandlers, (hc) => hc.type === FunctionBlock);
 
                 handler = handlerConfig.handler;
             });
@@ -254,10 +235,7 @@ describe('Base Classes', () => {
             beforeEach(() => {
                 inst = squel.rstr('G(?,?)', 12, 23, 65);
 
-                const handlerConfig = _.find(
-                    squel.globalValueHandlers,
-                    (hc) => hc.type === FunctionBlock
-                );
+                const handlerConfig = _.find(squel.globalValueHandlers, (hc) => hc.type === FunctionBlock);
 
                 handler = handlerConfig.handler;
             });
@@ -332,10 +310,7 @@ describe('Base Classes', () => {
 
             const expr1 = squel1.expr().and('1 = 1');
 
-            areEqual(
-                squel2.select().from('test', 't').where(expr1).toString(),
-                'SELECT * FROM test `t` WHERE (1 = 1)'
-            );
+            areEqual(squel2.select().from('test', 't').where(expr1).toString(), 'SELECT * FROM test `t` WHERE (1 = 1)');
         });
     });
 
@@ -370,17 +345,13 @@ describe('Base Classes', () => {
                     globalValueHandlers: [1],
                 });
 
-                const expectedOptions = _.extend(
-                    {},
-                    DefaultQueryBuilderOptions,
-                    {
-                        dummy1: 'str',
-                        dummy2: 12.3,
-                        usingValuePlaceholders: true,
-                        dummy3: true,
-                        globalValueHandlers: [1],
-                    }
-                );
+                const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+                    dummy1: 'str',
+                    dummy2: 12.3,
+                    usingValuePlaceholders: true,
+                    dummy3: true,
+                    globalValueHandlers: [1],
+                });
 
                 areEqual(expectedOptions, inst.options);
             });
@@ -399,18 +370,9 @@ describe('Base Classes', () => {
                 inst.registerValueHandler('number', handler);
 
                 areEqual(3, inst.options.valueHandlers.length);
-                areEqual(
-                    { type: Date, handler },
-                    inst.options.valueHandlers[0]
-                );
-                areEqual(
-                    { type: Object, handler },
-                    inst.options.valueHandlers[1]
-                );
-                areEqual(
-                    { type: 'number', handler },
-                    inst.options.valueHandlers[2]
-                );
+                areEqual({ type: Date, handler }, inst.options.valueHandlers[0]);
+                areEqual({ type: Object, handler }, inst.options.valueHandlers[1]);
+                areEqual({ type: 'number', handler }, inst.options.valueHandlers[2]);
             });
 
             it('type should be class constructor', () => {
@@ -436,10 +398,7 @@ describe('Base Classes', () => {
                 inst.registerValueHandler(Date, handler2);
 
                 areEqual(1, inst.options.valueHandlers.length);
-                areEqual(
-                    { type: Date, handler: handler2 },
-                    inst.options.valueHandlers[0]
-                );
+                areEqual({ type: Date, handler: handler2 }, inst.options.valueHandlers[0]);
             });
 
             it('does not touch global value handlers list', () => {
@@ -782,10 +741,7 @@ describe('Base Classes', () => {
                 });
 
                 it('default quote character', () => {
-                    areEqual(
-                        '`abc`.`def`',
-                        inst._formatFieldName('abc.def')
-                    );
+                    areEqual('`abc`.`def`', inst._formatFieldName('abc.def'));
                 });
 
                 it('do not quote *', () => {
@@ -794,10 +750,7 @@ describe('Base Classes', () => {
 
                 it('custom quote character', () => {
                     inst.options.nameQuoteCharacter = '|';
-                    areEqual(
-                        '|abc|.|def|',
-                        inst._formatFieldName('abc.def')
-                    );
+                    areEqual('|abc|.|def|', inst._formatFieldName('abc.def'));
                 });
 
                 it('ignore periods when quoting', () => {
@@ -813,30 +766,12 @@ describe('Base Classes', () => {
 
         describe('_formatCustomValue', () => {
             it('not a custom value type', () => {
-                areEqual(
-                    { formatted: false, value: null },
-                    inst._formatCustomValue(null)
-                );
-                areEqual(
-                    { formatted: false, value: 'abc' },
-                    inst._formatCustomValue('abc')
-                );
-                areEqual(
-                    { formatted: false, value: 12 },
-                    inst._formatCustomValue(12)
-                );
-                areEqual(
-                    { formatted: false, value: 1.2 },
-                    inst._formatCustomValue(1.2)
-                );
-                areEqual(
-                    { formatted: false, value: true },
-                    inst._formatCustomValue(true)
-                );
-                areEqual(
-                    { formatted: false, value: false },
-                    inst._formatCustomValue(false)
-                );
+                areEqual({ formatted: false, value: null }, inst._formatCustomValue(null));
+                areEqual({ formatted: false, value: 'abc' }, inst._formatCustomValue('abc'));
+                areEqual({ formatted: false, value: 12 }, inst._formatCustomValue(12));
+                areEqual({ formatted: false, value: 1.2 }, inst._formatCustomValue(1.2));
+                areEqual({ formatted: false, value: true }, inst._formatCustomValue(true));
+                areEqual({ formatted: false, value: false }, inst._formatCustomValue(false));
             });
 
             describe('custom value type', () => {
@@ -847,14 +782,8 @@ describe('Base Classes', () => {
                     squel.registerValueHandler(MyClass, () => 3.14);
                     squel.registerValueHandler('boolean', (v) => `a${v}`);
 
-                    areEqual(
-                        { formatted: true, value: 3.14 },
-                        inst._formatCustomValue(myObj)
-                    );
-                    areEqual(
-                        { formatted: true, value: 'atrue' },
-                        inst._formatCustomValue(true)
-                    );
+                    areEqual({ formatted: true, value: 3.14 }, inst._formatCustomValue(myObj));
+                    areEqual({ formatted: true, value: 'atrue' }, inst._formatCustomValue(true));
                 });
 
                 it('instance', () => {
@@ -864,32 +793,20 @@ describe('Base Classes', () => {
                     inst.registerValueHandler(MyClass, () => 3.14);
                     inst.registerValueHandler('number', (v) => `${v}a`);
 
-                    areEqual(
-                        { formatted: true, value: 3.14 },
-                        inst._formatCustomValue(myObj)
-                    );
-                    areEqual(
-                        { formatted: true, value: '5.2a' },
-                        inst._formatCustomValue(5.2)
-                    );
+                    areEqual({ formatted: true, value: 3.14 }, inst._formatCustomValue(myObj));
+                    areEqual({ formatted: true, value: '5.2a' }, inst._formatCustomValue(5.2));
                 });
 
                 it('instance handler takes precedence over global', () => {
                     inst.registerValueHandler(Date, (d) => 'hello');
                     squel.registerValueHandler(Date, (d) => 'goodbye');
 
-                    areEqual(
-                        { formatted: true, value: 'hello' },
-                        inst._formatCustomValue(new Date())
-                    );
+                    areEqual({ formatted: true, value: 'hello' }, inst._formatCustomValue(new Date()));
 
                     inst = new BaseBuilder({
                         valueHandlers: [],
                     });
-                    areEqual(
-                        { formatted: true, value: 'goodbye' },
-                        inst._formatCustomValue(new Date())
-                    );
+                    areEqual({ formatted: true, value: 'goodbye' }, inst._formatCustomValue(new Date()));
                 });
 
                 it('whether to format for parameterized output', () => {
@@ -903,14 +820,8 @@ describe('Base Classes', () => {
 
                     const val = new Date();
 
-                    areEqual(
-                        { formatted: true, value: 'foo' },
-                        inst._formatCustomValue(val, true)
-                    );
-                    areEqual(
-                        { formatted: true, value: 'bar' },
-                        inst._formatCustomValue(val)
-                    );
+                    areEqual({ formatted: true, value: 'foo' }, inst._formatCustomValue(val, true));
+                    areEqual({ formatted: true, value: 'bar' }, inst._formatCustomValue(val));
                 });
 
                 it('additional formatting options', () => {
@@ -943,10 +854,7 @@ describe('Base Classes', () => {
 
                     const val = new Date();
 
-                    areEqual(
-                        { rawNesting: true, formatted: true, value: 'foo' },
-                        inst._formatCustomValue(val, true)
-                    );
+                    areEqual({ rawNesting: true, formatted: true, value: 'foo' }, inst._formatCustomValue(val, true));
                 });
             });
         });
@@ -959,14 +867,10 @@ describe('Base Classes', () => {
             });
 
             it('else calls _formatCustomValue', () => {
-                const spy = mocker.stub(
-                    inst,
-                    '_formatCustomValue',
-                    (v, asParam) => ({
-                        formatted: true,
-                        value: `test${asParam ? 'foo' : 'bar'}`,
-                    })
-                );
+                const spy = mocker.stub(inst, '_formatCustomValue', (v, asParam) => ({
+                    formatted: true,
+                    value: `test${asParam ? 'foo' : 'bar'}`,
+                }));
 
                 areEqual('testfoo', inst._formatValueForParamArray(null));
                 areEqual('testfoo', inst._formatValueForParamArray('abc'));
@@ -975,10 +879,7 @@ describe('Base Classes', () => {
 
                 const opts = { dummy: true };
 
-                areEqual(
-                    'testfoo',
-                    inst._formatValueForParamArray(true, opts)
-                );
+                areEqual('testfoo', inst._formatValueForParamArray(true, opts));
 
                 areEqual('testfoo', inst._formatValueForParamArray(false));
 
@@ -1027,42 +928,25 @@ describe('Base Classes', () => {
                 it('have string formatter function', () => {
                     inst.options.stringFormatter = (str) => `N(${str})`;
 
-                    areEqual(
-                        'N(test)',
-                        inst._formatValueForQueryString('test')
-                    );
+                    areEqual('N(test)', inst._formatValueForQueryString('test'));
                 });
 
                 it('default', () => {
                     let escapedValue;
 
-                    mocker.stub(
-                        inst,
-                        '_escapeValue',
-                        (str) => escapedValue || str
-                    );
+                    mocker.stub(inst, '_escapeValue', (str) => escapedValue || str);
 
-                    areEqual(
-                        "'test'",
-                        inst._formatValueForQueryString('test')
-                    );
+                    areEqual("'test'", inst._formatValueForQueryString('test'));
 
                     expect(inst._escapeValue.calledWithExactly('test')).toBeTruthy();
                     escapedValue = 'blah';
-                    areEqual(
-                        "'blah'",
-                        inst._formatValueForQueryString('test')
-                    );
+                    areEqual("'blah'", inst._formatValueForQueryString('test'));
                 });
 
                 it('dont quote', () => {
                     const escapedValue = undefined;
 
-                    mocker.stub(
-                        inst,
-                        '_escapeValue',
-                        (str) => escapedValue || str
-                    );
+                    mocker.stub(inst, '_escapeValue', (str) => escapedValue || str);
 
                     areEqual(
                         'test',
@@ -1080,16 +964,7 @@ describe('Base Classes', () => {
 
                 const expected = "('test', 123, TRUE, 1.2, NULL)";
 
-                areEqual(
-                    expected,
-                    inst._formatValueForQueryString([
-                        'test',
-                        123,
-                        true,
-                        1.2,
-                        null,
-                    ])
-                );
+                areEqual(expected, inst._formatValueForQueryString(['test', 123, true, 1.2, null]));
 
                 areEqual(6, spy.callCount);
                 expect(spy.calledWith('test')).toBeTruthy();
@@ -1100,17 +975,10 @@ describe('Base Classes', () => {
             });
 
             it('BaseBuilder', () => {
-                const spy = mocker.stub(
-                    inst,
-                    '_applyNestingFormatting',
-                    (v) => `{{${v}}}`
-                );
+                const spy = mocker.stub(inst, '_applyNestingFormatting', (v) => `{{${v}}}`);
                 const s = squel.select().from('table');
 
-                areEqual(
-                    '{{SELECT * FROM table}}',
-                    inst._formatValueForQueryString(s)
-                );
+                areEqual('{{SELECT * FROM table}}', inst._formatValueForQueryString(s));
             });
 
             it('checks to see if it is custom value type first', () => {
@@ -1177,31 +1045,16 @@ describe('Base Classes', () => {
             });
             describe('non-array', () => {
                 it('non-parameterized', () => {
-                    areEqual(
-                        inst._buildString('a = ? ? ? ?', [
-                            2,
-                            'abc',
-                            false,
-                            null,
-                        ]),
-                        {
-                            text: "a = 2 'abc' FALSE NULL",
-                            values: [],
-                        }
-                    );
+                    areEqual(inst._buildString('a = ? ? ? ?', [2, 'abc', false, null]), {
+                        text: "a = 2 'abc' FALSE NULL",
+                        values: [],
+                    });
                 });
                 it('parameterized', () => {
-                    areEqual(
-                        inst._buildString(
-                            'a = ? ? ? ?',
-                            [2, 'abc', false, null],
-                            { buildParameterized: true }
-                        ),
-                        {
-                            text: 'a = ? ? ? ?',
-                            values: [2, 'abc', false, null],
-                        }
-                    );
+                    areEqual(inst._buildString('a = ? ? ? ?', [2, 'abc', false, null], { buildParameterized: true }), {
+                        text: 'a = ? ? ? ?',
+                        values: [2, 'abc', false, null],
+                    });
                 });
             });
             describe('array', () => {
@@ -1224,11 +1077,7 @@ describe('Base Classes', () => {
                 });
             });
             describe('nested builder', () => {
-                beforeEach(() =>
-                    (testContext.s = squel
-                        .select()
-                        .from('master')
-                        .where('b = ?', 5)));
+                beforeEach(() => (testContext.s = squel.select().from('master').where('b = ?', 5)));
 
                 it('non-parameterized', () => {
                     areEqual(inst._buildString('a = ?', [testContext.s]), {
@@ -1250,13 +1099,10 @@ describe('Base Classes', () => {
             });
             describe('return nested output', () => {
                 it('non-parameterized', () => {
-                    areEqual(
-                        inst._buildString('a = ?', [3], { nested: true }),
-                        {
-                            text: '(a = 3)',
-                            values: [],
-                        }
-                    );
+                    areEqual(inst._buildString('a = ?', [3], { nested: true }), {
+                        text: '(a = 3)',
+                        values: [],
+                    });
                 });
                 it('parameterized', () => {
                     areEqual(
@@ -1337,13 +1183,10 @@ describe('Base Classes', () => {
                 });
 
                 it('non-parameterized', () => {
-                    areEqual(
-                        inst._buildManyStrings(testContext.strings, testContext.values),
-                        {
-                            text: "a = 'elephant' b IN (1, 2, 3) AND c = 4",
-                            values: [],
-                        }
-                    );
+                    areEqual(inst._buildManyStrings(testContext.strings, testContext.values), {
+                        text: "a = 'elephant' b IN (1, 2, 3) AND c = 4",
+                        values: [],
+                    });
                 });
                 it('parameterized', () => {
                     areEqual(
@@ -1389,13 +1232,10 @@ describe('Base Classes', () => {
                     inst.options.separator = '|';
                 });
                 it('non-parameterized', () => {
-                    areEqual(
-                        inst._buildManyStrings(['a = ?', 'b = ?'], [[1], [2]]),
-                        {
-                            text: 'a = 1|b = 2',
-                            values: [],
-                        }
-                    );
+                    areEqual(inst._buildManyStrings(['a = ?', 'b = ?'], [[1], [2]]), {
+                        text: 'a = 1|b = 2',
+                        values: [],
+                    });
                 });
                 it('parameterized', () => {
                     areEqual(
@@ -1434,16 +1274,12 @@ describe('Base Classes', () => {
                     dummy3: true,
                 });
 
-                const expectedOptions = _.extend(
-                    {},
-                    DefaultQueryBuilderOptions,
-                    {
-                        dummy1: 'str',
-                        dummy2: 12.3,
-                        usingValuePlaceholders: true,
-                        dummy3: true,
-                    }
-                );
+                const expectedOptions = _.extend({}, DefaultQueryBuilderOptions, {
+                    dummy1: 'str',
+                    dummy2: 12.3,
+                    usingValuePlaceholders: true,
+                    dummy3: true,
+                });
 
                 areEqual(expectedOptions, inst.options);
             });
@@ -1454,19 +1290,10 @@ describe('Base Classes', () => {
 
             describe('blocks passed in', () => {
                 it('exposes block methods', () => {
-                    const limitExposedMethodsSpy = mocker.spy(
-                        LimitBlock.prototype,
-                        'exposedMethods'
-                    );
-                    const distinctExposedMethodsSpy = mocker.spy(
-                        DistinctBlock.prototype,
-                        'exposedMethods'
-                    );
+                    const limitExposedMethodsSpy = mocker.spy(LimitBlock.prototype, 'exposedMethods');
+                    const distinctExposedMethodsSpy = mocker.spy(DistinctBlock.prototype, 'exposedMethods');
                     const limitSpy = mocker.spy(LimitBlock.prototype, 'limit');
-                    const distinctSpy = mocker.spy(
-                        DistinctBlock.prototype,
-                        'distinct'
-                    );
+                    const distinctSpy = mocker.spy(DistinctBlock.prototype, 'distinct');
 
                     const blocks = [new LimitBlock(), new DistinctBlock()];
 
@@ -1494,10 +1321,7 @@ describe('Base Classes', () => {
                         inst = new QueryBuilder({}, blocks);
                         throw new Error('should not reach here');
                     } catch (err) {
-                        areEqual(
-                            'Error: Builder already has a builder method called: distinct',
-                            err.toString()
-                        );
+                        areEqual('Error: Builder already has a builder method called: distinct', err.toString());
                     }
                 });
             });
@@ -1544,20 +1368,12 @@ describe('Base Classes', () => {
 
             it('returns final query string', () => {
                 let i = 1;
-                const toStringSpy = mocker.stub(
-                    StringBlock.prototype,
-                    '_toParamString',
-                    () => ({
-                        text: `ret${++i}`,
-                        values: [],
-                    })
-                );
+                const toStringSpy = mocker.stub(StringBlock.prototype, '_toParamString', () => ({
+                    text: `ret${++i}`,
+                    values: [],
+                }));
 
-                inst.blocks = [
-                    new StringBlock({}, 'STR1'),
-                    new StringBlock({}, 'STR2'),
-                    new StringBlock({}, 'STR3'),
-                ];
+                inst.blocks = [new StringBlock({}, 'STR1'), new StringBlock({}, 'STR2'), new StringBlock({}, 'STR3')];
 
                 areEqual('ret2 ret3 ret4', inst.toString());
 
@@ -1580,26 +1396,15 @@ describe('Base Classes', () => {
             });
 
             it('returns final query string', () => {
-                inst.blocks = [
-                    new StringBlock({}, 'STR1'),
-                    new StringBlock({}, 'STR2'),
-                    new StringBlock({}, 'STR3'),
-                ];
+                inst.blocks = [new StringBlock({}, 'STR1'), new StringBlock({}, 'STR2'), new StringBlock({}, 'STR3')];
 
                 let i = 1;
-                const toStringSpy = mocker.stub(
-                    StringBlock.prototype,
-                    '_toParamString',
-                    () => ({
-                        text: `ret${++i}`,
-                        values: [],
-                    })
-                );
+                const toStringSpy = mocker.stub(StringBlock.prototype, '_toParamString', () => ({
+                    text: `ret${++i}`,
+                    values: [],
+                }));
 
-                areEqual(
-                    { text: 'ret2 ret3 ret4', values: [] },
-                    inst.toParam()
-                );
+                areEqual({ text: 'ret2 ret3 ret4', values: [] }, inst.toParam());
 
                 expect(toStringSpy.calledThrice).toBeTruthy();
                 expect(toStringSpy.calledOn(inst.blocks[0])).toBeTruthy();
@@ -1615,10 +1420,7 @@ describe('Base Classes', () => {
                     values: [1, 2, 3],
                 }));
 
-                areEqual(
-                    { text: 'a = ? AND b in (?, ?)', values: [1, 2, 3] },
-                    inst.toParam()
-                );
+                areEqual({ text: 'a = ? AND b in (?, ?)', values: [1, 2, 3] }, inst.toParam());
             });
 
             it('returns query with numbered parameters', () => {
@@ -1661,10 +1463,7 @@ describe('Base Classes', () => {
 
         describe('cloning', () => {
             it('blocks get cloned properly', () => {
-                const blockCloneSpy = mocker.spy(
-                    StringBlock.prototype,
-                    'clone'
-                );
+                const blockCloneSpy = mocker.spy(StringBlock.prototype, 'clone');
 
                 inst.blocks = [new StringBlock({}, 'TEST')];
 
@@ -1687,10 +1486,7 @@ describe('Base Classes', () => {
             });
 
             it('calls through to base class method', () => {
-                const baseBuilderSpy = mocker.spy(
-                    BaseBuilder.prototype,
-                    'registerValueHandler'
-                );
+                const baseBuilderSpy = mocker.spy(BaseBuilder.prototype, 'registerValueHandler');
 
                 const handler = () => 'test';
 
@@ -1710,10 +1506,7 @@ describe('Base Classes', () => {
             it('calls through to blocks', () => {
                 inst.blocks = [new StringBlock({}, '')];
 
-                const baseBuilderSpy = mocker.spy(
-                    inst.blocks[0],
-                    'registerValueHandler'
-                );
+                const baseBuilderSpy = mocker.spy(inst.blocks[0], 'registerValueHandler');
 
                 const handler = () => 'test';
 

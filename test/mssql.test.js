@@ -29,7 +29,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-xdescribe("MSSQL flavour", () => {
+xdescribe('MSSQL flavour', () => {
     let testContext;
 
     beforeEach(() => {
@@ -37,280 +37,247 @@ xdescribe("MSSQL flavour", () => {
     });
 
     beforeEach(() => {
-         delete require.cache[require.resolve("../dist/squel")];
-         squel = require("../dist/squel");
-         return (squel = squel.useFlavour("mssql"));
-     });
+        delete require.cache[require.resolve('../dist/squel')];
+        squel = require('../dist/squel');
 
-    describe("DATE Conversion", () => {
+        return (squel = squel.useFlavour('mssql'));
+    });
+
+    describe('DATE Conversion', () => {
         beforeEach(() => {
-             return testContext.inst = squel.insert();
-         });
+            return (testContext.inst = squel.insert());
+        });
 
-        describe(">> into(table).set(field, new Date(2012-12-12T4:30:00Z))", () => {
+        describe('>> into(table).set(field, new Date(2012-12-12T4:30:00Z))', () => {
             beforeEach(() => {
-                 return testContext.inst
-                     .into("table")
-                     .set("field", new Date("2012-12-12T04:30:00Z"));
-             });
+                return testContext.inst.into('table').set('field', new Date('2012-12-12T04:30:00Z'));
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.inst.toString(),
-                     "INSERT INTO table (field) VALUES (('2012-12-12 4:30:0'))"
-                 );
-             });
-         });
-     });
+                return assert.same(
+                    testContext.inst.toString(),
+                    "INSERT INTO table (field) VALUES (('2012-12-12 4:30:0'))"
+                );
+            });
+        });
+    });
 
-    describe("SELECT builder", () => {
+    describe('SELECT builder', () => {
         beforeEach(() => {
-             return testContext.sel = squel.select();
-         });
+            return (testContext.sel = squel.select());
+        });
 
-        describe(">> from(table).field(field).top(10)", () => {
+        describe('>> from(table).field(field).top(10)', () => {
             beforeEach(() => {
-                 return testContext.sel.from("table").field("field").top(10);
-             });
+                return testContext.sel.from('table').field('field').top(10);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.sel.toString(),
-                     "SELECT TOP (10) field FROM table"
-                 );
-             });
-         });
+                return assert.same(testContext.sel.toString(), 'SELECT TOP (10) field FROM table');
+            });
+        });
 
-        describe(">> from(table).field(field).limit(10)", () => {
+        describe('>> from(table).field(field).limit(10)', () => {
             beforeEach(() => {
-                 return testContext.sel.from("table").field("field").limit(10);
-             });
+                return testContext.sel.from('table').field('field').limit(10);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.sel.toString(),
-                     "SELECT TOP (10) field FROM table"
-                 );
-             });
-         });
+                return assert.same(testContext.sel.toString(), 'SELECT TOP (10) field FROM table');
+            });
+        });
 
-        describe(">> from(table).field(field).limit(10).offset(5)", () => {
+        describe('>> from(table).field(field).limit(10).offset(5)', () => {
             beforeEach(() => {
-                 return testContext.sel
-                     .from("table")
-                     .field("field")
-                     .limit(10)
-                     .offset(5);
-             });
+                return testContext.sel.from('table').field('field').limit(10).offset(5);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.sel.toString(),
-                     "SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY"
-                 );
-             });
-         });
+                return assert.same(
+                    testContext.sel.toString(),
+                    'SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY'
+                );
+            });
+        });
 
-        describe(">> from(table).field(field).top(10).offset(5)", () => {
+        describe('>> from(table).field(field).top(10).offset(5)', () => {
             beforeEach(() => {
-                 return testContext.sel.from("table").field("field").top(10).offset(5);
-             });
+                return testContext.sel.from('table').field('field').top(10).offset(5);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.sel.toString(),
-                     "SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY"
-                 );
-             });
-         });
+                return assert.same(
+                    testContext.sel.toString(),
+                    'SELECT field FROM table OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY'
+                );
+            });
+        });
 
-        describe(">> from(table).field(field).offset(5)", () => {
+        describe('>> from(table).field(field).offset(5)', () => {
             beforeEach(() => {
-                 return testContext.sel.from("table").field("field").offset(5);
-             });
+                return testContext.sel.from('table').field('field').offset(5);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.sel.toString(),
-                     "SELECT field FROM table OFFSET 5 ROWS"
-                 );
-             });
-         });
+                return assert.same(testContext.sel.toString(), 'SELECT field FROM table OFFSET 5 ROWS');
+            });
+        });
 
-        describe(">> from(table).field(field).offset(5).union(...)", () => {
+        describe('>> from(table).field(field).offset(5).union(...)', () => {
             beforeEach(() => {
-                 return testContext.sel
-                     .from("table")
-                     .field("field")
-                     .offset(5)
-                     .union(squel.select().from("table2").where("a = 2"));
-             });
+                return testContext.sel
+                    .from('table')
+                    .field('field')
+                    .offset(5)
+                    .union(squel.select().from('table2').where('a = 2'));
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.sel.toString(),
-                     "SELECT field FROM table OFFSET 5 ROWS UNION (SELECT * FROM table2 WHERE (a = 2))"
-                 );
-             });
-         });
+                return assert.same(
+                    testContext.sel.toString(),
+                    'SELECT field FROM table OFFSET 5 ROWS UNION (SELECT * FROM table2 WHERE (a = 2))'
+                );
+            });
+        });
 
-        describe(">> check variables arent being shared", () => {
+        describe('>> check variables arent being shared', () => {
             it('toString', () => {
-                 assert.same(
-                     squel
-                         .select()
-                         .from("table")
-                         .field("field")
-                         .top(10)
-                         .toString(),
-                     "SELECT TOP (10) field FROM table"
-                 );
-                 return assert.same(
-                     squel.select().from("table").field("field").toString(),
-                     "SELECT field FROM table"
-                 );
-             });
-         });
-     });
+                assert.same(
+                    squel.select().from('table').field('field').top(10).toString(),
+                    'SELECT TOP (10) field FROM table'
+                );
 
-    describe("INSERT builder", () => {
+                return assert.same(squel.select().from('table').field('field').toString(), 'SELECT field FROM table');
+            });
+        });
+    });
+
+    describe('INSERT builder', () => {
         beforeEach(() => {
-             return testContext.inst = squel.insert();
-         });
+            return (testContext.inst = squel.insert());
+        });
 
-        describe(">> into(table).set(field, 1).output(id)", () => {
+        describe('>> into(table).set(field, 1).output(id)', () => {
             beforeEach(() => {
-                 return testContext.inst.into("table").output("id").set("field", 1);
-             });
+                return testContext.inst.into('table').output('id').set('field', 1);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.inst.toString(),
-                     "INSERT INTO table (field) OUTPUT INSERTED.id VALUES (1)"
-                 );
-             });
-         });
-     });
+                return assert.same(
+                    testContext.inst.toString(),
+                    'INSERT INTO table (field) OUTPUT INSERTED.id VALUES (1)'
+                );
+            });
+        });
+    });
 
-    describe("UPDATE builder", () => {
+    describe('UPDATE builder', () => {
         beforeEach(() => {
-             return testContext.upt = squel.update();
-         });
+            return (testContext.upt = squel.update());
+        });
 
-        describe(">> table(table).set(field, 1).top(12)", () => {
+        describe('>> table(table).set(field, 1).top(12)', () => {
             beforeEach(() => {
-                 return testContext.upt.table("table").set("field", 1).top(12);
-             });
+                return testContext.upt.table('table').set('field', 1).top(12);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.upt.toString(),
-                     "UPDATE TOP (12) table SET field = 1"
-                 );
-             });
-         });
+                return assert.same(testContext.upt.toString(), 'UPDATE TOP (12) table SET field = 1');
+            });
+        });
 
-        describe(">> table(table).set(field, 1).limit(12)", () => {
+        describe('>> table(table).set(field, 1).limit(12)', () => {
             beforeEach(() => {
-                 return testContext.upt.table("table").set("field", 1).limit(12);
-             });
+                return testContext.upt.table('table').set('field', 1).limit(12);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.upt.toString(),
-                     "UPDATE TOP (12) table SET field = 1"
-                 );
-             });
-         });
+                return assert.same(testContext.upt.toString(), 'UPDATE TOP (12) table SET field = 1');
+            });
+        });
 
-        describe(">> table(table).set(field, 1).output(id)", () => {
+        describe('>> table(table).set(field, 1).output(id)', () => {
             beforeEach(() => {
-                 return testContext.upt.table("table").output("id").set("field", 1);
-             });
+                return testContext.upt.table('table').output('id').set('field', 1);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.upt.toString(),
-                     "UPDATE table SET field = 1 OUTPUT INSERTED.id"
-                 );
-             });
-         });
+                return assert.same(testContext.upt.toString(), 'UPDATE table SET field = 1 OUTPUT INSERTED.id');
+            });
+        });
 
-        describe(">> table(table).set(field, 1).outputs(id AS ident, name AS naming)", () => {
+        describe('>> table(table).set(field, 1).outputs(id AS ident, name AS naming)', () => {
             beforeEach(() => {
-                 return testContext.upt
-                     .table("table")
-                     .outputs({
-                         id: "ident",
-                         name: "naming",
-                     })
-                     .set("field", 1);
-             });
+                return testContext.upt
+                    .table('table')
+                    .outputs({
+                        id: 'ident',
+                        name: 'naming',
+                    })
+                    .set('field', 1);
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.upt.toString(),
-                     "UPDATE table SET field = 1 OUTPUT INSERTED.id AS ident, INSERTED.name AS naming"
-                 );
-             });
-         });
-     });
+                return assert.same(
+                    testContext.upt.toString(),
+                    'UPDATE table SET field = 1 OUTPUT INSERTED.id AS ident, INSERTED.name AS naming'
+                );
+            });
+        });
+    });
 
-    describe("DELETE builder", () => {
+    describe('DELETE builder', () => {
         beforeEach(() => {
-             return testContext.upt = squel.delete();
-         });
+            return (testContext.upt = squel.delete());
+        });
 
-        describe(">> from(table)", () => {
+        describe('>> from(table)', () => {
             beforeEach(() => {
-                 return testContext.upt.from("table");
-             });
+                return testContext.upt.from('table');
+            });
             it('toString', () => {
-                 return assert.same(testContext.upt.toString(), "DELETE FROM table");
-             });
-         });
+                return assert.same(testContext.upt.toString(), 'DELETE FROM table');
+            });
+        });
 
-        describe(">> from(table).output(id)", () => {
+        describe('>> from(table).output(id)', () => {
             beforeEach(() => {
-                 return testContext.upt.from("table").output("id");
-             });
+                return testContext.upt.from('table').output('id');
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.upt.toString(),
-                     "DELETE FROM table OUTPUT DELETED.id"
-                 );
-             });
-         });
+                return assert.same(testContext.upt.toString(), 'DELETE FROM table OUTPUT DELETED.id');
+            });
+        });
 
         describe('>> from(table).outputs(id AS ident, name AS naming).where("a = 1")', () => {
             beforeEach(() => {
-                 return testContext.upt
-                     .from("table")
-                     .outputs({
-                         id: "ident",
-                         name: "naming",
-                     })
-                     .where("a = 1");
-             });
+                return testContext.upt
+                    .from('table')
+                    .outputs({
+                        id: 'ident',
+                        name: 'naming',
+                    })
+                    .where('a = 1');
+            });
             it('toString', () => {
-                 return assert.same(
-                     testContext.upt.toString(),
-                     "DELETE FROM table OUTPUT DELETED.id AS ident, DELETED.name AS naming WHERE (a = 1)"
-                 );
-             });
-         });
-     });
+                return assert.same(
+                    testContext.upt.toString(),
+                    'DELETE FROM table OUTPUT DELETED.id AS ident, DELETED.name AS naming WHERE (a = 1)'
+                );
+            });
+        });
+    });
 
-    it("Default query builder options", () => {
-         return assert.same(
-             {
-                 autoQuoteTableNames: false,
-                 autoQuoteFieldNames: false,
-                 autoQuoteAliasNames: false,
-                 useAsForTableAliasNames: false,
-                 nameQuoteCharacter: "`",
-                 tableAliasQuoteCharacter: "`",
-                 fieldAliasQuoteCharacter: '"',
-                 valueHandlers: [],
-                 parameterCharacter: "?",
-                 numberedParameters: false,
-                 numberedParametersPrefix: "@",
-                 numberedParametersStartAt: 1,
-                 replaceSingleQuotes: true,
-                 singleQuoteReplacement: "''",
-                 separator: " ",
-                 stringFormatter: null,
-                 rawNesting: false,
-             },
-             squel.cls.DefaultQueryBuilderOptions
-         );
-     });
+    it('Default query builder options', () => {
+        return assert.same(
+            {
+                autoQuoteTableNames: false,
+                autoQuoteFieldNames: false,
+                autoQuoteAliasNames: false,
+                useAsForTableAliasNames: false,
+                nameQuoteCharacter: '`',
+                tableAliasQuoteCharacter: '`',
+                fieldAliasQuoteCharacter: '"',
+                valueHandlers: [],
+                parameterCharacter: '?',
+                numberedParameters: false,
+                numberedParametersPrefix: '@',
+                numberedParametersStartAt: 1,
+                replaceSingleQuotes: true,
+                singleQuoteReplacement: "''",
+                separator: ' ',
+                stringFormatter: null,
+                rawNesting: false,
+            },
+            squel.cls.DefaultQueryBuilderOptions
+        );
+    });
 });
