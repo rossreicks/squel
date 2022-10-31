@@ -1,11 +1,11 @@
-const sinon = require('sinon');
-const squel = require('../src/core');
+const sinon = require("sinon");
+const squel = require("../src/core");
 
 let func;
 let inst;
 let mocker;
 
-describe('Update Tests', () => {
+describe("Update Tests", () => {
     beforeEach(() => {
         mocker = sinon.sandbox.create();
         func = squel.insert;
@@ -16,7 +16,7 @@ describe('Update Tests', () => {
         mocker.restore();
     });
 
-    it('should be instance of query builder', () => {
+    it("should be instance of query builder", () => {
         expect(inst).toBeInstanceOf(squel.cls.QueryBuilder);
     });
 });

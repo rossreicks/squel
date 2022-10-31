@@ -1,0 +1,10 @@
+{
+    "extends": ["wesbos/typescript"],
+    "rules": {
+        "curly": ["error", "all"],
+        "newline-after-var": ["error", "always"],
+        "newline-before-return": "error",
+        "no-unsafe-return": "ignore",
+        "indent": ["error", 4]
+    }
+}
