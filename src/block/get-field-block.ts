@@ -1,14 +1,39 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-restricted-syntax */
 import { BaseBuilder } from '../base-builder';
 import { Block } from './block';
 import { FromTableBlock } from './from-table-block';
 import { Options } from '../types/options';
 import { _isArray, _pad } from '../helpers';
 import { AbstractTableBlock } from './abstract-table-block';
+import { FieldOptions } from '../types/field-options';
 
-export class GetFieldBlock extends Block {
+export interface GetFieldMixin {
+    /**
+     * Add the given field to the final result set.
+     *
+     * The 'field' parameter does not necessarily have to be a field name. It can use database functions too,
+     * e.g. DATE_FORMAT(a.started, "%H")
+     *
+     * An alias may also be specified for this field.
+     *
+     * @param name Name of field OR an SQL expression such as `DATE_FORMAT` OR a builder.
+     * @param alias An alias by which to refer to this field. Default is `null`.
+     * @param options Additional options. Default is `null`.
+     */
+    field(name: string | BaseBuilder, alias?: string, options?: FieldOptions): this;
+
+    /**
+     * Add the given fields to the final result set.
+     *
+     * The parameter is an Object containing field names (or database functions) as the keys and aliases for the fields
+     * as the values. If the value for a key is null then no alias is set for that field.
+     *
+     * @param fields List of field:alias pairs OR Array of field names
+     * @param options Additional options. Default is `null`.
+     */
+    fields(fields: { [field: string]: string } | string[], options?: FieldOptions): this;
+}
+
+export class GetFieldBlock extends Block implements GetFieldMixin {
     _fields: { name: string | BaseBuilder; alias: string; options: Options }[];
 
     constructor(options: Options) {
@@ -17,19 +42,9 @@ export class GetFieldBlock extends Block {
         this._fields = [];
     }
 
-    /**
-     * Add the given fields to the final result set.
-     *
-     * The parameter is an Object containing field names (or database functions) as the keys and aliases for the fields
-     * as the values. If the value for a key is null then no alias is set for that field.
-     *
-     * Internally this method simply calls the field() method of this block to add each individual field.
-     *
-     * options.ignorePeriodsForFieldNameQuotes - whether to ignore period (.) when automatically quoting the field name
-     */
-    fields(_fields, options = {}) {
+    fields(_fields: { [field: string]: string } | string[], options: FieldOptions = {}) {
         if (_isArray(_fields)) {
-            for (const field of _fields) {
+            for (const field of _fields as string[]) {
                 this.field(field, null, options);
             }
         } else {
@@ -39,19 +54,11 @@ export class GetFieldBlock extends Block {
                 this.field(field, alias, options);
             }
         }
+
+        return this;
     }
 
-    /**
-     * Add the given field to the final result set.
-     *
-     * The 'field' parameter does not necessarily have to be a fieldname. It can use database functions too,
-     * e.g. DATE_FORMAT(a.started, "%H")
-     *
-     * An alias may also be specified for this field.
-     *
-     * options.ignorePeriodsForFieldNameQuotes - whether to ignore period (.) when automatically quoting the field name
-     */
-    field(field, alias = null, options: Options = {}) {
+    field(field: string | BaseBuilder, alias: string = null, options: FieldOptions = {}) {
         alias = alias ? this._sanitizeFieldAlias(alias) : alias;
         field = this._sanitizeField(field);
 
@@ -67,6 +74,8 @@ export class GetFieldBlock extends Block {
             alias,
             options,
         });
+
+        return this;
     }
 
     _toParamString(opts: Options = {}) {

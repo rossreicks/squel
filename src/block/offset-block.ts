@@ -1,7 +1,16 @@
 import { AbstractVerbSingleValueBlock } from './abstract-verb-single-value-block';
 import { _extend } from '../helpers';
 
-export class OffsetBlock extends AbstractVerbSingleValueBlock {
+export interface OffsetMixin {
+    /**
+     * Add an OFFSET clause.
+     *
+     * @param limit Index of record to start fetching from.
+     */
+    offset(limit: number): this;
+}
+
+export class OffsetBlock extends AbstractVerbSingleValueBlock implements OffsetMixin {
     constructor(options) {
         super(
             _extend({}, options, {
@@ -10,13 +19,9 @@ export class OffsetBlock extends AbstractVerbSingleValueBlock {
         );
     }
 
-    /**
-     * Set the OFFSET transformation.
-     *
-     * Call this will override the previously set offset for this query. Also note that Passing 0 for 'max' will remove
-     * the offset.
-     */
-    offset(start) {
+    offset(start: number) {
         this._setValue(start);
+
+        return this;
     }
 }

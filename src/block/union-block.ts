@@ -1,11 +1,28 @@
-/* eslint-disable no-param-reassign */
 import { Block } from './block';
-import { BaseBuilder } from '../base-builder';
+import { QueryBuilder } from '../query-builder';
 import { Options } from '../types/options';
-import { _pad } from '../helpers';
+import { isSquelBuilder, _pad } from '../helpers';
 
-export class UnionBlock extends Block {
-    _unions: { table: string | BaseBuilder; type: string }[];
+type UnionType = 'UNION' | 'UNION ALL';
+
+export interface UnionMixin {
+    /**
+     * Combine with another `SELECT` using `UNION`.
+     *
+     * @param query Another `SELECT` query to combine this query with.
+     */
+    union(query: QueryBuilder, unionType?: UnionType): this;
+
+    /**
+     * Combine with another `SELECT` using `UNION ALL`.
+     *
+     * @param query Another `SELECT` query to combine this query with.
+     */
+    union_all(query: QueryBuilder): this;
+}
+
+export class UnionBlock extends Block implements UnionMixin {
+    _unions: { table: string | QueryBuilder; type: UnionType }[];
 
     constructor(options: Options) {
         super(options);
@@ -13,25 +30,21 @@ export class UnionBlock extends Block {
         this._unions = [];
     }
 
-    /**
-     * Add a UNION with the given table/query.
-     *
-     * 'table' is the name of the table or query to union with.
-     *
-     * 'type' must be either one of UNION or UNION ALL.... Default is 'UNION'.
-     */
-    union(table, type = 'UNION') {
-        table = this._sanitizeTable(table);
+    union(table: string | QueryBuilder, type: UnionType = 'UNION') {
+        table = this._sanitizeTable(table) as string | QueryBuilder;
 
         this._unions.push({
             type,
             table,
         });
+
+        return this;
     }
 
-    // Add a UNION ALL with the given table/query.
-    union_all(table) {
+    union_all(table: string | QueryBuilder) {
         this.union(table, 'UNION ALL');
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {
@@ -43,8 +56,8 @@ export class UnionBlock extends Block {
 
             let tableStr;
 
-            if (table instanceof BaseBuilder) {
-                const ret = table._toParamString({
+            if (isSquelBuilder(table)) {
+                const ret = (table as QueryBuilder)._toParamString({
                     buildParameterized: options.buildParameterized,
                     nested: true,
                 });
@@ -52,7 +65,7 @@ export class UnionBlock extends Block {
                 tableStr = ret.text;
                 ret.values.forEach((value) => totalValues.push(value));
             } else {
-                totalStr = this._formatTableName(table);
+                totalStr = this._formatTableName(table as string);
             }
 
             totalStr += `${type} ${tableStr}`;

@@ -1,18 +1,39 @@
-/* eslint-disable no-plusplus */
 import { AbstractSetFieldBlock } from './abstract-set-field-block';
 import { Options } from '../types/options';
+import { SetFieldsOptions } from '../types/set-field-options';
+import { SetOptions } from '../types/set-options';
 import { _pad } from '../helpers';
 
-/*
- *(UPDATE) SET field=value
- */
-export class SetFieldBlock extends AbstractSetFieldBlock {
-    set(field, value, options) {
+export interface SetFieldMixin {
+    /**
+     * Set a field to a value.
+     *
+     * @param name Name of field or an operation.
+     * @param value Value to set to field. Default is `undefined`.
+     * @param options Additional options. Default is `null`.
+     */
+    set(name: string, value?: any, options?: SetOptions): this;
+
+    /**
+     * Set fields to given values.
+     *
+     * @param fields Field-value pairs.
+     * @param options Additional options. Default is `null`.
+     */
+    setFields(fields: { [field: string]: any }, options?: SetFieldsOptions): this;
+}
+
+export class SetFieldBlock extends AbstractSetFieldBlock implements SetFieldMixin {
+    set(field: string, value: any, options: SetOptions) {
         this._set(field, value, options);
+
+        return this;
     }
 
-    setFields(fields, valueOptions) {
+    setFields(fields: { [field: string]: any }, valueOptions: SetFieldsOptions) {
         this._setFields(fields, valueOptions);
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {

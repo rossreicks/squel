@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable no-sequences */
-/* eslint-disable no-param-reassign */
 import { BaseBuilder } from '../base-builder';
 import { Block } from './block';
 import { Options } from '../types/options';
@@ -8,7 +5,19 @@ import { _isArray, _pad } from '../helpers';
 
 type OrderByDirection = 'ASC' | 'DESC';
 
-export class OrderByBlock extends Block {
+export interface OrderByMixin {
+    /**
+     * Add an ORDER BY clause.
+     *
+     * @param field Name of field to sort by.
+     * @param direction Sort direction. `true` = ascending, `false` = descending, `null` = no direction set.
+     *                  Default is `true`.
+     * @param values List of parameter values specified as additional arguments. Default is `[]`.
+     */
+    order(field: string, direction?: boolean | null | OrderByDirection, ...values: any[]): this;
+}
+
+export class OrderByBlock extends Block implements OrderByMixin {
     _orders: {
         field: string | BaseBuilder;
         dir: OrderByDirection;
@@ -26,22 +35,28 @@ export class OrderByBlock extends Block {
      *
      * To specify descending order pass false for the 'dir' parameter.
      */
-    order(field: string | BaseBuilder, dir?: OrderByDirection, ...values) {
+    order(field: string | BaseBuilder, dir?: boolean | null | OrderByDirection, ...values) {
         field = this._sanitizeField(field);
+
+        let direction: OrderByDirection;
 
         if (!(typeof dir === 'string')) {
             if (dir === undefined) {
-                dir = 'ASC'; // Default to asc
+                direction = 'ASC'; // Default to asc
             } else if (dir !== null) {
-                dir = dir ? 'ASC' : 'DESC'; // Convert truthy to asc
+                direction = dir ? 'ASC' : 'DESC'; // Convert truthy to asc
             }
+        } else {
+            direction = dir;
         }
 
         this._orders.push({
             field,
-            dir,
+            dir: direction,
             values: values || [],
         });
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {

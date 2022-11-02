@@ -2,7 +2,16 @@ import { BaseBuilder } from '../base-builder';
 import { Options } from '../types/options';
 import { Block } from './block';
 
-export class GroupByBlock extends Block {
+export interface GroupByMixin {
+    /**
+     * Add an GROUP BY clause.
+     *
+     * @param field Name of field to group by.
+     */
+    group(field: string): this;
+}
+
+export class GroupByBlock extends Block implements GroupByMixin {
     _groups: (string | BaseBuilder)[];
 
     constructor(options: Options) {
@@ -11,9 +20,10 @@ export class GroupByBlock extends Block {
         this._groups = [];
     }
 
-    // Add a GROUP BY transformation for the given field.
-    group(field) {
+    group(field: string) {
         this._groups.push(this._sanitizeField(field));
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {

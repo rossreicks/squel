@@ -46,10 +46,10 @@ export class QueryBuilder extends BaseBuilder {
     }
 
     /**
-    # Register a custom value handler for this query builder and all its contained blocks.
-    #
-    # Note: This will override any globally registered handler for this value type.
-    */
+     * Register a custom value handler for this query builder and all its contained blocks.
+     *
+     * Note: This will override any globally registered handler for this value type.
+     */
     registerValueHandler(type, handler) {
         for (const block of this.blocks) {
             block.registerValueHandler(type, handler);
@@ -61,11 +61,11 @@ export class QueryBuilder extends BaseBuilder {
     }
 
     /**
-    # Update query builder options
-    #
-    # This will update the options for all blocks too. Use this method with caution as it allows you to change the
-    # behaviour of your query builder mid-build.
-    */
+     * Update query builder options
+     *
+     * This will update the options for all blocks too. Use this method with caution as it allows you to change the
+     * behaviour of your query builder mid-build.
+     */
     updateOptions(options: Options) {
         this.options = _extend({}, this.options, options);
 
@@ -99,7 +99,7 @@ export class QueryBuilder extends BaseBuilder {
                 let i = undefined !== options.numberedParametersStartAt ? options.numberedParametersStartAt : 1;
 
                 // construct regex for searching
-                const regex = options.parameterCharacter.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+                const regex = options.parameterCharacter.replace(/[-[\]{}()*+?.,\\^$|*\s]/g, '\\$&');
 
                 totalStr = totalStr.replace(new RegExp(regex, 'g'), () => `${options.numberedParametersPrefix}${i++}`);
             }

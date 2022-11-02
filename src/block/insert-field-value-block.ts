@@ -1,20 +1,53 @@
-/* eslint-disable no-plusplus */
 import { AbstractSetFieldBlock } from './abstract-set-field-block';
-import { _pad } from '../helpers';
 import { Options } from '../types/options';
+import { SetFieldsOptions } from '../types/set-field-options';
+import { SetOptions } from '../types/set-options';
+import { _pad } from '../helpers';
 
-// (INSERT INTO) ... field ... value
-export class InsertFieldValueBlock extends AbstractSetFieldBlock {
-    set(field, value, options = {}) {
+export interface InsertFieldValueMixin {
+    /**
+     * Set a field to a value.
+     *
+     * @param name Name of field.
+     * @param value Value to set to field.
+     * @param options Additional options. Default is `null`.
+     */
+    set(name: string, value: any, options?: SetOptions): this;
+
+    /**
+     * Set fields to given values.
+     *
+     * @param name Field-value pairs.
+     * @param options Additional options. Default is `null`.
+     */
+    setFields(name: { [field: string]: any }, options?: SetFieldsOptions): this;
+
+    /**
+     * Set fields to given values in the given rows (a multi-row insert).
+     *
+     * @param fields An array of objects, where each object is map of field-value pairs for that row
+     * @param options Additional options. Default is `null`.
+     */
+    setFieldsRows<T extends { [field: string]: any }>(fields: T[], options?: SetFieldsOptions): this;
+}
+
+export class InsertFieldValueBlock extends AbstractSetFieldBlock implements InsertFieldValueMixin {
+    set(field: string, value: any, options: SetOptions) {
         this._set(field, value, options);
+
+        return this;
     }
 
-    setFields(fields, valueOptions) {
+    setFields(fields: { [field: string]: any }, valueOptions?: SetFieldsOptions) {
         this._setFields(fields, valueOptions);
+
+        return this;
     }
 
-    setFieldsRows(fieldsRows, valueOptions) {
+    setFieldsRows<T extends { [field: string]: any }>(fieldsRows: T[], valueOptions?: SetFieldsOptions) {
         this._setFieldsRows(fieldsRows, valueOptions);
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {

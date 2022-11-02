@@ -1,8 +1,17 @@
 import { Options } from '../types/options';
 import { Block } from './block';
 
-// A function string block
-export class FunctionBlock extends Block {
+export interface FunctionMixin {
+    /**
+     * Insert a function value, see [[FunctionBlock]].
+     */
+    function(str: string, ...value: any[]): this;
+}
+
+/**
+ * A function string block
+ */
+export class FunctionBlock extends Block implements FunctionMixin {
     _strings: string[];
     _values: any[][];
 
@@ -16,6 +25,8 @@ export class FunctionBlock extends Block {
     function(str: string, ...values) {
         this._strings.push(str);
         this._values.push(values);
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {

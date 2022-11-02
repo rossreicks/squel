@@ -1,11 +1,60 @@
-/* eslint-disable no-param-reassign */
 import { Block } from './block';
 import { BaseBuilder } from '../base-builder';
+import { Expression } from '../expression';
 import { Options } from '../types/options';
 import { _pad, isSquelBuilder } from '../helpers';
 
-export class JoinBlock extends Block {
-    _joins: { type; table; alias: string; condition: string | BaseBuilder }[];
+type JoinType = 'INNER' | 'LEFT' | 'RIGHT' | 'OUTER' | 'LEFT OUTER' | 'FULL' | 'CROSS';
+
+export interface JoinMixin {
+    /**
+     * Add an INNER JOIN.
+     *
+     * @param name The table to join on. Can be a a [[BaseBuilder]] instance.
+     * @param alias An alias by which to refer to this table. Default is `null`.
+     * @param condition A joining ON condition. Default is `null`.
+     */
+    join(name: string | BaseBuilder, alias?: string, condition?: string | Expression, join_type?: JoinType): this;
+
+    /**
+     * Add a LEFT JOIN.
+     *
+     * @param name The table to join on. Can be a a [[cls.BaseBuilder]] instance.
+     * @param alias An alias by which to refer to this table. Default is `null`.
+     * @param condition A joining ON condition. Default is `null`.
+     */
+    left_join(name: string | BaseBuilder, alias?: string, condition?: string | Expression): this;
+
+    /**
+     * Add a RIGHT JOIN.
+     *
+     * @param name The table to join on. Can be a a [[cls.BaseBuilder]] instance.
+     * @param alias An alias by which to refer to this table. Default is `null`.
+     * @param condition A joining ON condition. Default is `null`.
+     */
+    right_join(name: string | BaseBuilder, alias?: string, condition?: string | Expression): this;
+
+    /**
+     * Add a OUTER JOIN.
+     *
+     * @param name The table to join on. Can be a a [[cls.BaseBuilder]] instance.
+     * @param alias An alias by which to refer to this table. Default is `null`.
+     * @param condition A joining ON condition. Default is `null`.
+     */
+    outer_join(name: string | BaseBuilder, alias?: string, condition?: string | Expression): this;
+
+    /**
+     * Add a CROSS JOIN.
+     *
+     * @param name The table to join on. Can be a a [[cls.BaseBuilder]] instance.
+     * @param alias An alias by which to refer to this table. Default is `null`.
+     * @param condition A joining ON condition. Default is `null`.
+     */
+    cross_join(name: string | BaseBuilder, alias?: string, condition?: string | Expression): this;
+}
+
+export class JoinBlock extends Block implements JoinMixin {
+    _joins: { type: JoinType; table: string | BaseBuilder; alias: string; condition: string | Expression }[];
 
     constructor(options) {
         super(options);
@@ -13,22 +62,15 @@ export class JoinBlock extends Block {
         this._joins = [];
     }
 
-    /**
-     * Add a JOIN with the given table.
-     *
-     * 'table' is the name of the table to join with.
-     *
-     * 'alias' is an optional alias for the table name.
-     *
-     * 'condition' is an optional condition (containing an SQL expression) for the JOIN.
-     *
-     * 'type' must be either one of INNER, OUTER, LEFT or RIGHT. Default is 'INNER'.
-     *
-     */
-    join(table, alias = null, condition = null, type = 'INNER') {
+    join(
+        table: string | BaseBuilder,
+        alias: string = null,
+        condition: string | Expression = null,
+        type: JoinType = 'INNER'
+    ) {
         table = this._sanitizeTable(table);
         alias = alias ? this._sanitizeTableAlias(alias) : alias;
-        condition = condition ? this._sanitizeExpression(condition) : condition;
+        condition = condition ? (this._sanitizeExpression(condition) as any) : condition;
 
         this._joins.push({
             type,
@@ -36,30 +78,44 @@ export class JoinBlock extends Block {
             alias,
             condition,
         });
+
+        return this;
     }
 
-    left_join(table, alias = null, condition = null) {
+    left_join(table: string | BaseBuilder, alias: string = null, condition: string | Expression = null) {
         this.join(table, alias, condition, 'LEFT');
+
+        return this;
     }
 
-    right_join(table, alias = null, condition = null) {
+    right_join(table: string | BaseBuilder, alias: string = null, condition: string | Expression = null) {
         this.join(table, alias, condition, 'RIGHT');
+
+        return this;
     }
 
-    outer_join(table, alias = null, condition = null) {
+    outer_join(table: string | BaseBuilder, alias: string = null, condition: string | Expression = null) {
         this.join(table, alias, condition, 'OUTER');
+
+        return this;
     }
 
-    left_outer_join(table, alias = null, condition = null) {
+    left_outer_join(table: string | BaseBuilder, alias: string = null, condition: string | Expression = null) {
         this.join(table, alias, condition, 'LEFT OUTER');
+
+        return this;
     }
 
-    full_join(table, alias = null, condition = null) {
+    full_join(table: string | BaseBuilder, alias: string = null, condition: string | Expression = null) {
         this.join(table, alias, condition, 'FULL');
+
+        return this;
     }
 
-    cross_join(table, alias = null, condition = null) {
+    cross_join(table: string | BaseBuilder, alias: string = null, condition: string | Expression = null) {
         this.join(table, alias, condition, 'CROSS');
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {
@@ -72,7 +128,7 @@ export class JoinBlock extends Block {
             let tableStr;
 
             if (isSquelBuilder(table)) {
-                const ret = table._toParamString({
+                const ret = (table as BaseBuilder)._toParamString({
                     buildParameterized: options.buildParameterized,
                     nested: true,
                 });
@@ -80,7 +136,7 @@ export class JoinBlock extends Block {
                 ret.values.forEach((value) => totalValues.push(value));
                 tableStr = ret.text;
             } else {
-                tableStr = this._formatTableName(table);
+                tableStr = this._formatTableName(table as string);
             }
 
             totalStr += `${type} JOIN ${tableStr}`;

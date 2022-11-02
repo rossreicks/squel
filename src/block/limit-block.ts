@@ -1,7 +1,16 @@
 import { AbstractVerbSingleValueBlock } from './abstract-verb-single-value-block';
 import { _extend } from '../helpers';
 
-export class LimitBlock extends AbstractVerbSingleValueBlock {
+export interface LimitMixin {
+    /**
+     * Add a LIMIT clause.
+     *
+     * @param limit Number of records to limit the query to.
+     */
+    limit(limit: number): this;
+}
+
+export class LimitBlock extends AbstractVerbSingleValueBlock implements LimitMixin {
     constructor(options) {
         super(
             _extend({}, options, {
@@ -10,13 +19,9 @@ export class LimitBlock extends AbstractVerbSingleValueBlock {
         );
     }
 
-    /**
-     * Set the LIMIT transformation.
-     *
-     * Call this will override the previously set limit for this query. Also note that Passing `null` will remove
-     * the limit.
-     */
-    limit(limit) {
+    limit(limit: number) {
         this._setValue(limit);
+
+        return this;
     }
 }

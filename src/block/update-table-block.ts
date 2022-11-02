@@ -1,9 +1,21 @@
 import { Options } from '../types/options';
 import { AbstractTableBlock } from './abstract-table-block';
 
-export class UpdateTableBlock extends AbstractTableBlock {
-    table(table, alias = null) {
+export interface UpdateTableMixin {
+    /**
+     * A table to update.
+     *
+     * @param name Name of table.
+     * @param alias An alias by which to refer to this table. Default is `null`.
+     */
+    table(name: string, alias?: string): this;
+}
+
+export class UpdateTableBlock extends AbstractTableBlock implements UpdateTableMixin {
+    table(table: string, alias: string = null) {
         this._table(table, alias);
+
+        return this;
     }
 
     _toParamString(options: Options = {}) {

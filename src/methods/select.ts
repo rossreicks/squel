@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { QueryBuilder } from '../query-builder';
 import {
     FunctionBlock,
@@ -15,8 +14,34 @@ import {
     OffsetBlock,
     UnionBlock,
 } from '../block';
+import { DistinctMixin } from '../block/distinct-block';
+import { FromTableMixin } from '../block/from-table-block';
+import { FunctionMixin } from '../block/function-block';
+import { GetFieldMixin } from '../block/get-field-block';
+import { GroupByMixin } from '../block/group-by-block';
+import { HavingMixin } from '../block/having-block';
+import { JoinMixin } from '../block/join-block';
+import { LimitMixin } from '../block/limit-block';
+import { OffsetMixin } from '../block/offset-block';
+import { OrderByMixin } from '../block/order-by-block';
+import { UnionMixin } from '../block/union-block';
+import { WhereMixin } from '../block/where-block';
 
-// SELECT query builder.
+export interface Select
+    extends QueryBuilder,
+        FunctionMixin,
+        DistinctMixin,
+        GetFieldMixin,
+        FromTableMixin,
+        JoinMixin,
+        WhereMixin,
+        GroupByMixin,
+        HavingMixin,
+        OrderByMixin,
+        LimitMixin,
+        OffsetMixin,
+        UnionMixin {}
+
 export class Select extends QueryBuilder {
     constructor(options, blocks = null) {
         blocks = blocks || [

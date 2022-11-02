@@ -2,7 +2,16 @@ import { AbstractTableBlock } from './abstract-table-block';
 import { Options } from '../types/options';
 import { _extend } from '../helpers';
 
-export class IntoTableBlock extends AbstractTableBlock {
+export interface IntoTableMixin {
+    /**
+     * The table to insert into.
+     *
+     * @param name Name of table.
+     */
+    into(name: string): this;
+}
+
+export class IntoTableBlock extends AbstractTableBlock implements IntoTableMixin {
     constructor(options: Options) {
         super(
             _extend({}, options, {
@@ -12,8 +21,10 @@ export class IntoTableBlock extends AbstractTableBlock {
         );
     }
 
-    into(table) {
+    into(table: string) {
         this._table(table);
+
+        return this;
     }
 
     _toParamString(options = {}) {
