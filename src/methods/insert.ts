@@ -1,6 +1,17 @@
 import { QueryBuilder } from '../query-builder';
-import { Block, StringBlock, IntoTableBlock, InsertFieldValueBlock, InsertFieldsFromQueryBlock } from '../block';
+import {
+    Block,
+    StringBlock,
+    IntoTableBlock,
+    InsertFieldValueBlock,
+    InsertFieldsFromQueryBlock,
+    InsertFieldsFromQueryMixin,
+    InsertFieldValueMixin,
+    IntoTableMixin,
+} from '../block';
 import { Options } from '../types/options';
+
+export interface Insert extends QueryBuilder, IntoTableMixin, InsertFieldValueMixin, InsertFieldsFromQueryMixin {}
 
 export class Insert extends QueryBuilder {
     constructor(options: Options, blocks: Block[] = null) {
