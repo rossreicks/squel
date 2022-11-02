@@ -30,7 +30,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import { extend } from 'lodash';
-import { squel } from '../src';
+import squel from '../src';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 
 const areEqual = function (actual, expected, message) {

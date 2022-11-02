@@ -31,7 +31,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import sinon from 'sinon';
 import { extend } from 'lodash';
-import { squel } from '../src';
+import squel from '../src';
 import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
 
 let mocker;

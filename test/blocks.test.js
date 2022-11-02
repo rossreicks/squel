@@ -33,7 +33,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import sinon from 'sinon';
 import { extend } from 'lodash';
-import { squel } from '../src';
+import squel from '../src';
 import {
     FunctionBlock,
     OrderByBlock,
@@ -519,14 +519,16 @@ describe('Blocks', () => {
             it('saves inputs', () => {
                 const fieldSpy = mocker.spy(inst, 'field');
 
-                inst.fields({
-                    field1: null,
-                    field2: 'alias2',
-                    field3: null,
-                });
-                {
-                    dummy: true;
-                }
+                inst.fields(
+                    {
+                        field1: null,
+                        field2: 'alias2',
+                        field3: null,
+                    },
+                    {
+                        dummy: true,
+                    }
+                );
 
                 const expected = [
                     {
@@ -1790,7 +1792,7 @@ describe('Blocks', () => {
 
                 inst.join('table1', 'alias1', 'a = 1');
 
-                expect(sanitizeTableSpy.calledWithExactly('table1', true)).toBeTruthy();
+                expect(sanitizeTableSpy.calledWithExactly('table1')).toBeTruthy();
                 expect(sanitizeAliasSpy.calledWithExactly('alias1')).toBeTruthy();
                 expect(sanitizeConditionSpy.calledWithExactly('a = 1')).toBeTruthy();
 

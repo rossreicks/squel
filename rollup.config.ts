@@ -1,6 +1,7 @@
 import typescript from 'rollup-plugin-typescript2';
 import versionInjector from 'rollup-plugin-version-injector';
 import dts from 'rollup-plugin-dts';
+import { terser } from 'rollup-plugin-terser';
 
 const configs = [
     {
@@ -15,6 +16,13 @@ const configs = [
                 entryFileNames: 'squel.esm.js',
                 dir: 'lib',
                 format: 'esm',
+            },
+            {
+                entryFileNames: 'squel.min.js',
+                dir: 'lib',
+                format: 'iife',
+                name: 'squel',
+                plugins: [terser()],
             },
         ],
         plugins: [versionInjector(), typescript({ useTsconfigDeclarationDir: true })],

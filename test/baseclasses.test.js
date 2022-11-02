@@ -36,11 +36,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import sinon from 'sinon';
 import { extend, find } from 'lodash';
-import { squel } from '../lib/squel.esm';
-import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../src/block';
-import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
-import { QueryBuilder } from '../src/query-builder';
-import { Cloneable } from '../src/cloneable';
+import squel from '../lib/squel';
+import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../lib/squel';
+import { BaseBuilder, DefaultQueryBuilderOptions } from '../lib/squel';
+import { QueryBuilder } from '../lib/squel';
+import { Cloneable } from '../lib/squel';
 
 let mocker;
 let inst = new BaseBuilder();

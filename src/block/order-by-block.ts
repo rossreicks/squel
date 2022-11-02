@@ -38,7 +38,7 @@ export class OrderByBlock extends Block implements OrderByMixin {
     order(field: string | BaseBuilder, dir?: boolean | null | OrderByDirection, ...values) {
         field = this._sanitizeField(field);
 
-        let direction: OrderByDirection;
+        let direction: OrderByDirection = null;
 
         if (!(typeof dir === 'string')) {
             if (dir === undefined) {
