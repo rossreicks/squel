@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es2016",
-        "module": "ESNext",
+        "module": "CommonJS",
         "allowJs": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
@@ -9,7 +9,7 @@
         "skipLibCheck": true,
         "moduleResolution": "node",
         "declaration": true,
-        "declarationDir": "./type-definitions",
+        "outDir": "./lib/esm",
     },
     "exclude": [
         "node_modules",

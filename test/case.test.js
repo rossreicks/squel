@@ -30,8 +30,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 import { extend } from 'lodash';
-import squel from '../src';
-import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
+import squel from '../lib/cjs';
+import { BaseBuilder, DefaultQueryBuilderOptions } from '../lib/cjs/base-builder';
 
 const areEqual = function (actual, expected, message) {
     expect(actual).toEqual(expected);

@@ -10,11 +10,13 @@ const configs = [
             {
                 entryFileNames: 'squel.js',
                 dir: 'lib',
+                name: 'squel',
                 format: 'commonjs',
             },
             {
                 entryFileNames: 'squel.esm.js',
                 dir: 'lib',
+                name: 'squel',
                 format: 'esm',
             },
             {
@@ -25,7 +27,7 @@ const configs = [
                 plugins: [terser()],
             },
         ],
-        plugins: [versionInjector(), typescript({ useTsconfigDeclarationDir: true })],
+        plugins: [versionInjector(), typescript({ rollupCommonJSResolveHack: true, useTsconfigDeclarationDir: true })],
     },
     {
         input: './type-definitions/src/index.d.ts',

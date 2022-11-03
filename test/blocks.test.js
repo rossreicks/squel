@@ -33,7 +33,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import sinon from 'sinon';
 import { extend } from 'lodash';
-import squel from '../src';
+import squel from '../lib/cjs';
 import {
     FunctionBlock,
     OrderByBlock,
@@ -52,15 +52,15 @@ import {
     JoinBlock,
     StringBlock,
     Block,
-} from '../src/block';
-import { AbstractConditionBlock } from '../src/block/abstract-condition-block';
-import { AbstractVerbSingleValueBlock } from '../src/block/abstract-verb-single-value-block';
-import { AbstractSetFieldBlock } from '../src/block/abstract-set-field-block';
-import { DefaultQueryBuilderOptions } from '../src/base-builder';
-import { AbstractTableBlock } from '../src/block/abstract-table-block';
-import { SetFieldBlock } from '../src/block/set-field-block';
-import { Select } from '../src/methods/select';
-import { UpdateTableBlock } from '../src/block/update-table-block';
+} from '../lib/cjs/block';
+import { AbstractConditionBlock } from '../lib/cjs/block/abstract-condition-block';
+import { AbstractVerbSingleValueBlock } from '../lib/cjs/block/abstract-verb-single-value-block';
+import { AbstractSetFieldBlock } from '../lib/cjs/block/abstract-set-field-block';
+import { DefaultQueryBuilderOptions } from '../lib/cjs/base-builder';
+import { AbstractTableBlock } from '../lib/cjs/block/abstract-table-block';
+import { SetFieldBlock } from '../lib/cjs/block/set-field-block';
+import { Select } from '../lib/cjs/methods/select';
+import { UpdateTableBlock } from '../lib/cjs/block/update-table-block';
 
 let mocker;
 let inst = new Block();

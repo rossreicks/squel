@@ -32,10 +32,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import sinon from 'sinon';
 import { extend, pick, keys } from 'lodash';
-import squel from '../src';
-import { StringBlock } from '../src/block';
-import { DefaultQueryBuilderOptions } from '../src/base-builder';
-import { QueryBuilder } from '../src/query-builder';
+import squel from '../lib/cjs';
+import { StringBlock } from '../lib/cjs/block';
+import { DefaultQueryBuilderOptions } from '../lib/cjs/base-builder';
+import { QueryBuilder } from '../lib/cjs/query-builder';
 
 let mocker;
 let inst = squel.delete();

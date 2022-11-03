@@ -29,9 +29,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import squel from '../src';
-import { Block, StringBlock } from '../src/block';
-import { QueryBuilder } from '../src/query-builder';
+import squel from '../lib/cjs';
+import { Block, StringBlock } from '../lib/cjs/block';
+import { QueryBuilder } from '../lib/cjs/query-builder';
 
 const areEqual = function (actual, expected, message) {
     return expect(actual).toEqual(expected);
