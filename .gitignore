@@ -4,4 +4,4 @@ node_modules/
 .sass-cache/
 docs/
 test-coverage/
-type-definitions
+lib

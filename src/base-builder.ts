@@ -73,10 +73,6 @@ export abstract class BaseBuilder extends Cloneable {
 
     options: Options;
 
-    /**
-     * Constructor.
-     * this.param  {Object} options Overriding one or more of `cls.DefaultQueryBuilderOptions`.
-     */
     constructor(options: Options) {
         super();
 

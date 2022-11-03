@@ -36,7 +36,6 @@
     ],
     "scripts": {
         "clean": "rimraf type-definitions && rimraf lib",
-        "docs": "documentation build lib/** -f html --github -o docs",
         "test": "jest",
         "test-performance": "node performance/select.js",
         "build": "yarn clean && tsc -p tsconfig-esm.json && tsc -p tsconfig-cjs.json",

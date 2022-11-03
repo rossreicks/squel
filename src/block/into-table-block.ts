@@ -3,14 +3,18 @@ import { Options } from '../types/options';
 import { _extend } from '../helpers';
 
 export interface IntoTableMixin {
-    /**
-     * The table to insert into.
-     *
-     * @param name Name of table.
-     */
     into(name: string): this;
 }
 
+/**
+ * Mixin for INTO table clause
+ *
+ * @example
+ * insert().into('table'); // INSERT INTO `table`
+ *
+ * @extends AbstractTableBlock
+ * @mixin IntoTableMixin
+ */
 export class IntoTableBlock extends AbstractTableBlock implements IntoTableMixin {
     constructor(options: Options) {
         super(
@@ -21,6 +25,10 @@ export class IntoTableBlock extends AbstractTableBlock implements IntoTableMixin
         );
     }
 
+    /**
+     * The table to insert into.
+     * @param {string} table The table name.
+     */
     into(table: string) {
         this._table(table);
 
