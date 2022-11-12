@@ -4,7 +4,7 @@ This guide guidelines for those wishing to contribute to Squel.
 
 ## Contributor license agreement
 
-By submitting code as an individual or as an entity you agree that your code is [licensed the same as Squel](README.md).
+By submitting code as an individual or as an entity you agree that your code is [licensed the same as Squel](LICENSE.md).
 
 ## Issues and pull requests
 

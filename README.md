@@ -269,10 +269,10 @@ To build the code and run the tests:
 
 ## Contributing
 
-Contributions are welcome! Please see `CONTRIBUTING.md`.
+Contributions are welcome! Please see [CONTRIBUTING](CONTRIBUTING.md).
 
 <a name="License"/>
 
 ## License
 
-MIT - see LICENSE.md
+MIT - see [LICENSE](LICENSE.md)

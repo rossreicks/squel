@@ -2,38 +2,6 @@
 /* eslint-disable no-new-object */
 /* eslint-disable max-classes-per-file */
 
-/*
- * decaffeinate suggestions:
- * DS002: Fix invalid constructor
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
- */
-/*
-Copyright (c) 2014 Ramesh Nair (hiddentao.com)
-
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-*/
-
 import sinon from 'sinon';
 import { extend, find } from 'lodash';
 import squel from '../lib/cjs';
@@ -63,11 +31,6 @@ describe('Base Classes', () => {
 
     afterEach(() => {
         mocker.restore();
-    });
-
-    it('Version number', () => {
-        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-        areEqual(squel.VERSION, require('../package.json').version);
     });
 
     it('Default flavour', () => {
@@ -643,13 +606,6 @@ describe('Base Classes', () => {
             describe('custom handlers', () => {
                 const identity = (value) => value;
 
-                it('global', () => {
-                    squel.registerValueHandler(Date, identity);
-                    const date = new Date();
-
-                    areEqual(date, inst._sanitizeValue(date));
-                });
-
                 it('instance', () => {
                     inst.registerValueHandler(Date, identity);
                     const date = new Date();
@@ -777,17 +733,6 @@ describe('Base Classes', () => {
             });
 
             describe('custom value type', () => {
-                it('global', () => {
-                    class MyClass {}
-                    const myObj = new MyClass();
-
-                    squel.registerValueHandler(MyClass, () => 3.14);
-                    squel.registerValueHandler('boolean', (v) => `a${v}`);
-
-                    areEqual({ formatted: true, value: 3.14 }, inst._formatCustomValue(myObj));
-                    areEqual({ formatted: true, value: 'atrue' }, inst._formatCustomValue(true));
-                });
-
                 it('instance', () => {
                     class MyClass {}
                     const myObj = new MyClass();
@@ -804,11 +749,6 @@ describe('Base Classes', () => {
                     squel.registerValueHandler(Date, (d) => 'goodbye');
 
                     areEqual({ formatted: true, value: 'hello' }, inst._formatCustomValue(new Date()));
-
-                    inst = new BaseBuilder({
-                        valueHandlers: [],
-                    });
-                    areEqual({ formatted: true, value: 'goodbye' }, inst._formatCustomValue(new Date()));
                 });
 
                 it('whether to format for parameterized output', () => {
@@ -831,6 +771,8 @@ describe('Base Classes', () => {
                         if (options.dontQuote) {
                             return 'foo';
                         }
+
+                        return '"foo"';
                     });
 
                     const val = new Date();
