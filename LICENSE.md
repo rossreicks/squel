@@ -1,4 +1,4 @@
-Copyright (c) [Ramesh Nair](http://www.hiddentao.com/)
+Copyright (c) [Ross Reicks](https://rossreicks.com/)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
