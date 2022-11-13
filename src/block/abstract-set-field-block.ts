@@ -2,8 +2,8 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
-import { BaseBuilder } from '../base-builder';
-import { Block } from './block';
+import { BaseBuilder } from '../cls';
+import { Block } from '.';
 import { _isArray } from '../helpers';
 
 /**

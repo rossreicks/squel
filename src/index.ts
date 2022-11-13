@@ -1,5 +1,3 @@
-import { Squel } from './squel';
+import { Squel } from './cls';
 
-const squel = new Squel();
-
-export = squel;
+export default Squel;

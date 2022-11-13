@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 /* eslint-disable no-useless-constructor */
-import { BaseBuilder } from '../base-builder';
+import { BaseBuilder } from '../cls';
 import { Options } from '../types/options';
 
 /*

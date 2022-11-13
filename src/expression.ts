@@ -1,4 +1,4 @@
-import { BaseBuilder } from './base-builder';
+import { BaseBuilder } from './cls';
 import { Options } from './types/options';
 import { isSquelBuilder } from './helpers';
 

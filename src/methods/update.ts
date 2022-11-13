@@ -1,7 +1,7 @@
 import { QueryBuilder } from '../query-builder';
 import { LimitBlock, LimitMixin, OrderByBlock, OrderByMixin, StringBlock, WhereBlock, WhereMixin } from '../block';
-import { SetFieldBlock, SetFieldMixin } from '../block/set-field-block';
-import { UpdateTableBlock, UpdateTableMixin } from '../block/update-table-block';
+import { SetFieldBlock, SetFieldMixin } from '../block';
+import { UpdateTableBlock, UpdateTableMixin } from '../block';
 
 export interface Update extends QueryBuilder, UpdateTableMixin, SetFieldMixin, WhereMixin, OrderByMixin, LimitMixin {}
 

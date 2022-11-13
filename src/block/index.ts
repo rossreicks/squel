@@ -1,3 +1,4 @@
+export * from './block';
 export * from './function-block';
 export * from './string-block';
 export * from './distinct-block';
@@ -15,4 +16,6 @@ export * from './insert-fields-from-query-block';
 export * from './insert-field-value-block';
 export * from './into-table-block';
 export * from './target-table-block';
-export * from './block';
+export * from './set-field-block';
+export * from './update-table-block';
+export * from './on-duplicate-key-update-block';

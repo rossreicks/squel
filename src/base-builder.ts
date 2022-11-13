@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-plusplus */
+import Squel from '.';
 import { Cloneable } from './cloneable';
 import { isSquelBuilder, _extend, _isArray, _shouldApplyNesting, registerValueHandler } from './helpers';
 import { Options } from './types/options';
@@ -68,9 +69,6 @@ export const DefaultQueryBuilderOptions = {
 };
 
 export abstract class BaseBuilder extends Cloneable {
-    // TODO this needs to be shared from the parent somehow
-    globalValueHandlers = [];
-
     options: Options;
 
     constructor(options: Options) {
@@ -185,7 +183,7 @@ export abstract class BaseBuilder extends Cloneable {
         } else if (isSquelBuilder(item)) {
             // Builders allowed
         } else {
-            const typeIsValid = !!getValueHandler(item, this.options.valueHandlers, this.globalValueHandlers);
+            const typeIsValid = !!getValueHandler(item, this.options.valueHandlers, Squel.globalValueHandlers);
 
             if (!typeIsValid) {
                 throw new Error(
@@ -261,7 +259,7 @@ export abstract class BaseBuilder extends Cloneable {
     // TODO: figure out this type
     _formatCustomValue(value: any, asParam: boolean, formattingOptions = {}) {
         // user defined custom handlers takes precedence
-        const customHandler = getValueHandler(value, this.options.valueHandlers, this.globalValueHandlers);
+        const customHandler = getValueHandler(value, this.options.valueHandlers, Squel.globalValueHandlers);
 
         // use the custom handler if available
         if (customHandler) {
