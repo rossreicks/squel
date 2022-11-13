@@ -1,64 +1,37 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
- */
-/*
-Copyright (c) 2014 Ramesh Nair (hiddentao.com)
+import sinon from 'sinon';
+import rootSquel from '../src';
 
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
+let mocker;
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+let sel, del, sel2, sel3, upd, inst;
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-*/
+let squel = rootSquel.useFlavour('postgres');
 
-xdescribe('Postgres flavour', () => {
-    let testContext;
+const areSame = function (actual, expected, message) {
+    expect(actual).toEqual(expected);
+};
 
+describe('Postgres flavour', () => {
     beforeEach(() => {
-        testContext = {};
+        mocker = sinon.sandbox.create();
     });
 
-    beforeEach(() => {
-        delete require.cache[require.resolve('../dist/squel')];
-        squel = require('../dist/squel');
-
-        return (squel = squel.useFlavour('postgres'));
+    afterEach(() => {
+        mocker.restore();
     });
 
     describe('INSERT builder', () => {
         beforeEach(() => {
-            return (testContext.inst = squel.insert());
+            inst = squel.insert();
         });
 
         describe('>> into(table).set(field, 1).set(field,2).onConflict("field", {field2:2})', () => {
             beforeEach(() => {
-                return testContext.inst
-                    .into('table')
-                    .set('field', 1)
-                    .set('field2', 2)
-                    .onConflict('field', { field2: 2 });
+                inst.into('table').set('field', 1).set('field2', 2).onConflict('field', { field2: 2 });
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
+                areSame(
+                    inst.toString(),
                     'INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field) DO UPDATE SET field2 = 2'
                 );
             });
@@ -66,11 +39,11 @@ xdescribe('Postgres flavour', () => {
 
         describe('>> into(table).set(field, 1).set(field,2).onConflict("field")', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).set('field2', 2).onConflict('field');
+                inst.into('table').set('field', 1).set('field2', 2).onConflict('field');
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
+                areSame(
+                    inst.toString(),
                     'INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field) DO NOTHING'
                 );
             });
@@ -78,15 +51,11 @@ xdescribe('Postgres flavour', () => {
 
         describe('>> into(table).set(field, 1).set(field,2).onConflict(["field", "field2"], {field3:3})', () => {
             beforeEach(() => {
-                return testContext.inst
-                    .into('table')
-                    .set('field', 1)
-                    .set('field2', 2)
-                    .onConflict(['field', 'field2'], { field3: 3 });
+                inst.into('table').set('field', 1).set('field2', 2).onConflict(['field', 'field2'], { field3: 3 });
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
+                areSame(
+                    inst.toString(),
                     'INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field, field2) DO UPDATE SET field3 = 3'
                 );
             });
@@ -94,11 +63,11 @@ xdescribe('Postgres flavour', () => {
 
         describe('>> into(table).set(field, 1).set(field,2).onConflict(["field", "field2"])', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).set('field2', 2).onConflict('field');
+                inst.into('table').set('field', 1).set('field2', 2).onConflict('field');
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
+                areSame(
+                    inst.toString(),
                     'INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT (field) DO NOTHING'
                 );
             });
@@ -106,67 +75,58 @@ xdescribe('Postgres flavour', () => {
 
         describe('>> into(table).set(field, 1).set(field,2).onConflict()', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).set('field2', 2).onConflict();
+                inst.into('table').set('field', 1).set('field2', 2).onConflict();
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
-                    'INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT DO NOTHING'
-                );
+                areSame(inst.toString(), 'INSERT INTO table (field, field2) VALUES (1, 2) ON CONFLICT DO NOTHING');
             });
         });
 
         describe('>> into(table).set(field, 1).returning("*")', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).returning('*');
+                inst.into('table').set('field', 1).returning('*');
             });
             it('toString', () => {
-                return assert.same(testContext.inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING *');
+                areSame(inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING *');
             });
         });
 
         describe('>> into(table).set(field, 1).returning("id")', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).returning('id');
+                inst.into('table').set('field', 1).returning('id');
             });
             it('toString', () => {
-                return assert.same(testContext.inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING id');
+                areSame(inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING id');
             });
         });
 
         describe('>> into(table).set(field, 1).returning("id").returning("id")', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).returning('id').returning('id');
+                inst.into('table').set('field', 1).returning('id').returning('id');
             });
             it('toString', () => {
-                return assert.same(testContext.inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING id');
+                areSame(inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING id');
             });
         });
 
         describe('>> into(table).set(field, 1).returning("id").returning("name", "alias")', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).returning('id').returning('name', 'alias');
+                inst.into('table').set('field', 1).returning('id').returning('name', 'alias');
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
-                    'INSERT INTO table (field) VALUES (1) RETURNING id, name AS alias'
-                );
+                areSame(inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING id, name AS alias');
             });
         });
 
         describe('>> into(table).set(field, 1).returning(squel.str("id < ?", 100), "under100")', () => {
             beforeEach(() => {
-                return testContext.inst.into('table').set('field', 1).returning(squel.str('id < ?', 100), 'under100');
+                inst.into('table').set('field', 1).returning(squel.str('id < ?', 100), 'under100');
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
-                    'INSERT INTO table (field) VALUES (1) RETURNING (id < 100) AS under100'
-                );
+                areSame(inst.toString(), 'INSERT INTO table (field) VALUES (1) RETURNING (id < 100) AS under100');
             });
             it('toParam', () => {
-                return assert.same(testContext.inst.toParam(), {
+                areSame(inst.toParam(), {
                     text: 'INSERT INTO table (field) VALUES ($1) RETURNING (id < $2) AS under100',
                     values: [1, 100],
                 });
@@ -175,19 +135,16 @@ xdescribe('Postgres flavour', () => {
 
         describe('>> into(table).set(field, 1).with(alias, table)', () => {
             beforeEach(() => {
-                return testContext.inst
-                    .into('table')
-                    .set('field', 1)
-                    .with('alias', squel.select().from('table').where('field = ?', 2));
+                inst.into('table').set('field', 1).with('alias', squel.select().from('table').where('field = ?', 2));
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.inst.toString(),
+                areSame(
+                    inst.toString(),
                     'WITH alias AS (SELECT * FROM table WHERE (field = 2)) INSERT INTO table (field) VALUES (1)'
                 );
             });
             it('toParam', () => {
-                return assert.same(testContext.inst.toParam(), {
+                areSame(inst.toParam(), {
                     text: 'WITH alias AS (SELECT * FROM table WHERE (field = $1)) INSERT INTO table (field) VALUES ($2)',
                     values: [2, 1],
                 });
@@ -197,60 +154,57 @@ xdescribe('Postgres flavour', () => {
 
     describe('UPDATE builder', () => {
         beforeEach(() => {
-            return (testContext.upd = squel.update());
+            upd = squel.update();
         });
 
         describe('>> table(table).set(field, 1).returning("*")', () => {
             beforeEach(() => {
-                return testContext.upd.table('table').set('field', 1).returning('*');
+                upd.table('table').set('field', 1).returning('*');
             });
             it('toString', () => {
-                return assert.same(testContext.upd.toString(), 'UPDATE table SET field = 1 RETURNING *');
+                areSame(upd.toString(), 'UPDATE table SET field = 1 RETURNING *');
             });
         });
 
         describe('>> table(table).set(field, 1).returning("field")', () => {
             beforeEach(() => {
-                return testContext.upd.table('table').set('field', 1).returning('field');
+                upd.table('table').set('field', 1).returning('field');
             });
             it('toString', () => {
-                return assert.same(testContext.upd.toString(), 'UPDATE table SET field = 1 RETURNING field');
+                areSame(upd.toString(), 'UPDATE table SET field = 1 RETURNING field');
             });
         });
 
         describe('>> table(table).set(field, 1).returning("name", "alias")', () => {
             beforeEach(() => {
-                return testContext.upd.table('table').set('field', 1).returning('name', 'alias');
+                upd.table('table').set('field', 1).returning('name', 'alias');
             });
             it('toString', () => {
-                return assert.same(testContext.upd.toString(), 'UPDATE table SET field = 1 RETURNING name AS alias');
+                areSame(upd.toString(), 'UPDATE table SET field = 1 RETURNING name AS alias');
             });
         });
 
         describe('>> table(table).set(field, 1).from(table2)', () => {
             beforeEach(() => {
-                return testContext.upd.table('table').set('field', 1).from('table2');
+                upd.table('table').set('field', 1).from('table2');
             });
             it('toString', () => {
-                return assert.same(testContext.upd.toString(), 'UPDATE table SET field = 1 FROM table2');
+                areSame(upd.toString(), 'UPDATE table SET field = 1 FROM table2');
             });
         });
 
         describe('>> table(table).set(field, 1).with(alias, table)', () => {
             beforeEach(() => {
-                return testContext.upd
-                    .table('table')
-                    .set('field', 1)
-                    .with('alias', squel.select().from('table').where('field = ?', 2));
+                upd.table('table').set('field', 1).with('alias', squel.select().from('table').where('field = ?', 2));
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.upd.toString(),
+                areSame(
+                    upd.toString(),
                     'WITH alias AS (SELECT * FROM table WHERE (field = 2)) UPDATE table SET field = 1'
                 );
             });
             it('toParam', () => {
-                return assert.same(testContext.upd.toParam(), {
+                areSame(upd.toParam(), {
                     text: 'WITH alias AS (SELECT * FROM table WHERE (field = $1)) UPDATE table SET field = $2',
                     values: [2, 1],
                 });
@@ -260,54 +214,50 @@ xdescribe('Postgres flavour', () => {
 
     describe('DELETE builder', () => {
         beforeEach(() => {
-            return (testContext.del = squel.delete());
+            del = squel.delete();
         });
 
         describe('>> from(table).where(field = 1).returning("*")', () => {
             beforeEach(() => {
-                return testContext.del.from('table').where('field = 1').returning('*');
+                del.from('table').where('field = 1').returning('*');
             });
             it('toString', () => {
-                return assert.same(testContext.del.toString(), 'DELETE FROM table WHERE (field = 1) RETURNING *');
+                areSame(del.toString(), 'DELETE FROM table WHERE (field = 1) RETURNING *');
             });
         });
 
         describe('>> from(table).where(field = 1).returning("field")', () => {
             beforeEach(() => {
-                return testContext.del.from('table').where('field = 1').returning('field');
+                del.from('table').where('field = 1').returning('field');
             });
             it('toString', () => {
-                return assert.same(testContext.del.toString(), 'DELETE FROM table WHERE (field = 1) RETURNING field');
+                areSame(del.toString(), 'DELETE FROM table WHERE (field = 1) RETURNING field');
             });
         });
 
         describe('>> from(table).where(field = 1).returning("field", "f")', () => {
             beforeEach(() => {
-                return testContext.del.from('table').where('field = 1').returning('field', 'f');
+                del.from('table').where('field = 1').returning('field', 'f');
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.del.toString(),
-                    'DELETE FROM table WHERE (field = 1) RETURNING field AS f'
-                );
+                areSame(del.toString(), 'DELETE FROM table WHERE (field = 1) RETURNING field AS f');
             });
         });
 
         describe('>> from(table).where(field = 1).with(alias, table)', () => {
             beforeEach(() => {
-                return testContext.del
-                    .from('table')
+                del.from('table')
                     .where('field = ?', 1)
                     .with('alias', squel.select().from('table').where('field = ?', 2));
             });
             it('toString', () => {
-                return assert.same(
-                    testContext.del.toString(),
+                areSame(
+                    del.toString(),
                     'WITH alias AS (SELECT * FROM table WHERE (field = 2)) DELETE FROM table WHERE (field = 1)'
                 );
             });
             it('toParam', () => {
-                return assert.same(testContext.del.toParam(), {
+                areSame(del.toParam(), {
                     text: 'WITH alias AS (SELECT * FROM table WHERE (field = $1)) DELETE FROM table WHERE (field = $2)',
                     values: [2, 1],
                 });
@@ -317,18 +267,18 @@ xdescribe('Postgres flavour', () => {
 
     describe('SELECT builder', () => {
         beforeEach(() => {
-            return (testContext.sel = squel.select());
+            sel = squel.select();
         });
         describe('select', () => {
             describe('>> from(table).where(field = 1)', () => {
                 beforeEach(() => {
-                    return testContext.sel.field('field1').from('table1').where('field1 = 1');
+                    sel.field('field1').from('table1').where('field1 = 1');
                 });
                 it('toString', () => {
-                    return assert.same(testContext.sel.toString(), 'SELECT field1 FROM table1 WHERE (field1 = 1)');
+                    areSame(sel.toString(), 'SELECT field1 FROM table1 WHERE (field1 = 1)');
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT field1 FROM table1 WHERE (field1 = 1)',
                         values: [],
                     });
@@ -337,13 +287,13 @@ xdescribe('Postgres flavour', () => {
 
             describe('>> from(table).where(field = ?, 2)', () => {
                 beforeEach(() => {
-                    return testContext.sel.field('field1').from('table1').where('field1 = ?', 2);
+                    sel.field('field1').from('table1').where('field1 = ?', 2);
                 });
                 it('toString', () => {
-                    return assert.same(testContext.sel.toString(), 'SELECT field1 FROM table1 WHERE (field1 = 2)');
+                    areSame(sel.toString(), 'SELECT field1 FROM table1 WHERE (field1 = 2)');
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT field1 FROM table1 WHERE (field1 = $1)',
                         values: [2],
                     });
@@ -353,18 +303,18 @@ xdescribe('Postgres flavour', () => {
 
         describe('distinct queries', () => {
             beforeEach(() => {
-                return testContext.sel.fields(['field1', 'field2']).from('table1');
+                sel.fields(['field1', 'field2']).from('table1');
             });
 
             describe('>> from(table).distinct()', () => {
                 beforeEach(() => {
-                    return testContext.sel.distinct();
+                    sel.distinct();
                 });
                 it('toString', () => {
-                    return assert.same(testContext.sel.toString(), 'SELECT DISTINCT field1, field2 FROM table1');
+                    areSame(sel.toString(), 'SELECT DISTINCT field1, field2 FROM table1');
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT DISTINCT field1, field2 FROM table1',
                         values: [],
                     });
@@ -373,16 +323,13 @@ xdescribe('Postgres flavour', () => {
 
             describe('>> from(table).distinct(field1)', () => {
                 beforeEach(() => {
-                    return testContext.sel.distinct('field1');
+                    sel.distinct('field1');
                 });
                 it('toString', () => {
-                    return assert.same(
-                        testContext.sel.toString(),
-                        'SELECT DISTINCT ON (field1) field1, field2 FROM table1'
-                    );
+                    areSame(sel.toString(), 'SELECT DISTINCT ON (field1) field1, field2 FROM table1');
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT DISTINCT ON (field1) field1, field2 FROM table1',
                         values: [],
                     });
@@ -391,16 +338,13 @@ xdescribe('Postgres flavour', () => {
 
             describe('>> from(table).distinct(field1, field2)', () => {
                 beforeEach(() => {
-                    return testContext.sel.distinct('field1', 'field2');
+                    sel.distinct('field1', 'field2');
                 });
                 it('toString', () => {
-                    return assert.same(
-                        testContext.sel.toString(),
-                        'SELECT DISTINCT ON (field1, field2) field1, field2 FROM table1'
-                    );
+                    areSame(sel.toString(), 'SELECT DISTINCT ON (field1, field2) field1, field2 FROM table1');
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT DISTINCT ON (field1, field2) field1, field2 FROM table1',
                         values: [],
                     });
@@ -410,27 +354,27 @@ xdescribe('Postgres flavour', () => {
 
         describe('cte queries', () => {
             beforeEach(() => {
-                testContext.sel = squel.select();
-                testContext.sel2 = squel.select();
+                sel = squel.select();
+                sel2 = squel.select();
 
-                return (testContext.sel3 = squel.select());
+                sel3 = squel.select();
             });
 
             describe('>> query1.with(alias, query2)', () => {
                 beforeEach(() => {
-                    testContext.sel.from('table1').where('field1 = ?', 1);
-                    testContext.sel2.from('table2').where('field2 = ?', 2);
+                    sel.from('table1').where('field1 = ?', 1);
+                    sel2.from('table2').where('field2 = ?', 2);
 
-                    return testContext.sel.with('someAlias', testContext.sel2);
+                    sel.with('someAlias', sel2);
                 });
                 it('toString', () => {
-                    return assert.same(
-                        testContext.sel.toString(),
+                    areSame(
+                        sel.toString(),
                         'WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = 2)) SELECT * FROM table1 WHERE (field1 = 1)'
                     );
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = $1)) SELECT * FROM table1 WHERE (field1 = $2)',
                         values: [2, 1],
                     });
@@ -439,20 +383,20 @@ xdescribe('Postgres flavour', () => {
 
             describe('>> query1.with(alias1, query2).with(alias2, query2)', () => {
                 beforeEach(() => {
-                    testContext.sel.from('table1').where('field1 = ?', 1);
-                    testContext.sel2.from('table2').where('field2 = ?', 2);
-                    testContext.sel3.from('table3').where('field3 = ?', 3);
+                    sel.from('table1').where('field1 = ?', 1);
+                    sel2.from('table2').where('field2 = ?', 2);
+                    sel3.from('table3').where('field3 = ?', 3);
 
-                    return testContext.sel.with('someAlias', testContext.sel2).with('anotherAlias', testContext.sel3);
+                    sel.with('someAlias', sel2).with('anotherAlias', sel3);
                 });
                 it('toString', () => {
-                    return assert.same(
-                        testContext.sel.toString(),
+                    areSame(
+                        sel.toString(),
                         'WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = 2)), anotherAlias AS (SELECT * FROM table3 WHERE (field3 = 3)) SELECT * FROM table1 WHERE (field1 = 1)'
                     );
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'WITH someAlias AS (SELECT * FROM table2 WHERE (field2 = $1)), anotherAlias AS (SELECT * FROM table3 WHERE (field3 = $2)) SELECT * FROM table1 WHERE (field1 = $3)',
                         values: [2, 3, 1],
                     });
@@ -462,26 +406,26 @@ xdescribe('Postgres flavour', () => {
 
         describe('union queries', () => {
             beforeEach(() => {
-                testContext.sel = squel.select();
+                sel = squel.select();
 
-                return (testContext.sel2 = squel.select());
+                sel2 = squel.select();
             });
 
             describe('>> query1.union(query2)', () => {
                 beforeEach(() => {
-                    testContext.sel.field('field1').from('table1').where('field1 = ?', 3);
-                    testContext.sel2.field('field1').from('table1').where('field1 < ?', 10);
+                    sel.field('field1').from('table1').where('field1 = ?', 3);
+                    sel2.field('field1').from('table1').where('field1 < ?', 10);
 
-                    return testContext.sel.union(testContext.sel2);
+                    sel.union(sel2);
                 });
                 it('toString', () => {
-                    return assert.same(
-                        testContext.sel.toString(),
+                    areSame(
+                        sel.toString(),
                         'SELECT field1 FROM table1 WHERE (field1 = 3) UNION (SELECT field1 FROM table1 WHERE (field1 < 10))'
                     );
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT field1 FROM table1 WHERE (field1 = $1) UNION (SELECT field1 FROM table1 WHERE (field1 < $2))',
                         values: [3, 10],
                     });
@@ -490,19 +434,19 @@ xdescribe('Postgres flavour', () => {
 
             describe('>> query1.union_all(query2)', () => {
                 beforeEach(() => {
-                    testContext.sel.field('field1').from('table1').where('field1 = ?', 3);
-                    testContext.sel2.field('field1').from('table1').where('field1 < ?', 10);
+                    sel.field('field1').from('table1').where('field1 = ?', 3);
+                    sel2.field('field1').from('table1').where('field1 < ?', 10);
 
-                    return testContext.sel.union_all(testContext.sel2);
+                    sel.union_all(sel2);
                 });
                 it('toString', () => {
-                    return assert.same(
-                        testContext.sel.toString(),
+                    areSame(
+                        sel.toString(),
                         'SELECT field1 FROM table1 WHERE (field1 = 3) UNION ALL (SELECT field1 FROM table1 WHERE (field1 < 10))'
                     );
                 });
                 it('toParam', () => {
-                    return assert.same(testContext.sel.toParam(), {
+                    areSame(sel.toParam(), {
                         text: 'SELECT field1 FROM table1 WHERE (field1 = $1) UNION ALL (SELECT field1 FROM table1 WHERE (field1 < $2))',
                         values: [3, 10],
                     });
@@ -512,7 +456,7 @@ xdescribe('Postgres flavour', () => {
     });
 
     it('Default query builder options', () => {
-        return assert.same(
+        areSame(
             {
                 replaceSingleQuotes: false,
                 singleQuoteReplacement: "''",
@@ -532,7 +476,7 @@ xdescribe('Postgres flavour', () => {
                 stringFormatter: null,
                 rawNesting: false,
             },
-            squel.cls.DefaultQueryBuilderOptions
+            squel.defaultOptions
         );
     });
 });

@@ -1,4 +1,4 @@
-import { Expression, MySQL } from './cls';
+import { Expression, MySQL, PostgreSQL } from './cls';
 import { Case } from './case';
 import { Select } from './methods/select';
 import { Update } from './methods/update';
@@ -6,6 +6,7 @@ import { Insert } from './methods/insert';
 import { Delete } from './methods/delete';
 import { FunctionBlock } from './block';
 import { registerValueHandler as registerValueHandlerHelper } from './helpers';
+
 export class Squel {
     static flavour = null;
 
@@ -66,8 +67,8 @@ export class Squel {
     }
 
     // Setup Squel for a particular SQL flavour
-    static useFlavour(_flavour: 'mysql'): MySQL {
-        return MySQL;
+    static useFlavour<T extends 'mysql' | 'postgres'>(_flavour: T): T extends 'mysql' ? MySQL : PostgreSQL {
+        return _flavour === 'mysql' ? MySQL : PostgreSQL;
     }
 
     // aliases

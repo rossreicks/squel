@@ -8,9 +8,8 @@ import {
     OnDuplicateKeyUpdateBlock,
     OnDuplicateKeyUpdateMixin,
     StringBlock,
-} from '../block';
-import { QueryBuilder } from '../query-builder';
-import { Insert } from './insert';
+} from '../../block';
+import { QueryBuilder } from '../../query-builder';
 
 export interface MysqlInsert
     extends QueryBuilder,
@@ -19,7 +18,7 @@ export interface MysqlInsert
         InsertFieldsFromQueryMixin,
         OnDuplicateKeyUpdateMixin {}
 
-export class MysqlInsert extends Insert implements MysqlInsert {
+export class MysqlInsert extends QueryBuilder implements MysqlInsert {
     constructor(options, blocks = null) {
         blocks = blocks || [
             new StringBlock(options, 'INSERT'),
