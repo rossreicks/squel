@@ -72,14 +72,30 @@ export class Squel {
         _flavour: T
     ): T extends 'mysql' ? MySQL : T extends 'postgres' ? PostgreSQL : T extends 'mssql' ? MSSql : never {
         if (_flavour === 'mysql') {
+            this.globalValueHandlers = [
+                {
+                    type: FunctionBlock,
+                    handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
+                },
+            ];
+
             return MySQL as any;
         }
 
         if (_flavour === 'postgres') {
+            this.globalValueHandlers = [
+                {
+                    type: FunctionBlock,
+                    handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
+                },
+            ];
+
             return PostgreSQL as any;
         }
 
         if (_flavour === 'mssql') {
+            this.globalValueHandlers = MSSql.globalValueHandlers;
+
             return MSSql as any;
         }
 
