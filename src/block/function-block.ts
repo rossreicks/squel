@@ -1,5 +1,5 @@
 import { Options } from '../types/options';
-import { Block } from './block';
+import { Block } from '.';
 
 export interface FunctionMixin {
     /**

@@ -4,11 +4,11 @@
 
 import sinon from 'sinon';
 import { extend, find } from 'lodash';
-import squel from '../lib/cjs';
-import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../lib/cjs/block';
-import { BaseBuilder, DefaultQueryBuilderOptions } from '../lib/cjs/base-builder';
-import { QueryBuilder } from '../lib/cjs/query-builder';
-import { Cloneable } from '../lib/cjs/cloneable';
+import squel from '../src';
+import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../src/block';
+import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
+import { QueryBuilder } from '../src/query-builder';
+import { Cloneable } from '../src/cloneable';
 
 let mocker;
 let inst = new BaseBuilder();
@@ -209,71 +209,6 @@ describe('Base Classes', () => {
             it('toParam', () => {
                 areEqual(inst.toParam(), handler(inst, true));
             });
-        });
-    });
-
-    describe('Load an SQL flavour', () => {
-        beforeEach(() => {
-            testContext.flavoursBackup = squel.flavours;
-            squel.flavours = {};
-        });
-
-        afterEach(() => {
-            squel.flavours = testContext.flavoursBackup;
-        });
-
-        it('invalid flavour', () => {
-            expect(() => squel.useFlavour('test')).toThrow();
-        });
-
-        it('flavour reference should be a function', () => {
-            squel.flavours.test = 'blah';
-            expect(() => squel.useFlavour('test')).toThrow();
-        });
-
-        it('flavour setup function gets executed', () => {
-            squel.flavours.test = mocker.spy();
-            const ret = squel.useFlavour('test');
-
-            expect(squel.flavours.test.calledOnce).toBeTruthy();
-            expect(!!ret.select()).toBeTruthy();
-        });
-
-        it('can switch flavours', () => {
-            squel.flavours.test = mocker.spy((s) => (s.dummy = 1));
-            squel.flavours.test2 = mocker.spy((s) => (s.dummy2 = 2));
-            let ret = squel.useFlavour('test');
-
-            areEqual(ret.dummy, 1);
-
-            ret = squel.useFlavour('test2');
-            areEqual(ret.dummy, undefined);
-            areEqual(ret.dummy2, 2);
-
-            ret = squel.useFlavour();
-            areEqual(ret.dummy, undefined);
-            areEqual(ret.dummy2, undefined);
-        });
-
-        it('can get current flavour', () => {
-            const flavour = 'test';
-
-            squel.flavours[flavour] = mocker.spy();
-
-            const ret = squel.useFlavour(flavour);
-
-            areEqual(ret.flavour, flavour);
-        });
-
-        it('can mix flavours - #255', () => {
-            squel.flavours.flavour1 = (s) => s;
-            squel.flavours.flavour2 = (s) => s;
-            const squel1 = squel.useFlavour('flavour1');
-            const squel2 = squel.useFlavour('flavour2');
-
-            const expr1 = squel1.expr().and('1 = 1');
-
-            areEqual(squel2.select().from('test', 't').where(expr1).toString(), 'SELECT * FROM test `t` WHERE (1 = 1)');
         });
     });
 
