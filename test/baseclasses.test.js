@@ -541,6 +541,13 @@ describe('Base Classes', () => {
             describe('custom handlers', () => {
                 const identity = (value) => value;
 
+                it('global', () => {
+                    squel.registerValueHandler(Date, identity);
+                    const date = new Date();
+
+                    areEqual(date, inst._sanitizeValue(date));
+                });
+
                 it('instance', () => {
                     inst.registerValueHandler(Date, identity);
                     const date = new Date();
@@ -668,6 +675,17 @@ describe('Base Classes', () => {
             });
 
             describe('custom value type', () => {
+                it('global', () => {
+                    class MyClass {}
+                    const myObj = new MyClass();
+
+                    squel.registerValueHandler(MyClass, () => 3.14);
+                    squel.registerValueHandler('boolean', (v) => `a${v}`);
+
+                    areEqual({ formatted: true, value: 3.14 }, inst._formatCustomValue(myObj));
+                    areEqual({ formatted: true, value: 'atrue' }, inst._formatCustomValue(true));
+                });
+
                 it('instance', () => {
                     class MyClass {}
                     const myObj = new MyClass();
@@ -684,6 +702,11 @@ describe('Base Classes', () => {
                     squel.registerValueHandler(Date, (d) => 'goodbye');
 
                     areEqual({ formatted: true, value: 'hello' }, inst._formatCustomValue(new Date()));
+
+                    inst = new BaseBuilder({
+                        valueHandlers: [],
+                    });
+                    areEqual({ formatted: true, value: 'goodbye' }, inst._formatCustomValue(new Date()));
                 });
 
                 it('whether to format for parameterized output', () => {
