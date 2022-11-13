@@ -3,20 +3,20 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-plusplus */
 import Squel from '.';
+import { ValueHandler } from './types/value-handler';
 import { Cloneable } from './cloneable';
 import { isSquelBuilder, _extend, _isArray, _shouldApplyNesting, registerValueHandler } from './helpers';
 import { Options } from './types/options';
 
-type Handler = {
-    type: string | Function;
-    handler: (value: any, asParam: boolean, options: Options) => string;
-};
-
-function getValueHandler(value: string | Function, localHandlers: Handler[], globalHandlers: Handler[]) {
+function getValueHandler(
+    value: string | Function,
+    localHandlers: ValueHandler<any>[],
+    globalHandlers: ValueHandler<any>[]
+) {
     return _getValueHandler(value, localHandlers) || _getValueHandler(value, globalHandlers);
 }
 
-function _getValueHandler(value: string | Function, handlers: Handler[]) {
+function _getValueHandler(value: string | Function, handlers: ValueHandler<any>[]) {
     for (let i = 0; i < handlers.length; i++) {
         const typeHandler = handlers[i];
         // if type is a string then use `typeof` or else use `instanceof`

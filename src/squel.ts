@@ -1,4 +1,4 @@
-import { Expression, MySQL, PostgreSQL } from './cls';
+import { Expression, MySQL, MSSql, PostgreSQL } from './cls';
 import { Case } from './case';
 import { Select } from './methods/select';
 import { Update } from './methods/update';
@@ -6,11 +6,12 @@ import { Insert } from './methods/insert';
 import { Delete } from './methods/delete';
 import { FunctionBlock } from './block';
 import { registerValueHandler as registerValueHandlerHelper } from './helpers';
+import { ValueHandler } from './types/value-handler';
 
 export class Squel {
     static flavour = null;
 
-    static globalValueHandlers = [
+    static globalValueHandlers: ValueHandler<any>[] = [
         {
             type: FunctionBlock,
             handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
@@ -67,8 +68,38 @@ export class Squel {
     }
 
     // Setup Squel for a particular SQL flavour
-    static useFlavour<T extends 'mysql' | 'postgres'>(_flavour: T): T extends 'mysql' ? MySQL : PostgreSQL {
-        return _flavour === 'mysql' ? MySQL : PostgreSQL;
+    static useFlavour<T extends 'mysql' | 'postgres' | 'mssql'>(
+        _flavour: T
+    ): T extends 'mysql' ? MySQL : T extends 'postgres' ? PostgreSQL : T extends 'mssql' ? MSSql : never {
+        if (_flavour === 'mysql') {
+            this.globalValueHandlers = [
+                {
+                    type: FunctionBlock,
+                    handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
+                },
+            ];
+
+            return MySQL as any;
+        }
+
+        if (_flavour === 'postgres') {
+            this.globalValueHandlers = [
+                {
+                    type: FunctionBlock,
+                    handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
+                },
+            ];
+
+            return PostgreSQL as any;
+        }
+
+        if (_flavour === 'mssql') {
+            this.globalValueHandlers = MSSql.globalValueHandlers;
+
+            return MSSql as any;
+        }
+
+        throw new Error(`Unknown flavour: ${_flavour}`);
     }
 
     // aliases
