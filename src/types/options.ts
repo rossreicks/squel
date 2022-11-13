@@ -6,6 +6,7 @@ export interface Options {
     autoQuoteAliasNames?: boolean;
     buildParameterized?: boolean;
     dontQuote?: boolean;
+    forDelete?: boolean;
     useAsForTableAliasNames?: boolean;
     nameQuoteCharacter?: string;
     tableAliasQuoteCharacter?: string;

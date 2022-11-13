@@ -23,3 +23,7 @@ export * from './on-conflict-key-update-block';
 export * from './returning-block';
 export * from './distinct-on-block';
 export * from './with-block';
+export * from './mssql-insert-field-value-block';
+export * from './update-top-block';
+export * from './update-delete-output-block';
+export * from './limit-offset-top-block';
