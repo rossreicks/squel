@@ -5,10 +5,7 @@ export function _isPlainObject(obj) {
     return obj && obj.constructor.prototype === Object.prototype;
 }
 
-// get whether object is an array
-export function _isArray(obj) {
-    return obj && obj.constructor.prototype === Array.prototype;
-}
+export const _isArray = Array.isArray;
 
 export function _extend<T>(dst: T, ...sources: T[]): T {
     if (dst && sources) {

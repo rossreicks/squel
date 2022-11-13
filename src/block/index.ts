@@ -19,3 +19,7 @@ export * from './target-table-block';
 export * from './set-field-block';
 export * from './update-table-block';
 export * from './on-duplicate-key-update-block';
+export * from './on-conflict-key-update-block';
+export * from './returning-block';
+export * from './distinct-on-block';
+export * from './with-block';

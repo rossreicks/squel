@@ -2,7 +2,7 @@ import { Block } from './block';
 import { Replace } from './methods/replace';
 import { Squel } from './cls';
 import { Options } from './types/options';
-import { MysqlInsert } from './methods/mysql-insert';
+import { MysqlInsert } from './methods/mysql/mysql-insert';
 
 export class MySQL extends Squel {
     static flavor = 'mysql';
