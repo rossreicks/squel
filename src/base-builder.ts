@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-plusplus */
-import Squel from '.';
+import { Squel } from './cls';
 import { ValueHandler } from './types/value-handler';
 import { Cloneable } from './cloneable';
 import { isSquelBuilder, _extend, _isArray, _shouldApplyNesting, registerValueHandler } from './helpers';

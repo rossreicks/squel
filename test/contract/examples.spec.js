@@ -1,4 +1,4 @@
-import { select } from '../../lib/esm/index';
+import { select } from '../../lib/cjs/index';
 
 describe('Select Tests', () => {
     it('should be able to select from a table', () => {

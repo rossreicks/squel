@@ -21,11 +21,7 @@ const main = async () => {
     for (const file of files) {
         const content = await fs.readFileSync(file, 'utf8');
 
-        console.log(content.includes(versionKey));
-
         const newContent = content.replace(versionKey, version);
-
-        console.log(newContent);
 
         await fs.writeFileSync(file, newContent);
     }
