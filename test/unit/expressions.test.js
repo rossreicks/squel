@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import { extend } from 'lodash';
-import squel from '../src';
-import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
+import squel from '../../src';
+import { BaseBuilder, DefaultQueryBuilderOptions } from '../../src/base-builder';
 
 let mocker;
 let inst = squel.expr();

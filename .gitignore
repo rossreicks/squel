@@ -5,3 +5,4 @@ node_modules/
 docs/
 test-coverage/
 lib
+.DS_Store

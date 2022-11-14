@@ -1,6 +1,6 @@
-import squel from '../src';
-import { Block, StringBlock } from '../src/block';
-import { QueryBuilder } from '../src/query-builder';
+import squel from '../../src';
+import { Block, StringBlock } from '../../src/block';
+import { QueryBuilder } from '../../src/query-builder';
 
 const areEqual = function (actual, expected, message) {
     return expect(actual).toEqual(expected);
