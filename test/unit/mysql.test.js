@@ -1,7 +1,7 @@
 import sinon from 'sinon';
-import squel from '../src';
-import { OnDuplicateKeyUpdateBlock } from '../src/block';
-import { AbstractSetFieldBlock } from '../src/block/abstract-set-field-block';
+import squel from '../../src';
+import { OnDuplicateKeyUpdateBlock } from '../../src/block';
+import { AbstractSetFieldBlock } from '../../src/block/abstract-set-field-block';
 
 let mocker;
 
