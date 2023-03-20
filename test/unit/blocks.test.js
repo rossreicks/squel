@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import { extend } from 'lodash';
-import squel from '../src';
+import squel from '../../src';
 import {
     FunctionBlock,
     OrderByBlock,
@@ -19,15 +19,15 @@ import {
     JoinBlock,
     StringBlock,
     Block,
-} from '../src/block';
-import { AbstractConditionBlock } from '../src/block/abstract-condition-block';
-import { AbstractVerbSingleValueBlock } from '../src/block/abstract-verb-single-value-block';
-import { AbstractSetFieldBlock } from '../src/block/abstract-set-field-block';
-import { DefaultQueryBuilderOptions } from '../src/base-builder';
-import { AbstractTableBlock } from '../src/block/abstract-table-block';
-import { SetFieldBlock } from '../src/block/set-field-block';
-import { Select } from '../src/methods/select';
-import { UpdateTableBlock } from '../src/block/update-table-block';
+} from '../../src/block';
+import { AbstractConditionBlock } from '../../src/block/abstract-condition-block';
+import { AbstractVerbSingleValueBlock } from '../../src/block/abstract-verb-single-value-block';
+import { AbstractSetFieldBlock } from '../../src/block/abstract-set-field-block';
+import { DefaultQueryBuilderOptions } from '../../src/base-builder';
+import { AbstractTableBlock } from '../../src/block/abstract-table-block';
+import { SetFieldBlock } from '../../src/block/set-field-block';
+import { Select } from '../../src/methods/select';
+import { UpdateTableBlock } from '../../src/block/update-table-block';
 
 let mocker;
 let inst = new Block();

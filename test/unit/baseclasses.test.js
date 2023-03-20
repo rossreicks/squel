@@ -4,11 +4,11 @@
 
 import sinon from 'sinon';
 import { extend, find } from 'lodash';
-import squel from '../src';
-import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../src/block';
-import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
-import { QueryBuilder } from '../src/query-builder';
-import { Cloneable } from '../src/cloneable';
+import squel from '../../src';
+import { StringBlock, FunctionBlock, LimitBlock, DistinctBlock, WhereBlock, Block } from '../../src/block';
+import { BaseBuilder, DefaultQueryBuilderOptions } from '../../src/base-builder';
+import { QueryBuilder } from '../../src/query-builder';
+import { Cloneable } from '../../src/cloneable';
 
 let mocker;
 let inst = new BaseBuilder();

@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import rootSquel from '../src';
+import rootSquel from '../../src';
 
 let mocker;
 

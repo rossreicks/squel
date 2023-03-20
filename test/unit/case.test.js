@@ -1,6 +1,6 @@
 import { extend } from 'lodash';
-import squel from '../src';
-import { BaseBuilder, DefaultQueryBuilderOptions } from '../src/base-builder';
+import squel from '../../src';
+import { BaseBuilder, DefaultQueryBuilderOptions } from '../../src/base-builder';
 
 const areEqual = function (actual, expected, message) {
     expect(actual).toEqual(expected);
