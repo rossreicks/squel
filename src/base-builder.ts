@@ -56,8 +56,8 @@ export const DefaultQueryBuilderOptions = {
     numberedParametersPrefix: '$',
     // Numbered parameters start at this number.
     numberedParametersStartAt: 1,
-    // If true then replaces all single quotes within strings. The replacement string used is configurable via the `singleQuoteReplacement` option.
-    replaceSingleQuotes: false,
+    // If false, don't automatically escape single quotes to double quotes. If this is set to false, it opens the developer up for a potential sql injection issue. To combat this, this is now on by default. The replacement string used is configurable via the `singleQuoteReplacement` option.
+    replaceSingleQuotes: true,
     // The string to replace single quotes with in query strings
     singleQuoteReplacement: "''",
     // String used to join individual blocks in a query when it's stringified
@@ -71,7 +71,7 @@ export const DefaultQueryBuilderOptions = {
 export abstract class BaseBuilder extends Cloneable {
     options: Options;
 
-    constructor(options: Options) {
+    constructor(options?: Options) {
         super();
 
         const defaults = JSON.parse(JSON.stringify(DefaultQueryBuilderOptions));

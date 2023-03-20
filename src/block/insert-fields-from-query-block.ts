@@ -19,7 +19,7 @@ export class InsertFieldsFromQueryBlock extends Block implements InsertFieldsFro
     _fields: string[];
     _query: BaseBuilder | null;
 
-    constructor(options) {
+    constructor(options?: Options) {
         super(options);
 
         this._fields = [];

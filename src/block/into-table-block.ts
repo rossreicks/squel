@@ -16,7 +16,7 @@ export interface IntoTableMixin {
  * @mixin IntoTableMixin
  */
 export class IntoTableBlock extends AbstractTableBlock implements IntoTableMixin {
-    constructor(options: Options) {
+    constructor(options?: Options) {
         super(
             _extend({}, options, {
                 prefix: 'INTO',
