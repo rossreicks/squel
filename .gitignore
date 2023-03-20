@@ -6,3 +6,4 @@ docs/
 test-coverage/
 lib
 .DS_Store
+coverage
