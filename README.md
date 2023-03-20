@@ -7,6 +7,8 @@
 
 A flexible and powerful SQL query string builder for Typescript.
 
+This is a fork of [squel](https://github.com/hiddentao/squel) that converts it to TypeScript and ESM modules. That project has been abandoned and this fork is intended to be a drop-in replacement for it. Please see the [CHANGELOG](CHANGELOG.md) for details of the changes. Feel free to submit issues if you encounter problems upgrading from squel.
+
 ## Features
 
 * Works in node.js and in the browser.
