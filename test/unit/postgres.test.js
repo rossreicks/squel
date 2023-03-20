@@ -467,7 +467,7 @@ describe('Postgres flavour', () => {
     it('Default query builder options', () => {
         areSame(
             {
-                replaceSingleQuotes: false,
+                replaceSingleQuotes: true,
                 singleQuoteReplacement: "''",
                 autoQuoteTableNames: false,
                 autoQuoteFieldNames: false,

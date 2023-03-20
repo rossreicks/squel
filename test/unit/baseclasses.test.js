@@ -92,7 +92,7 @@ describe('Base Classes', () => {
                 numberedParameters: false,
                 numberedParametersPrefix: '$',
                 numberedParametersStartAt: 1,
-                replaceSingleQuotes: false,
+                replaceSingleQuotes: true,
                 singleQuoteReplacement: "''",
                 separator: ' ',
                 stringFormatter: null,

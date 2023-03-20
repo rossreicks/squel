@@ -4,9 +4,10 @@ import { Select } from './methods/select';
 import { Update } from './methods/update';
 import { Insert } from './methods/insert';
 import { Delete } from './methods/delete';
-import { FunctionBlock } from './block';
+import { Block, FunctionBlock } from './block';
 import { registerValueHandler as registerValueHandlerHelper } from './helpers';
 import { ValueHandler } from './types/value-handler';
+import { Options } from './types/options';
 
 export class Squel {
     static flavour = null;
@@ -25,27 +26,27 @@ export class Squel {
         registerValueHandlerHelper(Squel.globalValueHandlers, type, handler);
     }
 
-    static expr(options) {
+    static expr(options?: Options) {
         return new Expression(options);
     }
 
-    static case(name, options) {
+    static case(name, options?: Options) {
         return new Case(name, options);
     }
 
-    static select(options, blocks) {
+    static select(options?: Options, blocks?: Block[]) {
         return new Select(options, blocks);
     }
 
-    static update(options, blocks) {
+    static update(options?: Options, blocks?: Block[]) {
         return new Update(options, blocks);
     }
 
-    static insert(options, blocks) {
+    static insert(options?: Options, blocks?: Block[]) {
         return new Insert(options, blocks);
     }
 
-    static delete(options, blocks) {
+    static delete(options?: Options, blocks?: Block[]) {
         return new Delete(options, blocks);
     }
 
@@ -57,7 +58,7 @@ export class Squel {
         return inst;
     }
 
-    static rstr(...args) {
+    static rstr(...args: any[]) {
         const inst = new FunctionBlock({
             rawNesting: true,
         });

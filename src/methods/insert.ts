@@ -14,7 +14,7 @@ import { Options } from '../types/options';
 export interface Insert extends QueryBuilder, IntoTableMixin, InsertFieldValueMixin, InsertFieldsFromQueryMixin {}
 
 export class Insert extends QueryBuilder {
-    constructor(options: Options, blocks: Block[] = null) {
+    constructor(options?: Options, blocks: Block[] = null) {
         blocks = blocks || [
             new StringBlock(options, 'INSERT'),
             new IntoTableBlock(options),
