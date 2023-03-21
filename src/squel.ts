@@ -105,13 +105,11 @@ namespace Squel {
     // aliases
     export const remove = _delete;
 
-    export type Select = typeof Squel.select;
-    export type Update = typeof Squel.update;
-    export type Insert = typeof Squel.insert;
-    export type Delete = typeof Squel._delete;
-    export type Case = typeof Squel._case;
-    export type Str = typeof Squel.str;
-    export type Rstr = typeof Squel.rstr;
+    export type Select = typeof Select;
+    export type Update = typeof Update;
+    export type Insert = typeof Insert;
+    export type Delete = typeof Delete;
+    export type Case = typeof Case;
 }
 
 Squel['case'] = Squel._case;
