@@ -1,7 +1,7 @@
 {
     "name": "squel-ts",
     "description": "SQL query string builder",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "author": "Ross Reicks",
     "contributors": [
         "Ramesh Nair <ram@hiddentao.com> (http://www.hiddentao.com/)",
