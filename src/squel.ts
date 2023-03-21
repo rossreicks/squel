@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Expression, MySQL, MSSql, PostgreSQL } from './cls';
 import { Case } from './case';
+import type { Case as CaseType } from './case';
 import { Select } from './methods/select';
+import type { Select as SelectType } from './methods/select';
 import { Update } from './methods/update';
+import type { Update as UpdateType } from './methods/update';
 import { Insert } from './methods/insert';
+import type { Insert as InsertType } from './methods/insert';
 import { Delete } from './methods/delete';
+import type { Delete as DeleteType } from './methods/delete';
 import { Block, FunctionBlock } from './block';
 import { registerValueHandler as registerValueHandlerHelper } from './helpers';
 import { ValueHandler } from './types/value-handler';
@@ -105,11 +110,11 @@ namespace Squel {
     // aliases
     export const remove = _delete;
 
-    export type Select = typeof Select;
-    export type Update = typeof Update;
-    export type Insert = typeof Insert;
-    export type Delete = typeof Delete;
-    export type Case = typeof Case;
+    export type Select = SelectType;
+    export type Update = UpdateType;
+    export type Insert = InsertType;
+    export type Delete = DeleteType;
+    export type Case = CaseType;
 }
 
 Squel['case'] = Squel._case;
