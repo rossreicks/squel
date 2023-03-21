@@ -1,16 +1,17 @@
 import { Block } from './block';
-import { Squel } from './cls';
 import { DefaultQueryBuilderOptions } from './base-builder';
 import { PostgresDelete } from './methods/postgres/postgres-delete';
 import { PostgresInsert } from './methods/postgres/postgres-insert';
 import { PostgresSelect } from './methods/postgres/postgres-select';
 import { PostgresUpdate } from './methods/postgres/postgres-update';
 import { Options } from './types/options';
+import { Squel } from './cls';
 
-export class PostgreSQL extends Squel {
-    static flavor = 'postgres';
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace PostgreSQL {
+    export const flavor = 'postgres';
 
-    static defaultOptions: Options = {
+    export const defaultOptions: Options = {
         ...DefaultQueryBuilderOptions,
         autoQuoteAliasNames: false,
         numberedParameters: true,
@@ -18,19 +19,23 @@ export class PostgreSQL extends Squel {
         useAsForTableAliasNames: true,
     };
 
-    static select(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
+    export function select(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
         return new PostgresSelect(options, blocks);
     }
 
-    static insert(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
+    export function insert(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
         return new PostgresInsert(options, blocks);
     }
 
-    static update(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
+    export function update(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
         return new PostgresUpdate(options, blocks);
     }
 
-    static delete(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
+    export function _delete(options: Options = PostgreSQL.defaultOptions, blocks: Block[] = null) {
         return new PostgresDelete(options, blocks);
     }
+
+    export const str = Squel.str;
 }
+
+PostgreSQL['delete'] = PostgreSQL._delete;
