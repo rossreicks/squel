@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { Expression, MySQL, MSSql, PostgreSQL } from './cls';
 import { Case } from './case';
 import { Select } from './methods/select';
@@ -9,10 +10,10 @@ import { registerValueHandler as registerValueHandlerHelper } from './helpers';
 import { ValueHandler } from './types/value-handler';
 import { Options } from './types/options';
 
-export class Squel {
-    static flavour = null;
+namespace Squel {
+    export const flavour = null;
 
-    static globalValueHandlers: ValueHandler<any>[] = [
+    export const globalValueHandlers: ValueHandler<any>[] = [
         {
             type: FunctionBlock,
             handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
@@ -20,37 +21,37 @@ export class Squel {
     ];
 
     // THIS WILL BE REPLACED AT BUILD TIME WITH THE PACKAGE.JSON VERSION
-    static VERSION = '[VI]{version}[/VI]';
+    export const VERSION = '[VI]{version}[/VI]';
 
-    static registerValueHandler(type, handler) {
+    export function registerValueHandler(type, handler) {
         registerValueHandlerHelper(Squel.globalValueHandlers, type, handler);
     }
 
-    static expr(options?: Options) {
+    export function expr(options?: Options) {
         return new Expression(options);
     }
 
-    static case(name, options?: Options) {
+    export function _case(name, options?: Options) {
         return new Case(name, options);
     }
 
-    static select(options?: Options, blocks?: Block[]) {
+    export function select(options?: Options, blocks?: Block[]) {
         return new Select(options, blocks);
     }
 
-    static update(options?: Options, blocks?: Block[]) {
+    export function update(options?: Options, blocks?: Block[]) {
         return new Update(options, blocks);
     }
 
-    static insert(options?: Options, blocks?: Block[]) {
+    export function insert(options?: Options, blocks?: Block[]) {
         return new Insert(options, blocks);
     }
 
-    static delete(options?: Options, blocks?: Block[]) {
+    export function _delete(options?: Options, blocks?: Block[]) {
         return new Delete(options, blocks);
     }
 
-    static str(...args: any[]) {
+    export function str(...args: any[]) {
         const inst = new FunctionBlock({});
 
         inst.function(args[0] as string, ...args.slice(1));
@@ -58,7 +59,7 @@ export class Squel {
         return inst;
     }
 
-    static rstr(...args: any[]) {
+    export function rstr(...args: any[]) {
         const inst = new FunctionBlock({
             rawNesting: true,
         });
@@ -69,9 +70,7 @@ export class Squel {
     }
 
     // Setup Squel for a particular SQL flavour
-    static useFlavour<T extends 'mysql' | 'postgres' | 'mssql'>(
-        _flavour: T
-    ): T extends 'mysql' ? MySQL : T extends 'postgres' ? PostgreSQL : T extends 'mssql' ? MSSql : never {
+    export function useFlavour<T extends 'mysql' | 'postgres' | 'mssql'>(_flavour: T) {
         if (_flavour === 'mysql') {
             this.globalValueHandlers = [
                 {
@@ -104,5 +103,18 @@ export class Squel {
     }
 
     // aliases
-    static remove = this.delete;
+    export const remove = _delete;
+
+    export type Select = typeof Squel.select;
+    export type Update = typeof Squel.update;
+    export type Insert = typeof Squel.insert;
+    export type Delete = typeof Squel._delete;
+    export type Case = typeof Squel._case;
+    export type Str = typeof Squel.str;
+    export type Rstr = typeof Squel.rstr;
 }
+
+Squel['case'] = Squel._case;
+Squel['delete'] = Squel._delete;
+
+export default Squel;

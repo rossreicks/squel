@@ -7,10 +7,11 @@ import { MssqlInsert } from './methods/mssql/mssql-insert';
 import { MssqlUpdate } from './methods/mssql/mssql-update';
 import { MssqlDelete } from './methods/mssql/mssql-delete';
 
-export class MSSql extends Squel {
-    static flavor = 'mssql';
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace MSSql {
+    export const flavor = 'mssql';
 
-    static globalValueHandlers = [
+    export const globalValueHandlers = [
         {
             type: FunctionBlock,
             handler: (value, asParam = false) => (asParam ? value.toParam() : value.toString()),
@@ -24,26 +25,30 @@ export class MSSql extends Squel {
         },
     ];
 
-    static defaultOptions: Options = {
+    export const defaultOptions: Options = {
         ...DefaultQueryBuilderOptions,
         replaceSingleQuotes: true,
         autoQuoteAliasNames: false,
         numberedParametersPrefix: '@',
     };
 
-    static select(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
+    export function select(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
         return new MssqlSelect(options, blocks);
     }
 
-    static insert(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
+    export function insert(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
         return new MssqlInsert(options, blocks);
     }
 
-    static update(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
+    export function update(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
         return new MssqlUpdate(options, blocks);
     }
 
-    static delete(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
+    export function _delete(options: Options = MSSql.defaultOptions, blocks: Block[] = null) {
         return new MssqlDelete(options, blocks);
     }
+
+    export const str = Squel.str;
 }
+
+MSSql['delete'] = MSSql._delete;
