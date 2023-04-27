@@ -4,6 +4,7 @@ const select = Squel.select;
 const update = Squel.update;
 const insert = Squel.insert;
 const delete_ = Squel._delete;
+const remove = Squel.remove;
 const str = Squel.str;
 const rstr = Squel.rstr;
 const useFlavour = Squel.useFlavour;
@@ -27,6 +28,7 @@ export {
     expr,
     case_,
     mysql,
+    remove,
     postgres,
     mssql,
     VERSION,
