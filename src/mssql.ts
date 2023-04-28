@@ -49,6 +49,7 @@ export namespace MSSql {
     }
 
     export const str = Squel.str;
+    export const remove = _delete;
 }
 
 MSSql['delete'] = MSSql._delete;

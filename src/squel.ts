@@ -75,7 +75,9 @@ namespace Squel {
     }
 
     // Setup Squel for a particular SQL flavour
-    export function useFlavour<T extends 'mysql' | 'postgres' | 'mssql'>(_flavour: T) {
+    export function useFlavour<T extends 'mysql' | 'postgres' | 'mssql'>(
+        _flavour: T
+    ): T extends 'mysql' ? typeof MySQL : T extends 'postgres' ? typeof PostgreSQL : typeof MSSql {
         if (_flavour === 'mysql') {
             this.globalValueHandlers = [
                 {

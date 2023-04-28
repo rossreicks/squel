@@ -36,6 +36,7 @@ export namespace PostgreSQL {
     }
 
     export const str = Squel.str;
+    export const remove = _delete;
 }
 
 PostgreSQL['delete'] = PostgreSQL._delete;
