@@ -20,6 +20,7 @@ export namespace MySQL {
     export const select = Squel.select;
     export const update = Squel.update;
     export const _delete = Squel._delete;
+    export const remove = Squel.remove;
 }
 
 MySQL['delete'] = MySQL._delete;
