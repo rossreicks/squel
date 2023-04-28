@@ -8,11 +8,11 @@ import { MysqlInsert } from './methods/mysql/mysql-insert';
 export namespace MySQL {
     export const flavor = 'mysql';
 
-    export function replace(options: Options, blocks: Block[] = null) {
+    export function replace(options?: Options, blocks: Block[] = null) {
         return new Replace(options, blocks);
     }
 
-    export function insert(options: Options, blocks: Block[] = null) {
+    export function insert(options?: Options, blocks: Block[] = null) {
         return new MysqlInsert(options, blocks);
     }
 
